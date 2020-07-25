@@ -3,6 +3,11 @@ from typing import List, Set, Dict, Callable, Optional
 
 from lines import Lines
 
+__author__      = "Howard C Lovatt"
+__copyright__   = "Howard C Lovatt, 2020 onwards."
+__license__     = "MIT https://opensource.org/licenses/MIT (as used by MicroPython)."
+__version__     = "0.0.0"
+
 
 @dataclass
 class Typeshed:

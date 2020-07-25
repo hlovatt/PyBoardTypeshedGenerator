@@ -2,6 +2,11 @@ from dataclasses import dataclass, field
 from typing import Iterator, List, Union
 from urllib.request import urlopen, Request
 
+__author__      = "Howard C Lovatt"
+__copyright__   = "Howard C Lovatt, 2020 onwards."
+__license__     = "MIT https://opensource.org/licenses/MIT (as used by MicroPython)."
+__version__     = "0.0.0"
+
 
 @dataclass
 class Lines(Iterator[str]):
