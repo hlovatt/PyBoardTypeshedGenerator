@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/Typeshed.iml" filepath="$PROJECT_DIR$/.idea/Typeshed.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/PyBoardTypeshedGenerator.iml" filepath="$PROJECT_DIR$/.idea/PyBoardTypeshedGenerator.iml" />
     </modules>
   </component>
 </project>
