@@ -6,8 +6,8 @@ __license__ = "MIT https://opensource.org/licenses/MIT (as used by MicroPython).
 __version__ = "1.0.0"
 
 
-def uarray():
-    shed = Typeshed(name='uarray')
+def uarray(*, output_dir: str):
+    shed = Typeshed(name='uarray', output_dir=output_dir)
     shed.module(
         old='efficient arrays of numeric data',
         post_doc='''

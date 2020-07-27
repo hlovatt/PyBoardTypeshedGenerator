@@ -6,8 +6,8 @@ __license__ = "MIT https://opensource.org/licenses/MIT (as used by MicroPython).
 __version__ = "1.0.0"
 
 
-def pyb():
-    shd = _pyb()
+def pyb(*, output_dir: str):
+    shd = _pyb(output_dir=output_dir)
     nxt = _acl(shd)
     nxt = _adc(nxt, shd)
     nxt = _can(nxt, shd)
@@ -2259,8 +2259,8 @@ def _acl(shed: Typeshed) -> str:
     return nxt
 
 
-def _pyb() -> Typeshed:
-    shed = Typeshed(name='pyb')
+def _pyb(*, output_dir: str) -> Typeshed:
+    shed = Typeshed(name='pyb', output_dir=output_dir)
     shed.module(
         old='functions related to the board',
         post_doc='''

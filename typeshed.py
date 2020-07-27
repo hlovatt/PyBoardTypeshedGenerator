@@ -30,17 +30,18 @@ class Typeshed:
     """
 
     name: str
-    base_output: str = r'/Users/lov080/Google Drive/Python/PyBoardTypeshed/'
-    base_input: str = r'https://raw.githubusercontent.com/micropython/micropython/master/docs/library/'
+    output_dir: str
+    input_base_url: str = r'https://raw.githubusercontent.com/micropython/micropython/master/docs/library/'
     typeshed: List[str] = field(default_factory=list)
     lines: Lines = Lines()
+    _last_class_index: int = 0
+    _last_line_index: int = 0
+
     _title_underline: Set[str] = field(default_factory=lambda: set('='))
     _header_underline: Set[str] = field(default_factory=lambda: set('-'))
     _synopsis: str = '   :synopsis: '
     _definitions: str = '.. '
     _note: str = '.. note::'
-    _last_class_index: int = 0
-    _last_line_index: int = 0
 
     def is_last(self, line: str, end: str) -> bool:
         """
@@ -96,7 +97,7 @@ class Typeshed:
         self.consume_line(lambda s: s.startswith(name), msg=name, and_preceding_lines=and_preceding_lines)
 
     def module(self, *, old: str, new: Optional[str] = None, post_doc: str = '', end: str = _definitions) -> None:
-        url = self.base_input + self.name + '.rst'
+        url = self.input_base_url + self.name + '.rst'
         self.lines.push_url(url)
         for line in self.lines:
             if line.startswith(self._synopsis):
@@ -130,7 +131,7 @@ __version__ = "0.1.0"
         self._last_line_index = -(len(post_doc) + 7)
         for line in self.lines:
             if line.lstrip().startswith(old):
-                url = self.base_input + old.strip()
+                url = self.input_base_url + old.strip()
                 self.lines.push_url(url)
                 break
         else:
@@ -285,6 +286,6 @@ class {class_name}:
         print('\n'.join(self.typeshed))
 
     def write(self) -> None:
-        with open(self.base_output + self.name + '.pyi', 'w') as f:
+        with open(self.output_dir + self.name + '.pyi', 'w') as f:
             f.write('\n'.join(self.typeshed))
         self.typeshed.clear()
