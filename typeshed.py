@@ -3,17 +3,35 @@ from typing import List, Set, Dict, Callable, Optional
 
 from lines import Lines
 
-__author__      = "Howard C Lovatt"
-__copyright__   = "Howard C Lovatt, 2020 onwards."
-__license__     = "MIT https://opensource.org/licenses/MIT (as used by MicroPython)."
-__version__     = "0.0.0"
+__author__ = "Howard C Lovatt"
+__copyright__ = "Howard C Lovatt, 2020 onwards."
+__license__ = "MIT https://opensource.org/licenses/MIT (as used by MicroPython)."
+__version__ = "1.0.0"
 
 
 @dataclass
 class Typeshed:
+    """
+    Converts `.rst` documentation files into `.pyi` typeshed stub interfaces.
+    The conversion process is declarative and after declaring the module follows whatever order the `.rst` file is in:
+
+      1. Declare the `module`.
+      2. Declare the `def_`s in the module.
+      3. Declare the `class_`s in the module.
+      4. Declare the `def_`s inside the classes.
+      5. `.rst` files might at any point contain `extra_notes`, `constants`, and multiple `defs` in one block.
+
+    In addition to the above declarative conversions you can:
+
+      1. `preview` the conversions so far (useful for debugging).
+      2. `write` the finished conversion to the `.pyi` file (the point of the exercise!).
+
+    A simple example of using `Typeshed` is `uarray.py` and a complicated example is `pyb.py`.
+    """
+
     name: str
-    base_input: str = r'https://raw.githubusercontent.com/micropython/micropython/master/docs/library/'
     base_output: str = r'/Users/lov080/Google Drive/Python/PyBoardTypeshed/'
+    base_input: str = r'https://raw.githubusercontent.com/micropython/micropython/master/docs/library/'
     typeshed: List[str] = field(default_factory=list)
     lines: Lines = Lines()
     _title_underline: Set[str] = field(default_factory=lambda: set('='))
@@ -25,8 +43,26 @@ class Typeshed:
     _last_line_index: int = 0
 
     def is_last(self, line: str, end: str) -> bool:
+        """
+        Many of the parsing functions have an end argument, this function is used for end testing.
+        If `line` is `end` then the line is pushed-back and `True` returned, else no push-back and `False`.
+        Testing for `end` is slightly more complicated than simply comparing lines:
+
+          1. White space is stripped from the start to account for indentation.
+          2. If the line starts with definition `self._note` then it is not an end line
+          (this is because the default end line is `self._definitions`,
+          but the note definition is part of the current parsing unit - its a note!).
+          3. `end` is compared to the start of `line` (to allow partial matches).
+
+        :param line: The line to be tested.
+        :param end: The line to test for.
+        :return: True if `line` is `end` line.
+        """
         s_line = line.lstrip()
-        return not s_line.startswith(self._note) and s_line.startswith(end)
+        if not s_line.startswith(self._note) and s_line.startswith(end):
+            self.lines.push_line(line)
+            return True
+        return False
 
     def consume_line(self, test: Callable[[str], bool], *, msg: str, and_preceding_lines: bool = False) -> None:
         if and_preceding_lines:
@@ -59,7 +95,7 @@ class Typeshed:
     def consume_name_line(self, name: str, *, and_preceding_lines: bool = False) -> None:
         self.consume_line(lambda s: s.startswith(name), msg=name, and_preceding_lines=and_preceding_lines)
 
-    def synopsis(self, *, old: str, new: Optional[str] = None, post_doc: str = '', end: str = _definitions) -> None:
+    def module(self, *, old: str, new: Optional[str] = None, post_doc: str = '', end: str = _definitions) -> None:
         url = self.base_input + self.name + '.rst'
         self.lines.push_url(url)
         for line in self.lines:
@@ -76,10 +112,10 @@ Descriptions taken from
 `{url}`, etc.
 """
 
-__author__      = "Howard C Lovatt"
-__copyright__   = "Howard C Lovatt, 2020 onwards."
-__license__     = "MIT https://opensource.org/licenses/MIT (as used by MicroPython)."
-__version__     = "0.0.0"
+__author__ = "Howard C Lovatt"
+__copyright__ = "Howard C Lovatt, 2020 onwards."
+__license__ = "MIT https://opensource.org/licenses/MIT (as used by MicroPython)."
+__version__ = "0.1.0"
 
 
 {post_doc}
@@ -87,7 +123,6 @@ __version__     = "0.0.0"
                              )
         for line in self.lines:
             if self.is_last(line, end):  # Skip over lines to end of synopsis.
-                self.lines.push_line(line)
                 break
 
     def class_(self, *, old: str, post_doc: str = '') -> None:
@@ -138,7 +173,6 @@ class {class_name}:
         doc = []
         for doc_line in self.lines:
             if self.is_last(doc_line, end):
-                self.lines.push_line(doc_line)
                 break
             if doc_line and set(doc_line).issubset(self._header_underline):
                 assert doc[-1], f'Expected heading, got blank line!'

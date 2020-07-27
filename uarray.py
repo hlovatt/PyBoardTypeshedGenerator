@@ -1,14 +1,14 @@
 from typeshed import Typeshed
 
-__author__      = "Howard C Lovatt"
-__copyright__   = "Howard C Lovatt, 2020 onwards."
-__license__     = "MIT https://opensource.org/licenses/MIT (as used by MicroPython)."
-__version__     = "0.0.0"
+__author__ = "Howard C Lovatt"
+__copyright__ = "Howard C Lovatt, 2020 onwards."
+__license__ = "MIT https://opensource.org/licenses/MIT (as used by MicroPython)."
+__version__ = "1.0.0"
 
 
 def uarray():
     shed = Typeshed(name='uarray')
-    shed.synopsis(
+    shed.module(
         old='efficient arrays of numeric data',
         post_doc='''
 from typing import overload, Sequence, Any

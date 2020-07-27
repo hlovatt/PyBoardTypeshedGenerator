@@ -1,9 +1,9 @@
 from typeshed import Typeshed
 
-__author__      = "Howard C Lovatt"
-__copyright__   = "Howard C Lovatt, 2020 onwards."
-__license__     = "MIT https://opensource.org/licenses/MIT (as used by MicroPython)."
-__version__     = "0.0.0"
+__author__ = "Howard C Lovatt"
+__copyright_ = "Howard C Lovatt, 2020 onwards."
+__license__ = "MIT https://opensource.org/licenses/MIT (as used by MicroPython)."
+__version__ = "1.0.0"
 
 
 def pyb():
@@ -2261,7 +2261,7 @@ def _acl(shed: Typeshed) -> str:
 
 def _pyb() -> Typeshed:
     shed = Typeshed(name='pyb')
-    shed.synopsis(
+    shed.module(
         old='functions related to the board',
         post_doc='''
 from abc import ABC, abstractmethod
