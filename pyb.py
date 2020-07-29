@@ -1,159 +1,134 @@
+import lines
 from typeshed import Typeshed
 
-__author__ = "Howard C Lovatt"
-__copyright_ = "Howard C Lovatt, 2020 onwards."
-__license__ = "MIT https://opensource.org/licenses/MIT (as used by MicroPython)."
-__version__ = "1.0.0"
+__author__ = lines.__author__
+__copyright__ = lines.__copyright__
+__license__ = lines.__license__
+__version__ = lines.__version__
 
 
-def pyb(*, output_dir: str):
-    shd = _pyb(output_dir=output_dir)
-    nxt = _acl(shd)
-    nxt = _adc(nxt, shd)
-    nxt = _can(nxt, shd)
-    nxt = _dac(nxt, shd)
-    nxt = _eit(nxt, shd)
-    nxt = _flh(nxt, shd)
-    nxt = _i2c(nxt, shd)
-    nxt = _lcd(nxt, shd)
-    nxt = _led(nxt, shd)
-    nxt = _pin(nxt, shd)
-    nxt = _rtc(nxt, shd)
-    nxt = _svo(nxt, shd)
-    nxt = _spi(nxt, shd)
-    nxt = _swt(nxt, shd)
-    nxt = _tim(nxt, shd)
-    nxt = _urt(nxt, shd)
-    nxt = _uhd(nxt, shd)
-    _uvp(nxt, shd)
+def pyb(shed: Typeshed):
+    _pyb(shed)
+    nxt = _accel(shed)
+    nxt = _adc(nxt, shed)
+    nxt = _can(nxt, shed)
+    nxt = _dac(nxt, shed)
+    nxt = _ext_int(nxt, shed)
+    nxt = _flash(nxt, shed)
+    nxt = _i2c(nxt, shed)
+    nxt = _lcd(nxt, shed)
+    nxt = _led(nxt, shed)
+    nxt = _pin(nxt, shed)
+    nxt = _rtc(nxt, shed)
+    nxt = _servo(nxt, shed)
+    nxt = _spi(nxt, shed)
+    nxt = _switch(nxt, shed)
+    nxt = _timer(nxt, shed)
+    nxt = _uart(nxt, shed)
+    nxt = _usb_hid(nxt, shed)
+    _usb_vcp(nxt, shed)
 
-    shd.write()
+    shed.write()
 
 
-def _uvp(this: str, shed: Typeshed):
-    shed.class_(old=this)
+def _usb_vcp(this: str, shed: Typeshed):
+    shed.class_from_file(old=this)
     shed.def_(
         old=r'.. class:: pyb.USB_VCP(id=0)',
         new='def __init__(self, id: int = 0, /)',
-        indent=3,
     )
     shed.def_(
         old=r'.. method:: USB_VCP.init(\*, flow=-1)',
         new='def init(self, *, flow: int = - 1) -> int',
-        indent=3,
     )
     shed.def_(
         old=r'.. method:: USB_VCP.setinterrupt(chr)',
         new='def setinterrupt(self, chr: int, /) -> None',
-        indent=3,
     )
     shed.def_(
         old=r'.. method:: USB_VCP.isconnected()',
         new='def isconnected(self) -> bool',
-        indent=3,
     )
     shed.def_(
         old=r'.. method:: USB_VCP.any()',
         new='def any(self) -> bool',
-        indent=3,
     )
     shed.def_(
         old=r'.. method:: USB_VCP.close()',
         new='def close(self) -> None',
-        indent=3,
     )
     shed.def_(
         old=r'.. method:: USB_VCP.read([nbytes])',
-        new='''
-@overload
-def read(self) -> Optional[bytes]: ...
-@overload
-def read(self, nbytes, /) -> Optional[bytes]
-''',
-        indent=3,
+        new=[
+            'def read(self) -> Optional[bytes]',
+            'def read(self, nbytes, /) -> Optional[bytes]'
+        ],
     )
     shed.def_(
         old=r'.. method:: USB_VCP.readinto(buf, [maxlen])',
-        new='''
-@overload
-def readinto(self, buf: _AnyArray, /) -> Optional[int]: ...
-@overload
-def readinto(self, buf: _AnyArray, maxlen: int, /) -> Optional[int]
-''',
-        indent=3,
+        new=[
+            'def readinto(self, buf: _AnyWritableBuf, /) -> Optional[int]',
+            'def readinto(self, buf: _AnyWritableBuf, maxlen: int, /) -> Optional[int]'
+        ],
     )
     shed.def_(
         old=r'.. method:: USB_VCP.readline()',
         new='def readline(self) -> Optional[bytes]',
-        indent=3,
     )
     shed.def_(
         old=r'.. method:: USB_VCP.readlines()',
         new='def readlines(self) -> Optional[List[bytes]]',
-        indent=3,
     )
     shed.def_(
         old=r'.. method:: USB_VCP.write(buf)',
-        new='def write(self, buf: Union[_AnyArray, bytes], /) -> int',
-        indent=3,
+        new='def write(self, buf: Union[_AnyWritableBuf, bytes], /) -> int',
     )
     shed.def_(
         old=r'.. method:: USB_VCP.recv(data, \*, timeout=5000)',
-        new='''
-@overload
-def recv(self, data: int, /, *, timeout: int = 5000) -> Optional[bytes]: ...
-@overload
-def recv(self, data: _AnyArray, /, *, timeout: int = 5000) -> Optional[int]
-''',
-        indent=3,
+        new=[
+            'def recv(self, data: int, /, *, timeout: int = 5000) -> Optional[bytes]',
+            'def recv(self, data: _AnyWritableBuf, /, *, timeout: int = 5000) -> Optional[int]'
+        ],
     )
     shed.def_(
         old=r'.. method:: USB_VCP.send(data, \*, timeout=5000)',
-        new='def send(self, buf: Union[_AnyArray, bytes, int], /, *, timeout: int = 5000) -> int',
-        indent=3,
+        new='def send(self, buf: Union[_AnyWritableBuf, bytes, int], /, *, timeout: int = 5000) -> int',
     )
-    shed.constants()
+    shed.vars(end=None)
 
 
-def _uhd(this: str, shed: Typeshed) -> str:
-    shed.class_(old=this)
+def _usb_hid(this: str, shed: Typeshed) -> str:
+    shed.class_from_file(old=this)
     shed.def_(
         old=r'.. class:: pyb.USB_HID()',
         new='def __init__(self)',
-        indent=3,
     )
     shed.def_(
         old=r'.. method:: USB_HID.recv(data, \*, timeout=5000)',
-        new='''
-@overload
-def recv(self, data: int, /, *, timeout: int = 5000) -> bytes: ...
-@overload
-def recv(self, data: _AnyArray, /, *, timeout: int = 5000) -> int
-''',
-        indent=3,
+        new=[
+            'def recv(self, data: int, /, *, timeout: int = 5000) -> bytes',
+            'def recv(self, data: _AnyWritableBuf, /, *, timeout: int = 5000) -> int'
+        ],
     )
     nxt = 'pyb.USB_VCP.rst'
     shed.def_(
         old=r'.. method:: USB_HID.send(data)',
         new='def send(self, data: Sequence[int]) -> None',
-        indent=3,
         end=nxt
     )
     return nxt
 
 
-def _urt(this: str, shed: Typeshed) -> str:
-    shed.class_(old=this)
+def _uart(this: str, shed: Typeshed) -> str:
+    shed.class_from_file(old=this)
     shed.def_(
         old=r'.. class:: pyb.UART(bus, ...)',
-        new='''
-@overload
+        new=['''
 def __init__(
    self, 
    bus: Union[int, str],
    /
-): ...
-@overload
+)''', '''
 def __init__(
    self, 
    bus: Union[int, str],
@@ -168,8 +143,7 @@ def __init__(
    timeout_char: int = 0, 
    read_buf_len: int = 64
 )
-''',
-        indent=3
+'''],
     )
     shed.def_(
         old=(
@@ -191,64 +165,50 @@ def init(
    read_buf_len: int = 64
 )
 ''',
-        indent=3
     )
     shed.def_(
         old=r'.. method:: UART.deinit()',
         new='def deinit(self) -> None',
-        indent=3
     )
     shed.def_(
         old=r'.. method:: UART.any()',
         new='def any(self) -> int',
-        indent=3
     )
     shed.def_(
         old=r'.. method:: UART.read([nbytes])',
-        new='''
-@overload
-def read(self) -> Optional[bytes]: ...
-@overload
-def read(self, nbytes: int, /) -> Optional[bytes]
-''',
-        indent=3
+        new=[
+            'def read(self) -> Optional[bytes]',
+            'def read(self, nbytes: int, /) -> Optional[bytes]'
+        ],
     )
     shed.def_(
         old=r'.. method:: UART.readchar()',
         new='def readchar(self) -> int',
-        indent=3
     )
     shed.def_(
         old=r'.. method:: UART.readinto(buf[, nbytes])',
-        new='''
-@overload
-def readinto(self, buf: _AnyArray, /) -> Optional[int]: ...
-@overload
-def readinto(self, buf: _AnyArray, nbytes: int, /) -> Optional[int]
-''',
-        indent=3
+        new=[
+            'def readinto(self, buf: _AnyWritableBuf, /) -> Optional[int]',
+            'def readinto(self, buf: _AnyWritableBuf, nbytes: int, /) -> Optional[int]'
+        ],
     )
     shed.def_(
         old=r'.. method:: UART.readline()',
         new='def readline(self) -> Optional[str]',
-        indent=3
     )
     shed.def_(
         old=r'.. method:: UART.write(buf)',
-        new='def write(self, buf: _AnyArray, /) -> Optional[int]',
-        indent=3
+        new='def write(self, buf: _AnyWritableBuf, /) -> Optional[int]',
     )
     shed.def_(
         old=r'.. method:: UART.writechar(char)',
         new='def writechar(self, char: int, /) -> None',
-        indent=3
     )
     shed.def_(
         old=r'.. method:: UART.sendbreak()',
         new='def sendbreak(self) -> None',
-        indent=3
     )
-    shed.constants()
+    shed.vars(end='Flow Control')
     nxt = 'pyb.USB_HID.rst'
     shed.extra_notes(end=nxt)
     return nxt
@@ -281,166 +241,157 @@ class TimerChannel(ABC):
 @abstractmethod
 def callback(self, fun: Optional[Callable[[Timer], None]], /) -> None
 ''',
-        indent=3,
     )
     shed.def_(
         old='.. method:: timerchannel.capture([value])',
-        new='''
-@overload
+        new=['''
 @abstractmethod
-def capture(self) -> int: ...
-@overload
+def capture(self) -> int
+''', '''
 @abstractmethod
 def capture(self, value: int, /) -> None
-''',
-        indent=3,
+'''],
     )
     shed.def_(
         old='.. method:: timerchannel.compare([value])',
-        new='''
-@overload
+        new=['''
 @abstractmethod
-def compare(self) -> int: ...
-@overload
+def compare(self) -> int
+''', '''
 @abstractmethod
 def compare(self, value: int, /) -> None
-''',
-        indent=3,
+'''],
     )
     shed.def_(
         old='.. method:: timerchannel.pulse_width([value])',
-        new='''
-@overload
+        new=['''
 @abstractmethod
-def pulse_width(self) -> int: ...
-@overload
+def pulse_width(self) -> int
+''', '''
 @abstractmethod
 def pulse_width(self, value: int, /) -> None
-''',
-        indent=3,
+'''],
     )
     shed.def_(
         old='.. method:: timerchannel.pulse_width_percent([value])',
-        new='''
-@overload
+        new=['''
 @abstractmethod
-def pulse_width_percent(self) -> float: ...
-@overload
+def pulse_width_percent(self) -> float
+''', '''
 @abstractmethod
 def pulse_width_percent(self, value: Union[int, float], /) -> None
-''',
-        indent=3,
+'''],
         end=end,
     )
 
 
-def _tim(this: str, shed: Typeshed) -> str:
-    shed.class_(
+def _timer(this: str, shed: Typeshed) -> str:
+    shed.class_from_file(
         old=this,
         post_doc='''
 
-   UP: int = ...
+   UP: ClassVar[int] = ...
    """
    configures the timer to count from 0 to ARR (default).
    """
    
-   DOWN: int = ...
+   DOWN: ClassVar[int] = ...
    """
    configures the timer to count from ARR down to 0.
    """
    
-   CENTER: int = ...
+   CENTER: ClassVar[int] = ...
    """
    configures the timer to count from 0 to ARR and then back down to 0.
    """
 
 
-   PWM: int = ...
+   PWM: ClassVar[int] = ...
    """
    configure the timer in PWM mode (active high).
    """
 
-   PWM_INVERTED: int = ...
+   PWM_INVERTED: ClassVar[int] = ...
    """
    configure the timer in PWM mode (active low).
    """
    
    
-   OC_TIMING: int = ...
+   OC_TIMING: ClassVar[int] = ...
    """
    indicates that no pin is driven.
    """
    
-   OC_ACTIVE: int = ...
+   OC_ACTIVE: ClassVar[int] = ...
    """
    the pin will be made active when a compare match occurs (active is determined by polarity).
    """
    
-   OC_INACTIVE: int = ...
+   OC_INACTIVE: ClassVar[int] = ...
    """
    the pin will be made inactive when a compare match occurs.
    """
    
-   OC_TOGGLE: int = ...
+   OC_TOGGLE: ClassVar[int] = ...
    """
    the pin will be toggled when an compare match occurs.
    """
    
-   OC_FORCED_ACTIVE: int = ...
+   OC_FORCED_ACTIVE: ClassVar[int] = ...
    """
    the pin is forced active (compare match is ignored).
    """
    
-   OC_FORCED_INACTIVE: int = ...
+   OC_FORCED_INACTIVE: ClassVar[int] = ...
    """
    the pin is forced inactive (compare match is ignored).
    """
    
    
-   IC: int = ...
+   IC: ClassVar[int] = ...
    """
    configure the timer in Input Capture mode.
    """
    
    
-   ENC_A: int = ...
+   ENC_A: ClassVar[int] = ...
    """
    configure the timer in Encoder mode. The counter only changes when CH1 changes.
    """
    
-   ENC_B: int = ...
+   ENC_B: ClassVar[int] = ...
    """
    configure the timer in Encoder mode. The counter only changes when CH2 changes.
    """
    
-   ENC_AB: int = ...
+   ENC_AB: ClassVar[int] = ...
    """
    configure the timer in Encoder mode. The counter changes when CH1 or CH2 changes.
    """
    
    
-   HIGH: int = ...
+   HIGH: ClassVar[int] = ...
    """
    output is active high.
    """
    
-   LOW: int = ...
+   LOW: ClassVar[int] = ...
    """
    output is active low.
    """
    
    
-   RISING: int = ...
+   RISING: ClassVar[int] = ...
    """
    captures on rising edge.
    """
    
-   FALLING: int = ...
+   FALLING: ClassVar[int] = ...
    """
    captures on falling edge.
    """
    
-   BOTH: int = ...
+   BOTH: ClassVar[int] = ...
    """
    captures on both edges.
    """
@@ -448,14 +399,13 @@ def _tim(this: str, shed: Typeshed) -> str:
     )
     shed.def_(
         old=r'.. class:: pyb.Timer(id, ...)',
-        new='''
-@overload
+        new=['''
 def __init__(
    self, 
    id: int, 
    /
-): ...
-@overload
+)
+''', '''
 def __init__(
    self, 
    id: int, 
@@ -466,8 +416,8 @@ def __init__(
    div: int = 1, 
    callback: Optional[Callable[["Timer"], None]] = None, 
    deadtime: int = 0
-): ...
-@overload
+)
+''', '''
 def __init__(
    self, 
    id: int, 
@@ -479,10 +429,10 @@ def __init__(
    div: int = 1, 
    callback: Optional[Callable[["Timer"], None]] = None, 
    deadtime: int = 0
-): ...
-@overload
-def __init__(self, id: int, /): ...
-@overload
+)
+''', '''
+def __init__(self, id: int, /)
+''', '''
 def __init__(
    self, 
    id: int, 
@@ -492,8 +442,8 @@ def __init__(
    mode: int = UP, 
    div: int = 1, 
    callback: Optional[Callable[["Timer"], None]] = None, 
-): ...
-@overload
+)
+''', '''
 def __init__(
    self, 
    id: int, 
@@ -505,13 +455,11 @@ def __init__(
    div: int = 1, 
    callback: Optional[Callable[["Timer"], None]] = None, 
 )
-''',
-        indent=3
+'''],
     )
     shed.def_(
         old=r'.. method:: Timer.init(\*, freq, prescaler, period, mode=Timer.UP, div=1, callback=None, deadtime=0)',
-        new='''
-@overload
+        new=['''
 def init(
    self, 
    *, 
@@ -520,8 +468,8 @@ def init(
    div: int = 1, 
    callback: Optional[Callable[["Timer"], None]] = None, 
    deadtime: int = 0
-) -> None: ...
-@overload
+) -> None
+''', '''
 def init(
    self, 
    *, 
@@ -532,29 +480,25 @@ def init(
    callback: Optional[Callable[["Timer"], None]] = None, 
    deadtime: int = 0
 ) -> None
-''',
-        indent=3
+'''],
     )
     shed.def_(
         old=r'.. method:: Timer.deinit()',
         new='def deinit(self) -> None',
-        indent=3
     )
     shed.def_(
         old=r'.. method:: Timer.callback(fun)',
         new='def callback(self, fun: Optional[Callable[["Timer"], None]], /) -> None',
-        indent=3
     )
     shed.def_(
         old=r'.. method:: Timer.channel(channel, mode, ...)',
-        new='''
-@overload
+        new=['''
 def channel(
    self, 
    channel: int, 
    /
-) -> Optional["TimerChannel"]: ...
-@overload
+) -> Optional["TimerChannel"]
+''', '''
 def channel(
    self, 
    channel: int, 
@@ -564,8 +508,8 @@ def channel(
    callback: Optional[Callable[["Timer"], None]] = None, 
    pin: Optional[Pin] = None,
    pulse_width: int,
-) -> "TimerChannel": ...
-@overload
+) -> "TimerChannel"
+''', '''
 def channel(
    self, 
    channel: int, 
@@ -575,8 +519,8 @@ def channel(
    callback: Optional[Callable[["Timer"], None]] = None, 
    pin: Optional[Pin] = None,
    pulse_width_percent: Union[int, float],
-) -> "TimerChannel": ...
-@overload
+) -> "TimerChannel"
+''', '''
 def channel(
    self, 
    channel: int, 
@@ -587,8 +531,8 @@ def channel(
    pin: Optional[Pin] = None,
    compare: int,
    polarity: int,
-) -> "TimerChannel": ...
-@overload
+) -> "TimerChannel"
+''', '''
 def channel(
    self, 
    channel: int, 
@@ -598,8 +542,8 @@ def channel(
    callback: Optional[Callable[["Timer"], None]] = None, 
    pin: Optional[Pin] = None,
    polarity: int,
-) -> "TimerChannel": ...
-@overload
+) -> "TimerChannel"
+''', '''
 def channel(
    self, 
    channel: int, 
@@ -609,54 +553,40 @@ def channel(
    callback: Optional[Callable[["Timer"], None]] = None, 
    pin: Optional[Pin] = None,
 ) -> "TimerChannel"
-''',
-        indent=3
+'''],
     )
     shed.def_(
         old='.. method:: Timer.counter([value])',
-        new='''
-@overload
-def counter(self) -> int: ...
-@overload
-def counter(self, value: int, /) -> None
-''',
-        indent=3
+        new=[
+            'def counter(self) -> int',
+            'def counter(self, value: int, /) -> None'
+        ],
     )
     shed.def_(
         old='.. method:: Timer.freq([value])',
-        new='''
-@overload
-def freq(self) -> int: ...
-@overload
-def freq(self, value: int, /) -> None
-''',
-        indent=3
+        new=[
+            'def freq(self) -> int',
+            'def freq(self, value: int, /) -> None'
+        ],
     )
     shed.def_(
         old='.. method:: Timer.period([value])',
-        new='''
-@overload
-def period(self) -> int: ...
-@overload
-def period(self, value: int, /) -> None
-''',
-        indent=3
+        new=[
+            'def period(self) -> int',
+            'def period(self, value: int, /) -> None'
+        ],
     )
     shed.def_(
         old='.. method:: Timer.prescaler([value])',
-        new='''
-@overload
-def prescaler(self) -> int: ...
-@overload
-def prescaler(self, value: int, /) -> None
-''',
-        indent=3
+        new=[
+            'def prescaler(self) -> int',
+            'def prescaler(self, value: int, /) -> None'
+        ],
     )
     timer_channel = 'class TimerChannel --- setup a channel for a timer'
     shed.def_(
         old=r'.. method:: Timer.source_freq()',
         new='def source_freq(self) -> int',
-        indent=3,
         end=timer_channel,
     )
     nxt = 'pyb.UART.rst'
@@ -664,41 +594,36 @@ def prescaler(self, value: int, /) -> None
     return nxt
 
 
-def _swt(this: str, shed: Typeshed) -> str:
-    shed.class_(old=this)
+def _switch(this: str, shed: Typeshed) -> str:
+    shed.class_from_file(old=this)
     shed.def_(
         old=r'.. class:: pyb.Switch()',
         new='def __init__(self)',
-        indent=3
     )
     shed.def_(
         old=r'.. method:: Switch.__call__()',
         new='def __call__(self) -> bool',
-        indent=3
     )
     shed.def_(
         old=r'.. method:: Switch.value()',
         new='def value(self) -> bool',
-        indent=3
     )
     nxt = 'pyb.Timer.rst'
     shed.def_(
         old=r'.. method:: Switch.callback(fun)',
         new='def callback(self, fun: Optional[Callable[[], None]]) -> None',
-        indent=3,
         end=nxt
     )
     return nxt
 
 
 def _spi(this: str, shed: Typeshed) -> str:
-    shed.class_(old=this)
+    shed.class_from_file(old=this)
     shed.def_(
         old='.. class:: pyb.SPI(bus, ...)',
-        new='''
-@overload
-def __init__(self, bus: int, /): ...
-@overload
+        new=['''
+def __init__(self, bus: int, /)
+''', '''
 def __init__(
    self, 
    bus: int, 
@@ -712,8 +637,8 @@ def __init__(
    firstbit: int = MSB, 
    ti: bool = False, 
    crc: Optional[int] = None
-): ...
-@overload
+)
+''', '''
 def __init__(
    self, 
    bus: int, 
@@ -728,21 +653,18 @@ def __init__(
    ti: bool = False, 
    crc: Optional[int] = None
 )
-''',
-        indent=3
+'''],
     )
     shed.def_(
         old=r'.. method:: SPI.deinit()',
         new='def deinit(self) -> None',
-        indent=3
     )
     shed.def_(
         old=(
             r'.. method:: SPI.init(mode, baudrate=328125, \*, prescaler, '
             r'polarity=1, phase=0, bits=8, firstbit=SPI.MSB, ti=False, crc=None)'
         ),
-        new='''
-@overload
+        new=['''
 def init(
    self, 
    mode: int = MASTER, 
@@ -754,8 +676,8 @@ def init(
    firstbit: int = MSB, 
    ti: bool = False, 
    crc: Optional[int] = None
-): ...
-@overload
+)
+''', '''
 def init(
    self, 
    mode: int = MASTER, 
@@ -768,18 +690,15 @@ def init(
    ti: bool = False, 
    crc: Optional[int] = None
 )
-''',
-        indent=3
+'''],
     )
     shed.def_(
         old=r'.. method:: SPI.recv(recv, \*, timeout=5000)',
-        new='def recv(self, recv: Union[int, _AnyArray], /, *, timeout: int = 5000) -> _AnyArray',
-        indent=3
+        new='def recv(self, recv: Union[int, _AnyWritableBuf], /, *, timeout: int = 5000) -> _AnyWritableBuf',
     )
     shed.def_(
         old=r'.. method:: SPI.send(send, \*, timeout=5000)',
-        new='def send(self, send: Union[int, _AnyArray, bytes], /, *, timeout: int = 5000) -> None',
-        indent=3
+        new='def send(self, send: Union[int, _AnyWritableBuf, bytes], /, *, timeout: int = 5000) -> None',
     )
     shed.def_(
         old=r'.. method:: SPI.send_recv(send, recv=None, \*, timeout=5000)',
@@ -787,72 +706,61 @@ def init(
 def send_recv(
    self, 
    send: Union[int, bytearray, array, bytes], 
-   recv: Optional[_AnyArray] = None, 
+   recv: Optional[_AnyWritableBuf] = None, 
    /, 
    *, 
    timeout: int = 5000
-) -> _AnyArray
+) -> _AnyWritableBuf
 ''',
-        indent=3
     )
-    shed.constants()
-    return 'pyb.Switch.rst'
+    nxt = 'pyb.Switch.rst'
+    shed.vars(end=nxt)
+    return nxt
 
 
-def _svo(this: str, shed: Typeshed) -> str:
-    shed.class_(old=this)
+def _servo(this: str, shed: Typeshed) -> str:
+    shed.class_from_file(old=this)
     shed.def_(
         old='.. class:: pyb.Servo(id)',
         new='def __init__(self, id: int, /)',
-        indent=3
     )
     shed.def_(
         old='.. method:: Servo.angle([angle, time=0])',
-        new='''
-@overload
-def angle(self) -> int: ...
-@overload
-def angle(self, angle: int, time: int = 0, /) -> None
-''',
-        indent=3
+        new=[
+            'def angle(self) -> int',
+            'def angle(self, angle: int, time: int = 0, /) -> None'
+        ],
     )
     shed.def_(
         old='.. method:: Servo.speed([speed, time=0])',
-        new='''
-@overload
-def speed(self) -> int: ...
-@overload
-def speed(self, speed: int, time: int = 0, /) -> None
-''',
-        indent=3
+        new=[
+            'def speed(self) -> int',
+            'def speed(self, speed: int, time: int = 0, /) -> None'
+        ],
     )
     shed.def_(
         old='.. method:: Servo.pulse_width([value])',
-        new='''
-@overload
-def speed(self) -> int: ...
-@overload
-def speed(self, value: int, /) -> None
-''',
-        indent=3
+        new=[
+            'def speed(self) -> int',
+            'def speed(self, value: int, /) -> None'
+        ],
     )
     nxt = 'pyb.SPI.rst'
     shed.def_(
         old='.. method:: Servo.calibration([pulse_min, pulse_max, pulse_centre, [pulse_angle_90, pulse_speed_100]])',
-        new='''
-@overload
+        new=['''
 def calibration(
    self
-) -> Tuple[int, int, int, int, int]: ...
-@overload
+) -> Tuple[int, int, int, int, int]
+''', '''
 def calibration(
    self, 
    pulse_min: int, 
    pulse_max: int, 
    pulse_centre: int, 
    /
-) -> None: ...
-@overload
+) -> None
+''', '''
 def calibration(
    self, 
    pulse_min: int, 
@@ -862,45 +770,37 @@ def calibration(
    pulse_speed_100: int, 
    /
 ) -> None
-''',
-        indent=3,
+'''],
         end=nxt
     )
     return nxt
 
 
 def _rtc(this: str, shed: Typeshed) -> str:
-    shed.class_(old=this)
+    shed.class_from_file(old=this)
     shed.def_(
         old='.. class:: pyb.RTC()',
         new='def __init__(self)',
-        indent=3
     )
     shed.def_(
         old='.. method:: RTC.datetime([datetimetuple])',
         new='def datetime(self, datetimetuple: Tuple[int, int, int, int, int, int, int, int], /) -> None',
-        indent=3
     )
     shed.def_(
         old='.. method:: RTC.wakeup(timeout, callback=None)',
         new='def wakeup(self, timeout: Optional[Callable[["RTC"], None]] = None, /) -> None',
-        indent=3
     )
     shed.def_(
         old='.. method:: RTC.info()',
         new='def info(self) -> int',
-        indent=3
     )
     nxt = 'pyb.Servo.rst'
     shed.def_(
         old='.. method:: RTC.calibration(cal)',
-        new='''
-@overload
-def calibration(self) -> int: ...
-@overload
-def calibration(self, cal: int, /) -> None
-''',
-        indent=3,
+        new=[
+            'def calibration(self) -> int',
+            'def calibration(self, cal: int, /) -> None'
+        ],
         end=nxt
     )
     return nxt
@@ -934,7 +834,6 @@ class PinAF(ABC):
 @abstractmethod
 def __str__(self) -> str
 ''',
-        indent=3,
     )
     shed.def_(
         old='.. method:: pinaf.index()',
@@ -942,7 +841,6 @@ def __str__(self) -> str
 @abstractmethod
 def index(self) -> int
 ''',
-        indent=3,
     )
     shed.def_(
         old='.. method:: pinaf.name()',
@@ -950,7 +848,6 @@ def index(self) -> int
 @abstractmethod
 def name(self) -> str
 ''',
-        indent=3,
     )
     shed.def_(
         old='.. method:: pinaf.reg()',
@@ -958,637 +855,644 @@ def name(self) -> str
 @abstractmethod
 def reg(self) -> int
 ''',
-        indent=3,
         end=end
     )
 
 
 def _pin(this: str, shed: Typeshed) -> str:
-    shed.class_(
+    shed.class_from_file(
         old=this,
         post_doc='''
    
-   AF1_TIM1: "PinAF" = ...
+   AF1_TIM1: ClassVar["PinAF"] = ...
    """
    Alternate def_ 1, timer 1.
    """
    
-   AF1_TIM2: "PinAF" = ...
+   AF1_TIM2: ClassVar["PinAF"] = ...
    """
    Alternate def_ 1, timer 2.
    """
 
-   AF2_TIM3: "PinAF" = ...
+   AF2_TIM3: ClassVar["PinAF"] = ...
    """
    Alternate def_ 2, timer 3.
    """
 
-   AF2_TIM4: "PinAF" = ...
+   AF2_TIM4: ClassVar["PinAF"] = ...
    """
    Alternate def_ 2, timer 4.
    """
 
-   AF2_TIM5: "PinAF" = ...
+   AF2_TIM5: ClassVar["PinAF"] = ...
    """
    Alternate def_ 2, timer 5.
    """
 
-   AF3_TIM10: "PinAF" = ...
+   AF3_TIM10: ClassVar["PinAF"] = ...
    """
    Alternate def_ 3, timer 10.
    """
 
-   AF3_TIM11: "PinAF" = ...
+   AF3_TIM11: ClassVar["PinAF"] = ...
    """
    Alternate def_ 3, timer 11.
    """
 
-   AF3_TIM8: "PinAF" = ...
+   AF3_TIM8: ClassVar["PinAF"] = ...
    """
    Alternate def_ 3, timer 8.
    """
 
-   AF3_TIM9: "PinAF" = ...
+   AF3_TIM9: ClassVar["PinAF"] = ...
    """
    Alternate def_ 3, timer 9.
    """
 
-   AF4_I2C1: "PinAF" = ...
+   AF4_I2C1: ClassVar["PinAF"] = ...
    """
    Alternate def_ 4, I2C 1.
    """
 
-   AF4_I2C2: "PinAF" = ...
+   AF4_I2C2: ClassVar["PinAF"] = ...
    """
    Alternate def_ 4, I2C 2.
    """
 
-   AF5_SPI1: "PinAF" = ...
+   AF5_SPI1: ClassVar["PinAF"] = ...
    """
    Alternate def_ 5, SPI 1.
    """
 
-   AF5_SPI2: "PinAF" = ...
+   AF5_SPI2: ClassVar["PinAF"] = ...
    """
    Alternate def_ 5, SPI 2.
    """
 
-   AF7_USART1: "PinAF" = ...
+   AF7_USART1: ClassVar["PinAF"] = ...
    """
    Alternate def_ 7, USART 1.
    """
 
-   AF7_USART2: "PinAF" = ...
+   AF7_USART2: ClassVar["PinAF"] = ...
    """
    Alternate def_ 7, USART 2.
    """
 
-   AF7_USART3: "PinAF" = ...
+   AF7_USART3: ClassVar["PinAF"] = ...
    """
    Alternate def_ 7, USART 3.
    """
 
-   AF8_UART4: "PinAF" = ...
+   AF8_UART4: ClassVar["PinAF"] = ...
    """
    Alternate def_ 8, USART 4.
    """
 
-   AF8_USART6: "PinAF" = ...
+   AF8_USART6: ClassVar["PinAF"] = ...
    """
    Alternate def_ 8, USART 6.
    """
 
-   AF9_CAN1: "PinAF" = ...
+   AF9_CAN1: ClassVar["PinAF"] = ...
    """
    Alternate def_ 9, CAN 1.
    """
 
-   AF9_CAN2: "PinAF" = ...
+   AF9_CAN2: ClassVar["PinAF"] = ...
    """
    Alternate def_ 9, CAN 2.
    """
 
-   AF9_TIM12: "PinAF" = ...
+   AF9_TIM12: ClassVar["PinAF"] = ...
    """
    Alternate def_ 9, timer 12.
    """
 
-   AF9_TIM13: "PinAF" = ...
+   AF9_TIM13: ClassVar["PinAF"] = ...
    """
    Alternate def_ 9, timer 13.
    """
 
-   AF9_TIM14: "PinAF" = ...
+   AF9_TIM14: ClassVar["PinAF"] = ...
    """
    Alternate def_ 9, timer 14.
    """
 
 
-   ALT: int = ...
+   ALT: ClassVar[int] = ...
    """
    Initialise the pin to alternate-def_ mode with a push-pull drive (same as `AF_PP`).
    """
 
-   ALT_OPEN_DRAIN: int = ...
+   ALT_OPEN_DRAIN: ClassVar[int] = ...
    """
    Initialise the pin to alternate-def_ mode with an open-drain drive (same as `AF_OD`).
    """
 
-   IRQ_FALLING: int = ...
+   IRQ_FALLING: ClassVar[int] = ...
    """
    Initialise the pin to generate an interrupt on a falling edge.
    """
 
-   IRQ_RISING: int = ...
+   IRQ_RISING: ClassVar[int] = ...
    """
    Initialise the pin to generate an interrupt on a rising edge.
    """
 
-   OPEN_DRAIN: int = ...
+   OPEN_DRAIN: ClassVar[int] = ...
    """
    Initialise the pin to output mode with an open-drain drive (same as `OUT_OD`).
    """
    
    
    class board:
-      LED_BLUE: "Pin" = ...
+      """
+      The board pins (board nomenclature, e.g. `X1`) that are bought out onto pads on a PyBoard.
+      """
+
+      LED_BLUE: ClassVar["Pin"] = ...
       """
       The blue LED.
       """
       
-      LED_GREEN: "Pin" = ...
+      LED_GREEN: ClassVar["Pin"] = ...
       """
       The green LED.
       """
       
-      LED_RED: "Pin" = ...
+      LED_RED: ClassVar["Pin"] = ...
       """
       The red LED.
       """
       
-      LED_YELLOW: "Pin" = ...
+      LED_YELLOW: ClassVar["Pin"] = ...
       """
       The yellow LED.
       """
       
-      MMA_AVDD: "Pin" = ...
+      MMA_AVDD: ClassVar["Pin"] = ...
       """
       Accelerometer (MMA7660) analogue power (AVDD) pin.
       """
       
-      MMA_INT: "Pin" = ...
+      MMA_INT: ClassVar["Pin"] = ...
       """
       Accelerometer (MMA7660) interrupt (\\INT) pin.
       """
       
-      SD: "Pin" = ...
+      SD: ClassVar["Pin"] = ...
       """
       SD card present switch (0 for card inserted, 1 for no card) (same as SD_SW).
       """
 
-      SD_CK: "Pin" = ...
+      SD_CK: ClassVar["Pin"] = ...
       """
       SD card clock.
       """
 
-      SD_CMD: "Pin" = ...
+      SD_CMD: ClassVar["Pin"] = ...
       """
       SD card command.
       """
 
-      SD_D0: "Pin" = ...
+      SD_D0: ClassVar["Pin"] = ...
       """
       SD card serial data 0.
       """
 
-      SD_D1: "Pin" = ...
+      SD_D1: ClassVar["Pin"] = ...
       """
       SD card serial data 1.
       """
 
-      SD_D2: "Pin" = ...
+      SD_D2: ClassVar["Pin"] = ...
       """
       SD card serial data 2.
       """
 
-      SD_D3: "Pin" = ...
+      SD_D3: ClassVar["Pin"] = ...
       """
       SD card serial data 3.
       """
 
-      SD_SW: "Pin" = ...
+      SD_SW: ClassVar["Pin"] = ...
       """
       SD card present switch (0 for card inserted, 1 for no card) (same as SD).
       """
 
-      SW: "Pin" = ...
+      SW: ClassVar["Pin"] = ...
       """
       Usr switch (0 = pressed, 1 = not pressed).
       """
 
-      USB_DM: "Pin" = ...
+      USB_DM: ClassVar["Pin"] = ...
       """
       USB data -.
       """
 
-      USB_DP: "Pin" = ...
+      USB_DP: ClassVar["Pin"] = ...
       """
       USB data +.
       """
 
-      USB_ID: "Pin" = ...
+      USB_ID: ClassVar["Pin"] = ...
       """
       USB OTG (on-the-go) ID.
       """
 
-      USB_VBUS: "Pin" = ...
+      USB_VBUS: ClassVar["Pin"] = ...
       """
       USB VBUS (power) monitoring pin.
       """
 
-      X1: "Pin" = ...
+      X1: ClassVar["Pin"] = ...
       """
       X1 pin.
       """
 
-      X10: "Pin" = ...
+      X10: ClassVar["Pin"] = ...
       """
       X10 pin.
       """
 
-      X11: "Pin" = ...
+      X11: ClassVar["Pin"] = ...
       """
       X11 pin.
       """
 
-      X12: "Pin" = ...
+      X12: ClassVar["Pin"] = ...
       """
       X12 pin.
       """
 
-      X17: "Pin" = ...
+      X17: ClassVar["Pin"] = ...
       """
       X17 pin.
       """
 
-      X18: "Pin" = ...
+      X18: ClassVar["Pin"] = ...
       """
       X18 pin.
       """
 
-      X19: "Pin" = ...
+      X19: ClassVar["Pin"] = ...
       """
       X19 pin.
       """
 
-      X2: "Pin" = ...
+      X2: ClassVar["Pin"] = ...
       """
       X2 pin.
       """
 
-      X20: "Pin" = ...
+      X20: ClassVar["Pin"] = ...
       """
       X20 pin.
       """
 
-      X21: "Pin" = ...
+      X21: ClassVar["Pin"] = ...
       """
       X21 pin.
       """
              
-      X22: "Pin" = ...
+      X22: ClassVar["Pin"] = ...
       """
       X22 pin.
       """
 
-      X3: "Pin" = ...
+      X3: ClassVar["Pin"] = ...
       """
       X3 pin.
       """
 
-      X4: "Pin" = ...
+      X4: ClassVar["Pin"] = ...
       """
       X4 pin.
       """
 
-      X5: "Pin" = ...
+      X5: ClassVar["Pin"] = ...
       """
       X5 pin.
       """
 
-      X6: "Pin" = ...
+      X6: ClassVar["Pin"] = ...
       """
       X6 pin.
       """
 
-      X7: "Pin" = ...
+      X7: ClassVar["Pin"] = ...
       """
       X7 pin.
       """
 
-      X8: "Pin" = ...
+      X8: ClassVar["Pin"] = ...
       """
       X8 pin.
       """
 
-      X9: "Pin" = ...
+      X9: ClassVar["Pin"] = ...
       """
       X9 pin.
       """
 
-      Y1: "Pin" = ...
+      Y1: ClassVar["Pin"] = ...
       """
       Y1 pin.
       """
 
-      Y10: "Pin" = ...
+      Y10: ClassVar["Pin"] = ...
       """
       Y10 pin.
       """
 
-      Y11: "Pin" = ...
+      Y11: ClassVar["Pin"] = ...
       """
       Y11 pin.
       """
 
-      Y12: "Pin" = ...
+      Y12: ClassVar["Pin"] = ...
       """
       Y12 pin.
       """
 
-      Y2: "Pin" = ...
+      Y2: ClassVar["Pin"] = ...
       """
       Y2 pin.
       """
 
-      Y3: "Pin" = ...
+      Y3: ClassVar["Pin"] = ...
       """
       Y3 pin.
       """
 
-      Y4: "Pin" = ...
+      Y4: ClassVar["Pin"] = ...
       """
       Y4 pin.
       """
 
-      Y5: "Pin" = ...
+      Y5: ClassVar["Pin"] = ...
       """
       Y5 pin.
       """
 
-      Y6: "Pin" = ...
+      Y6: ClassVar["Pin"] = ...
       """
       Y6 pin.
       """
 
-      Y7: "Pin" = ...
+      Y7: ClassVar["Pin"] = ...
       """
       Y7 pin.
       """
 
-      Y8: "Pin" = ...
+      Y8: ClassVar["Pin"] = ...
       """
       Y8 pin.
       """
 
-      Y9: "Pin" = ...
+      Y9: ClassVar["Pin"] = ...
       """
       Y9 pin.
       """
    
    
    class cpu:
-      A0: "Pin" = ...
+      """
+      The CPU pins (CPU nomenclature, e.g. `A0`) that are bought out onto pads on a PyBoard.
+      """
+      
+      A0: ClassVar["Pin"] = ...
       """
       A0 pin.
       """
       
-      A1: "Pin" = ...
+      A1: ClassVar["Pin"] = ...
       """
       A1 pin.
       """
 
-      A10: "Pin" = ...
+      A10: ClassVar["Pin"] = ...
       """
       A10 pin.
       """
 
-      A11: "Pin" = ...
+      A11: ClassVar["Pin"] = ...
       """
       A11 pin.
       """
 
-      A12: "Pin" = ...
+      A12: ClassVar["Pin"] = ...
       """
       A12 pin.
       """
 
-      A13: "Pin" = ...
+      A13: ClassVar["Pin"] = ...
       """
       A13 pin.
       """
 
-      A14: "Pin" = ...
+      A14: ClassVar["Pin"] = ...
       """
       A14 pin.
       """
 
-      A15: "Pin" = ...
+      A15: ClassVar["Pin"] = ...
       """
       A15 pin.
       """
 
-      A2: "Pin" = ...
+      A2: ClassVar["Pin"] = ...
       """
       A2 pin.
       """
 
-      A3: "Pin" = ...
+      A3: ClassVar["Pin"] = ...
       """
       A3 pin.
       """
 
-      A4: "Pin" = ...
+      A4: ClassVar["Pin"] = ...
       """
       A4 pin.
       """
 
-      A5: "Pin" = ...
+      A5: ClassVar["Pin"] = ...
       """
       A5 pin.
       """
 
-      A6: "Pin" = ...
+      A6: ClassVar["Pin"] = ...
       """
       A6 pin.
       """
 
-      A7: "Pin" = ...
+      A7: ClassVar["Pin"] = ...
       """
       A7 pin.
       """
 
-      A8: "Pin" = ...
+      A8: ClassVar["Pin"] = ...
       """
       A8 pin.
       """
 
-      A9: "Pin" = ...
+      A9: ClassVar["Pin"] = ...
       """
       A9 pin.
       """
 
-      B0: "Pin" = ...
+      B0: ClassVar["Pin"] = ...
       """
       B0 pin.
       """
 
-      B1: "Pin" = ...
+      B1: ClassVar["Pin"] = ...
       """
       B1 pin.
       """
 
-      B10: "Pin" = ...
+      B10: ClassVar["Pin"] = ...
       """
       B10 pin.
       """
 
-      B11: "Pin" = ...
+      B11: ClassVar["Pin"] = ...
       """
       B11 pin.
       """
 
-      B12: "Pin" = ...
+      B12: ClassVar["Pin"] = ...
       """
       B12 pin.
       """
 
-      B13: "Pin" = ...
+      B13: ClassVar["Pin"] = ...
       """
       B13 pin.
       """
 
-      B14: "Pin" = ...
+      B14: ClassVar["Pin"] = ...
       """
       B14 pin.
       """
 
-      B15: "Pin" = ...
+      B15: ClassVar["Pin"] = ...
       """
       B15 pin.
       """
 
-      B2: "Pin" = ...
+      B2: ClassVar["Pin"] = ...
       """
       B2 pin.
       """
 
-      B3: "Pin" = ...
+      B3: ClassVar["Pin"] = ...
       """
       B3 pin.
       """
 
-      B4: "Pin" = ...
+      B4: ClassVar["Pin"] = ...
       """
       B4 pin.
       """
 
-      B5: "Pin" = ...
+      B5: ClassVar["Pin"] = ...
       """
       B5 pin.
       """
 
-      B6: "Pin" = ...
+      B6: ClassVar["Pin"] = ...
       """
       B6 pin.
       """
 
-      B7: "Pin" = ...
+      B7: ClassVar["Pin"] = ...
       """
       B7 pin.
       """
 
-      B8: "Pin" = ...
+      B8: ClassVar["Pin"] = ...
       """
       B8 pin.
       """
 
-      B9: "Pin" = ...
+      B9: ClassVar["Pin"] = ...
       """
       B9 pin.
       """
 
-      C0: "Pin" = ...
+      C0: ClassVar["Pin"] = ...
       """
       C0 pin.
       """
 
-      C1: "Pin" = ...
+      C1: ClassVar["Pin"] = ...
       """
       C1 pin.
       """
 
-      C10: "Pin" = ...
+      C10: ClassVar["Pin"] = ...
       """
       C10 pin.
       """
 
-      C11: "Pin" = ...
+      C11: ClassVar["Pin"] = ...
       """
       C11 pin.
       """
 
-      C12: "Pin" = ...
+      C12: ClassVar["Pin"] = ...
       """
       C12 pin.
       """
 
-      C13: "Pin" = ...
+      C13: ClassVar["Pin"] = ...
       """
       C13 pin.
       """
 
-      C2: "Pin" = ...
+      C2: ClassVar["Pin"] = ...
       """
       C2 pin.
       """
 
-      C3: "Pin" = ...
+      C3: ClassVar["Pin"] = ...
       """
       C3 pin.
       """
 
-      C4: "Pin" = ...
+      C4: ClassVar["Pin"] = ...
       """
       C4 pin.
       """
 
-      C5: "Pin" = ...
+      C5: ClassVar["Pin"] = ...
       """
       C5 pin.
       """
 
-      C6: "Pin" = ...
+      C6: ClassVar["Pin"] = ...
       """
       C6 pin.
       """
 
-      C7: "Pin" = ...
+      C7: ClassVar["Pin"] = ...
       """
       C7 pin.
       """
 
-      C8: "Pin" = ...
+      C8: ClassVar["Pin"] = ...
       """
       C8 pin.
       """
 
-      C9: "Pin" = ...
+      C9: ClassVar["Pin"] = ...
       """
       C9 pin.
       """
 
-      D2: "Pin" = ...
+      D2: ClassVar["Pin"] = ...
       """
       D2 pin.
       """
@@ -1596,211 +1500,173 @@ def _pin(this: str, shed: Typeshed) -> str:
     shed.def_(
         old='.. class:: pyb.Pin(id, ...)',
         new='def __init__(self, id: str, /, mode: int = IN, pull: int = PULL_NONE, af: Union[str, int] = -1)',
-        indent=3
     )
     shed.def_(
         old='.. classmethod:: Pin.debug([state])',
-        new='''
+        new=['''
 @staticmethod
-@overload
-def debug() -> bool: ...
+def debug() -> bool
+''', '''
 @staticmethod
-@overload
 def debug(state: bool, /) -> None
-''',
-        indent=3
+'''],
     )
     shed.def_(
         old='.. classmethod:: Pin.dict([dict])',
-        new='''
+        new=['''
 @staticmethod
-@overload
-def dict() -> Dict[str, "Pin"]: ...
+def dict() -> Dict[str, "Pin"]
+''', '''
 @staticmethod
-@overload
 def dict(dict: Dict[str, "Pin"], /) -> None
-''',
-        indent=3
+'''],
     )
     shed.def_(
         old='.. classmethod:: Pin.mapper([fun])',
-        new='''
+        new=['''
 @staticmethod
-@overload
-def mapper() -> Callable[[str], "Pin"]: ...
+def mapper() -> Callable[[str], "Pin"]
+''', '''
 @staticmethod
-@overload
 def mapper(fun: Callable[[str], "Pin"], /) -> None
-''',
-        indent=3
+'''],
     )
     shed.def_(
         old='.. method:: Pin.init(mode, pull=Pin.PULL_NONE, af=-1)',
         new='def init(self, mode: int = IN, pull: int = PULL_NONE, af: Union[str, int] = -1) -> None',
-        indent=3
     )
     shed.def_(
         old='.. method:: Pin.value([value])',
-        new='''
-@overload
-def value(self) -> int: ...
-@overload
-def value(self, value: Any, /) -> None
-''',
-        indent=3
+        new=[
+            'def value(self) -> int',
+            'def value(self, value: Any, /) -> None'
+        ],
     )
     shed.def_(
         old='.. method:: Pin.__str__()',
         new='def __str__(self) -> str',
-        indent=3
     )
     shed.def_(
         old='.. method:: Pin.af()',
         new='def af(self) -> int',
-        indent=3
     )
     shed.def_(
         old='.. method:: Pin.af_list()',
         new='def af_list(self) -> List["PinAF"]',
-        indent=3
     )
     shed.def_(
         old='.. method:: Pin.gpio()',
         new='def gpio(self) -> int',
-        indent=3
     )
     shed.def_(
         old='.. method:: Pin.mode()',
         new='def mode(self) -> int',
-        indent=3
     )
     shed.def_(
         old='.. method:: Pin.name()',
         new='def name(self) -> str',
-        indent=3
     )
     shed.def_(
         old='.. method:: Pin.names()',
         new='def names(self) -> List[str]',
-        indent=3
     )
     shed.def_(
         old='.. method:: Pin.pin()',
         new='def pin(self) -> int',
-        indent=3
     )
     shed.def_(
         old='.. method:: Pin.port()',
         new='def port(self) -> int',
-        indent=3
     )
     shed.def_(
         old='.. method:: Pin.pull()',
         new='def pull(self) -> int',
-        indent=3
     )
-    shed.constants()
+    shed.vars(end='class PinAF -- Pin Alternate Functions')
     nxt = 'pyb.RTC.rst'
     _pin_af(end=nxt, shed=shed)
     return nxt
 
 
 def _led(this: str, shed: Typeshed) -> str:
-    shed.class_(old=this)
+    shed.class_from_file(old=this)
     shed.def_(
         old='.. class:: pyb.LED(id)',
         new='def __init__(self, id: int, /)',
-        indent=3
     )
     shed.def_(
         old='.. method:: LED.intensity([value])',
-        new='''
-@overload
-def intensity(self) -> int: ...
-@overload
-def intensity(self, value: int, /) -> None
-''',
-        indent=3
+        new=[
+            'def intensity(self) -> int',
+            'def intensity(self, value: int, /) -> None'
+        ],
     )
     shed.def_(
         old='.. method:: LED.off()',
         new='def off(self) -> None',
-        indent=3
     )
     shed.def_(
         old='.. method:: LED.on()',
         new='def on(self) -> None',
-        indent=3
     )
     nxt = 'pyb.Pin.rst'
     shed.def_(
         old='.. method:: LED.toggle()',
         new='def toggle(self) -> None',
-        indent=3,
         end=nxt
     )
     return nxt
 
 
 def _lcd(this: str, shed: Typeshed) -> str:
-    shed.class_(old=this)
+    shed.class_from_file(old=this)
     shed.def_(
         old='.. class:: pyb.LCD(skin_position)',
         new='def __init__(self, skin_position: str, /)',
-        indent=3
     )
     shed.def_(
         old='.. method:: LCD.command(instr_data, buf)',
         new='def command(self, inst_data: int, buf: bytes, /) -> None',
-        indent=3
     )
     shed.def_(
         old='.. method:: LCD.contrast(value)',
         new='def contrast(self, value: int, /) -> None',
-        indent=3
     )
     shed.def_(
         old='.. method:: LCD.fill(colour)',
         new='def fill(self, colour: int, /) -> None',
-        indent=3
     )
     shed.def_(
         old='.. method:: LCD.get(x, y)',
         new='def get(self, x: int, y: int, /) -> int',
-        indent=3
     )
     shed.def_(
         old='.. method:: LCD.light(value)',
         new='def light(self, value: Union[bool, int], /) -> None',
-        indent=3
     )
     shed.def_(
         old='.. method:: LCD.pixel(x, y, colour)',
         new='def pixel(self, x: int, y: int, colour: int, /) -> None',
-        indent=3
     )
     shed.def_(
         old='.. method:: LCD.show()',
         new='def show(self) -> None',
-        indent=3
     )
     shed.def_(
         old='.. method:: LCD.text(str, x, y, colour)',
         new='def text(self, str: str, x: int, y: int, colour: int, /) -> None',
-        indent=3
     )
     nxt = 'pyb.LED.rst'
     shed.def_(
         old='.. method:: LCD.write(str)',
         new='def write(self, str: str, /) -> None',
-        indent=3,
         end=nxt
     )
     return nxt
 
 
 def _i2c(this: str, shed: Typeshed) -> str:
-    shed.class_(old=this, )
+    shed.class_from_file(old=this, )
     shed.def_(
         old=r'.. class:: pyb.I2C(bus, ...)',
         new='''
@@ -1816,12 +1682,10 @@ def __init__(
    dma: bool = False
 )
 ''',
-        indent=3
     )
     shed.def_(
         old=r'.. method:: I2C.deinit()',
         new='def deinit(self) -> None',
-        indent=3
     )
     shed.def_(
         old=r'.. method:: I2C.init(mode, \*, addr=0x12, baudrate=400000, gencall=False, dma=False)',
@@ -1838,19 +1702,17 @@ def init(
    dma: bool = False
 ) -> None
 ''',
-        indent=3
     )
     shed.def_(
         old=r'.. method:: I2C.is_ready(addr)',
         new='def is_ready(self, addr: int, /) -> bool',
-        indent=3
     )
     shed.def_(
         old=r'.. method:: I2C.mem_read(data, addr, memaddr, \*, timeout=5000, addr_size=8)',
         new='''
 def mem_read(
    self, 
-   data: Union[int, _AnyArray], 
+   data: Union[int, _AnyWritableBuf], 
    addr: int, 
    memaddr: int,
    /, 
@@ -1859,20 +1721,18 @@ def mem_read(
    addr_size: int = 8, 
 ) -> bytes
 ''',
-        indent=3
     )
     return 'pyb.LCD.rst'
 
 
-def _flh(this: str, shed: Typeshed) -> str:
-    shed.class_(old=this, )
+def _flash(this: str, shed: Typeshed) -> str:
+    shed.class_from_file(old=this, )
     shed.def_(
         old='.. class:: pyb.Flash()',
         new='''
 @overload
 def __init__(self)
 ''',
-        indent=3,
     )
     shed.def_(
         old=r'.. class:: pyb.Flash(\*, start=-1, len=-1)',
@@ -1880,9 +1740,8 @@ def __init__(self)
 @overload
 def __init__(self, *, start: int = -1, len: int = -1)
 ''',
-        indent=3
     )
-    shed.defs(
+    shed.defs_with_common_description(
         class_='Flash',
         old2new={
             'readblocks(block_num, buf)':
@@ -1902,12 +1761,11 @@ def __init__(self, *, start: int = -1, len: int = -1)
     return nxt
 
 
-def _eit(this: str, shed: Typeshed):
-    shed.class_(old=this, )
+def _ext_int(this: str, shed: Typeshed):
+    shed.class_from_file(old=this, )
     shed.def_(
         old='.. class:: pyb.ExtInt(pin, mode, pull, callback)',
         new='def __init__(self, pin: Union[int, str, "Pin"], mode: int, pull: int, callback: Callable[[int], None])',
-        indent=3
     )
     shed.def_(
         old='.. classmethod:: ExtInt.regs()',
@@ -1915,43 +1773,39 @@ def _eit(this: str, shed: Typeshed):
 @staticmethod
 def regs() -> None
 ''',
-        indent=3
     )
     shed.def_(
         old='.. method:: ExtInt.disable()',
         new='def disable(self) -> None',
-        indent=3
     )
     shed.def_(
         old='.. method:: ExtInt.enable()',
         new='def enable(self) -> None',
-        indent=3
     )
     shed.def_(
         old='.. method:: ExtInt.line()',
         new='def line(self) -> int',
-        indent=3
     )
     shed.def_(
         old='.. method:: ExtInt.swint()',
         new='def swint(self) -> None',
-        indent=3
     )
-    shed.constants()
-    return 'pyb.Flash.rst'
+    nxt = 'pyb.Flash.rst'
+    shed.vars(end=nxt)
+    return nxt
 
 
 def _dac(this: str, shed: Typeshed) -> str:
-    shed.class_(
+    shed.class_from_file(
         old=this,
         post_doc='''
       
-   NORMAL: int = ...
+   NORMAL: ClassVar[int] = ...
    """
    Normal mode (output buffer once) for `mode` argument of `write_timed`.
    """
    
-   CIRCULAR: int = ...
+   CIRCULAR: ClassVar[int] = ...
    """
    Circular mode (output buffer continuously) for `mode` argument of `write_timed`.
    """
@@ -1960,45 +1814,38 @@ def _dac(this: str, shed: Typeshed) -> str:
     shed.def_(
         old=r'.. class:: pyb.DAC(port, bits=8, \*, buffering=None)',
         new='def __init__(self, port: Union[int, "Pin"], /, bits: int = 8, *, buffering: Optional[bool] = None)',
-        indent=3,
     )
     shed.def_(
         old=r'.. method:: DAC.init(bits=8, \*, buffering=None)',
         new='def init(self, bits: int = 8, *, buffering: Optional[bool] = None) -> None',
-        indent=3,
     )
     shed.def_(
         old='.. method:: DAC.deinit()',
         new='def deinit(self) -> None',
-        indent=3,
     )
     shed.def_(
         old='.. method:: DAC.noise(freq)',
         new='def noise(self, freq: int, /) -> None',
-        indent=3,
     )
     shed.def_(
         old='.. method:: DAC.triangle(freq)',
         new='def triangle(self, freq: int, /) -> None',
-        indent=3,
     )
     shed.def_(
         old='.. method:: DAC.write(value)',
         new='def write(self, value: int, /) -> None',
-        indent=3,
     )
     nxt = 'pyb.ExtInt.rst'
     shed.def_(
         old=r'.. method:: DAC.write_timed(data, freq, \*, mode=DAC.NORMAL)',
-        new='def write_timed(self, data: _AnyArray, freq: Union[int, "Timer"], /, *, mode: int = NORMAL) -> None',
-        indent=3,
+        new='def write_timed(self, data: _AnyWritableBuf, freq: Union[int, "Timer"], /, *, mode: int = NORMAL) -> None',
         end=nxt,
     )
     return nxt
 
 
 def _can(this: str, shed: Typeshed) -> str:
-    shed.class_(old=this, )
+    shed.class_from_file(old=this, )
     shed.def_(
         old='.. class:: pyb.CAN(bus, ...)',
         new='''
@@ -2016,7 +1863,6 @@ def __init__(
    auto_restart: bool = False
 )
 ''',
-        indent=3,
     )
     shed.def_(
         old='.. classmethod:: CAN.initfilterbanks(nr)',
@@ -2024,7 +1870,6 @@ def __init__(
 @staticmethod
 def initfilterbanks(nr: int, /) -> None
 ''',
-        indent=3,
     )
     shed.def_(
         old=r'.. method:: CAN.init(mode, extframe=False, prescaler=100, \*, sjw=1, bs1=6, bs2=8, auto_restart=False)',
@@ -2042,39 +1887,31 @@ def init(
    auto_restart: bool = False
 ) -> None
 ''',
-        indent=3,
     )
     shed.def_(
         old='.. method:: CAN.deinit()',
         new='def deinit(self) -> None',
-        indent=3,
     )
     shed.def_(
         old='.. method:: CAN.restart()',
         new='def restart(self) -> None',
-        indent=3,
     )
     shed.def_(
         old='.. method:: CAN.state()',
         new='def state(self) -> int',
-        indent=3,
     )
     shed.def_(
         old='.. method:: CAN.info([list])',
-        new='''
-@overload
-def info(self) -> List[int]: ...
-@overload
-def info(self, list: List[int], /) -> List[int]
-''',
-        indent=3,
+        new=[
+            'def info(self) -> List[int]',
+            'def info(self, list: List[int], /) -> List[int]'
+        ],
     )
     shed.def_(
         old=r'.. method:: CAN.setfilter(bank, mode, fifo, params, \*, rtr)',
-        new='''
-@overload
-def setfilter(self, bank: int, mode: int, fifo: int, params: Sequence[int], /) -> None: ...
-@overload
+        new=['''
+def setfilter(self, bank: int, mode: int, fifo: int, params: Sequence[int], /) -> None
+''', '''
 def setfilter(
    self, 
    bank: int, 
@@ -2085,43 +1922,37 @@ def setfilter(
    *, 
    rtr: Sequence[bool]
 ) -> None
-''',
-        indent=3,
+'''],
     )
     shed.def_(
         old='.. method:: CAN.clearfilter(bank)',
         new='def clearfilter(self, bank: int, /) -> None',
-        indent=3,
     )
     shed.def_(
         old='.. method:: CAN.any(fifo)',
         new='def any(self, fifo: int, /) -> bool',
-        indent=3,
     )
     shed.def_(
         old=r'.. method:: CAN.recv(fifo, list=None, \*, timeout=5000)',
-        new='''
-@overload
-def recv(self, fifo: int, /, *, timeout: int = 5000) -> Tuple[int, bool, int, memoryview]: ...
-@overload
-def recv(self, fifo: int, list: None, /, *, timeout: int = 5000) -> Tuple[int, bool, int, memoryview]: ...
-@overload
-def recv(self, fifo: int, list: List[Union[int, bool, memoryview]], /, *, timeout: int = 5000) -> None
-''',
-        indent=3,
+        new=[
+            'def recv(self, fifo: int, /, *, timeout: int = 5000) -> Tuple[int, bool, int, memoryview]',
+            'def recv(self, fifo: int, list: None, /, *, timeout: int = 5000) -> Tuple[int, bool, int, memoryview]',
+            'def recv(self, fifo: int, list: List[Union[int, bool, memoryview]], /, *, timeout: int = 5000) -> None'
+        ],
     )
     shed.def_(
         old=r'.. method:: CAN.send(data, id, \*, timeout=0, rtr=False)',
-        new='def send(self, data: Union[int, _AnyArray], id: int, /, *, timeout: int = 0, rtr: bool = False) -> None',
-        indent=3,
+        new='''
+def send(self, data: Union[int, _AnyWritableBuf], id: int, /, *, timeout: int = 0, rtr: bool = False) -> None
+''',
     )
     shed.def_(
         old='.. method:: CAN.rxcallback(fifo, fun)',
         new='def rxcallback(self, fifo: int, fun: Callable[["CAN"], None], /) -> None',
-        indent=3,
     )
-    shed.constants()
-    return 'pyb.DAC.rst'
+    nxt = 'pyb.DAC.rst'
+    shed.vars(end=nxt)
+    return nxt
 
 
 def _adc_all(*, this: str, end: str, shed: Typeshed):
@@ -2185,21 +2016,18 @@ class ADCAll:
 
 
 def _adc(this: str, shed: Typeshed) -> str:
-    shed.class_(old=this)
+    shed.class_from_file(old=this)
     shed.def_(
         old='.. class:: pyb.ADC(pin)',
         new='def __init__(self, pin: Union[int, "Pin"], /)',
-        indent=3
     )
     shed.def_(
         old='.. method:: ADC.read()',
         new='def read(self) -> int',
-        indent=3
     )
     shed.def_(
         old='.. method:: ADC.read_timed(buf, timer)',
-        new='def read_timed(self, buf: _AnyArray, timer: Union["Timer", int], /) -> None',
-        indent=3
+        new='def read_timed(self, buf: _AnyWritableBuf, timer: Union["Timer", int], /) -> None',
     )
     extra = 'The ADCAll Object'
     shed.def_(
@@ -2208,12 +2036,11 @@ def _adc(this: str, shed: Typeshed) -> str:
 @staticmethod
 def read_timed_multi(
    adcs: Tuple['ADC', ...], 
-   bufs: Tuple[_AnyArray, ...], 
+   bufs: Tuple[_AnyWritableBuf, ...], 
    timer: "Timer", 
    /
 ) -> bool
 ''',
-        indent=3,
         end=extra
     )
     nxt = 'pyb.CAN.rst'
@@ -2221,37 +2048,31 @@ def read_timed_multi(
     return nxt
 
 
-def _acl(shed: Typeshed) -> str:
-    shed.class_(old='pyb.Accel.rst')
+def _accel(shed: Typeshed) -> str:
+    shed.class_from_file(old='pyb.Accel.rst')
     shed.def_(
         old='.. class:: pyb.Accel()',
         new='def __init__(self)',
-        indent=3
     )
     shed.def_(
         old='.. method:: Accel.filtered_xyz()',
         new='def filtered_xyz(self) -> Tuple[int, int, int]',
-        indent=3
     )
     shed.def_(
         old='.. method:: Accel.tilt()',
         new='def tilt(self) -> int',
-        indent=3
     )
     shed.def_(
         old='.. method:: Accel.x()',
         new='def x(self) -> int',
-        indent=3
     )
     shed.def_(
         old='.. method:: Accel.y()',
         new='def y(self) -> int',
-        indent=3
     )
     shed.def_(
         old='.. method:: Accel.z()',
         new='def z(self) -> int',
-        indent=3,
         end='Hardware Note'
     )
     nxt = 'pyb.ADC.rst'
@@ -2259,14 +2080,14 @@ def _acl(shed: Typeshed) -> str:
     return nxt
 
 
-def _pyb(*, output_dir: str) -> Typeshed:
-    shed = Typeshed(name='pyb', output_dir=output_dir)
+def _pyb(shed: Typeshed) -> None:
     shed.module(
+        name='pyb',
         old='functions related to the board',
         post_doc='''
 from abc import ABC, abstractmethod
 from typing import NoReturn, overload, Tuple, Sequence, runtime_checkable, Protocol
-from typing import Optional, Union, TypeVar, List, Callable, Dict, Any
+from typing import Optional, Union, TypeVar, List, Callable, Dict, Any, ClassVar
 
 from uarray import array
 
@@ -2334,7 +2155,7 @@ Keyboard human interface device (hid), see `hid` argument of `usb_mode`.
 """
 
 
-_AnyArray = TypeVar('_AnyArray', bytearray, array, memoryview)
+_AnyWritableBuf = TypeVar('_AnyWritableBuf', bytearray, array, memoryview)
 """
 Type that allows either bytearray or array but not mixture of both; exclusively one or the other.
 """
@@ -2342,105 +2163,114 @@ Type that allows either bytearray or array but not mixture of both; exclusively 
     )
     shed.def_(
         old='.. function:: delay(ms)',
-        new='def delay(ms: int, /) -> None'
+        new='def delay(ms: int, /) -> None',
+        indent=0
     )
     shed.def_(
         old='.. function:: udelay(us)',
-        new='def udelay(us: int, /) -> None'
+        new='def udelay(us: int, /) -> None',
+        indent=0
     )
     shed.def_(
         old='.. function:: millis()',
-        new='def millis() -> int'
+        new='def millis() -> int',
+        indent=0
     )
     shed.def_(
         old='.. function:: micros()',
-        new='def micros() -> int'
+        new='def micros() -> int',
+        indent=0
     )
     shed.def_(
         old='.. function:: elapsed_millis(start)',
-        new='def elapsed_millis(start: int, /) -> int'
+        new='def elapsed_millis(start: int, /) -> int',
+        indent=0
     )
     shed.def_(
         old='.. function:: elapsed_micros(start)',
-        new='def elapsed_micros(start: int, /) -> int'
+        new='def elapsed_micros(start: int, /) -> int',
+        indent=0
     )
     shed.def_(
         old='.. function:: hard_reset()',
-        new='def hard_reset() -> NoReturn'
+        new='def hard_reset() -> NoReturn',
+        indent=0
     )
     shed.def_(
         old='.. function:: bootloader()',
-        new='def bootloader() -> NoReturn'
+        new='def bootloader() -> NoReturn',
+        indent=0
     )
     shed.def_(
         old='.. function:: fault_debug(value)',
-        new='def fault_debug(value: bool = False) -> None'
+        new='def fault_debug(value: bool = False) -> None',
+        indent=0
     )
     shed.def_(
         old='.. function:: disable_irq()',
-        new='def disable_irq() -> bool'
+        new='def disable_irq() -> bool',
+        indent=0
     )
     shed.def_(
         old='.. function:: enable_irq(state=True)',
-        new='def enable_irq(state: bool = True, /) -> None'
+        new='def enable_irq(state: bool = True, /) -> None',
+        indent=0
     )
     shed.def_(
         old='.. function:: freq([sysclk[, hclk[, pclk1[, pclk2]]]])',
-        new='''
-@overload
-def freq() -> Tuple[int, int, int, int]: ...
-@overload
-def freq(sysclk: int, /) -> None: ...
-@overload
-def freq(sysclk: int, hclk: int, /) -> None: ...
-@overload
-def freq(sysclk: int, hclk: int, pclk1: int, /) -> None: ...
-@overload
-def freq(sysclk: int, hclk: int, pclk1: int, pclk2: int, /) -> None
-''',
+        new=[
+            'def freq() -> Tuple[int, int, int, int]',
+            'def freq(sysclk: int, /) -> None',
+            'def freq(sysclk: int, hclk: int, /) -> None',
+            'def freq(sysclk: int, hclk: int, pclk1: int, /) -> None',
+            'def freq(sysclk: int, hclk: int, pclk1: int, pclk2: int, /) -> None'
+        ],
+        indent=0
     )
     shed.def_(
         old='.. function:: wfi()',
-        new='def wfi() -> None'
+        new='def wfi() -> None',
+        indent=0
     )
     shed.def_(
         old='.. function:: stop()',
-        new='def stop() -> None'
+        new='def stop() -> None',
+        indent=0
     )
     shed.def_(
         old='.. function:: standby()',
-        new='def standby() -> None'
+        new='def standby() -> None',
+        indent=0
     )
     shed.def_(
         old='.. function:: have_cdc()',
-        new='def have_cdc() -> bool'
+        new='def have_cdc() -> bool',
+        indent=0
     )
     shed.def_(
         old='.. function:: hid((buttons, x, y, z))',
-        new='''
-@overload
-def hid(data: Tuple[int, int, int, int], /) -> None: ...
-@overload
-def hid(data: Sequence[int], /) -> None
-''',
+        new=[
+            'def hid(data: Tuple[int, int, int, int], /) -> None',
+            'def hid(data: Sequence[int], /) -> None'
+        ],
+        indent=0
     )
     shed.def_(
         old='.. function:: info([dump_alloc_table])',
-        new='''
-@overload
-def info() -> None: ...
-@overload
-def info(dump_alloc_table: bytes, /) -> None
-''',
+        new=[
+            'def info() -> None',
+            'def info(dump_alloc_table: bytes, /) -> None'
+        ],
+        indent=0
     )
     shed.def_(
         old='.. function:: main(filename)',
-        new='def main(filename: str, /) -> None'
+        new='def main(filename: str, /) -> None',
+        indent=0
     )
     shed.def_(
         old=r'.. function:: mount(device, mountpoint, \*, readonly=False, mkfs=False)',
-        new='''
-@overload
+        new=['''
 def mount(
    device: _OldAbstractReadOnlyBlockDev, 
    mountpoint: str, 
@@ -2448,8 +2278,8 @@ def mount(
    *, 
    readonly: bool = False, 
    mkfs: bool = False
-) -> None: ...
-@overload
+) -> None
+''', '''
 def mount(
    device: _OldAbstractBlockDev, 
    mountpoint: str, 
@@ -2458,38 +2288,40 @@ def mount(
    readonly: bool = False, 
    mkfs: bool = False
 ) -> None
-''',
+'''],
+        indent=0
     )
     shed.def_(
         old='.. function:: repl_uart(uart)',
-        new='''
-@overload
-def repl_uart() -> Optional['UART']: ...
-@overload
-def repl_uart(uart: 'UART', /) -> None
-''',
+        new=[
+            'def repl_uart() -> Optional["UART"]',
+            'def repl_uart(uart: "UART", /) -> None'
+        ],
+        indent=0
     )
     shed.def_(
         old='.. function:: rng()',
-        new='def rng() -> int'
+        new='def rng() -> int',
+        indent=0
     )
     shed.def_(
         old='.. function:: sync()',
-        new='def sync() -> None'
+        new='def sync() -> None',
+        indent=0
     )
     shed.def_(
         old='.. function:: unique_id()',
-        new='def unique_id() -> bytes'
+        new='def unique_id() -> bytes',
+        indent=0
     )
     shed.def_(
         old=(
             '.. function:: usb_mode('
             '[modestr], port=-1, vid=0xf055, pid=-1, msc=(), hid=pyb.hid_mouse, high_speed=False)'
         ),
-        new='''
-@overload
-def usb_mode() -> str: ...
-@overload
+        new=['''
+def usb_mode() -> str
+''', '''
 def usb_mode(
    modestr: str, 
    /, 
@@ -2501,7 +2333,8 @@ def usb_mode(
    hid: Tuple[int, int, int, int, bytes] = hid_mouse, 
    high_speed: bool = False
 ) -> None
-''',
-        end='Classes',
+'''],
+        indent=0,
+        end='Classes'
     )
     return shed

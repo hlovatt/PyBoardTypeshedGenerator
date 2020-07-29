@@ -3,9 +3,9 @@ from typing import Iterator, List, Union
 from urllib.request import urlopen, Request
 
 __author__ = "Howard C Lovatt"
-__copyright_ = "Howard C Lovatt, 2020 onwards."
+__copyright__ = "Howard C Lovatt, 2020 onwards."
 __license__ = "MIT https://opensource.org/licenses/MIT (as used by MicroPython)."
-__version__ = "1.0.0"
+__version__ = "Use `git tag` to obtain version numbers, then `git show <version>` for details."
 
 
 @dataclass
@@ -26,7 +26,9 @@ class Lines(Iterator[str]):
 
     def __next__(self) -> str:
         if not self._lines:
-            raise StopIteration  # Should really remember that it has stopped and then stay stopped, but it doesn't!
+            # Should really remember that it has stopped and then stay stopped (`Iterator` contract);
+            # but it doesn't, in fact it does the opposite and is reused via `Typeshed` instance for the next module!
+            raise StopIteration
         return self._lines.pop()
 
     def __len__(self) -> int:
