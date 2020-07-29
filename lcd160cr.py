@@ -9,7 +9,7 @@ __version__ = lines.__version__
 
 def lcd160cr(shed: Typeshed):
     module_post_doc = '''
-from typing import overload, Any, Union, Tuple, TypeVar, Optional, ClassVar
+from typing import overload, Any, Union, Tuple, TypeVar, Optional
 
 from pyb import Pin, I2C, SPI
 from uarray import array
@@ -259,5 +259,6 @@ def set_scroll_win(
         old='.. method:: LCD160CR.reset()',
         new='def reset(self) -> None',
     )
-    shed.vars(type_='str', class_var=None, end=None)
+    shed.vars(type_='str', class_var=None, end='.. data:: lcd160cr.STARTUP_DECO_NONE')
+    shed.vars(class_var=None, end=None)
     shed.write()

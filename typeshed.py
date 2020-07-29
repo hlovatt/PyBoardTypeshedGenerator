@@ -43,22 +43,25 @@ class Typeshed:
     _definitions: ClassVar[str] = '.. '
     _note: ClassVar[str] = '.. note::'
 
-    def is_last(self, line: str, end: str) -> bool:
+    def is_last(self, line: str, end: Optional[str]) -> bool:
         """
         Many of the parsing functions have an end argument, this function is used for end testing.
         If `line` is `end` then the line is pushed-back and `True` returned, else no push-back and `False`.
         Testing for `end` is slightly more complicated than simply comparing lines:
 
-          1. White space is stripped from the start to account for indentation.
-          2. If the line starts with definition `self._note` then it is not an end line
+          1. If `end` is `None` return false.
+          2. White space is stripped from the start to account for indentation.
+          3. If the line starts with definition `self._note` then it is not an end line
           (this is because the default end line is `self._definitions`,
           but the note definition is part of the current parsing unit - its a note!).
-          3. `end` is compared to the start of `line` (to allow partial matches).
+          4. `end` is compared to the start of `line` (to allow partial matches).
 
         :param line: The line to be tested.
-        :param end: The line to test for.
+        :param end: The line to test for (if `None` returns false).
         :return: True if `line` is `end` line.
         """
+        if end is None:
+            return False
         s_line = line.lstrip()
         if not s_line.startswith(self._note) and s_line.startswith(end):
             self.lines.push_line(line)
@@ -290,11 +293,13 @@ class {name}:
                 assert names, 'No constant names found!'
             description_lines = []
             for desc_line in self.lines:
-                if self.is_last(desc_line, self._definitions) or (end is not None and self.is_last(desc_line, end)):
+                if self.is_last(desc_line, self._definitions) or self.is_last(desc_line, end):
                     break
                 description_lines.append(desc_line)
             else:
                 assert description_lines, 'No description found!'
+            while not description_lines[0]:
+                del description_lines[0]  # Remove leading blank lines.
             description = "\n".join(description_lines).rstrip()
             indent_str = '' if class_var is None else '   '
             declarations = []
