@@ -9,10 +9,10 @@ __version__ = "Use `git tag` to obtain version numbers, then `git show <version>
 
 
 @dataclass
-class Lines(Iterator[str]):
+class RST(Iterator[str]):
     """
     An iterator of lines, used to read in the restructured text, `.rst`, files.
-    `Lines` works like a stack, you `push_line`s or `push_url`s (whole files) and then pop them using `next` 
+    `RST` works like a stack, you `push_line`s or `push_url`s (whole files) and then pop them using `next`
     (typically via a `for` loop).
     `push_line` is typically used to provide 'push back' when parsing.
     `__len__` is provided and is typically use to test if empty, via implicit bool conversion.
@@ -21,7 +21,7 @@ class Lines(Iterator[str]):
     
     _lines: List[str] = field(default_factory=list)
 
-    def __iter__(self) -> 'Lines':
+    def __iter__(self) -> 'RST':
         return self
 
     def __next__(self) -> str:

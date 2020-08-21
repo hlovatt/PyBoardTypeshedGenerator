@@ -1,13 +1,13 @@
-import lines
-from typeshed import Typeshed
+import rst
+from rst2pyi import RST2PyI
 
-__author__ = lines.__author__
-__copyright__ = lines.__copyright__
-__license__ = lines.__license__
-__version__ = lines.__version__
+__author__ = rst.__author__
+__copyright__ = rst.__copyright__
+__license__ = rst.__license__
+__version__ = rst.__version__
 
 
-def pyb(shed: Typeshed):
+def pyb(shed: RST2PyI):
     _pyb(shed)
     nxt = _accel(shed)
     nxt = _adc(nxt, shed)
@@ -31,14 +31,14 @@ def pyb(shed: Typeshed):
     shed.write()
 
 
-def _usb_vcp(this: str, shed: Typeshed):
+def _usb_vcp(this: str, shed: RST2PyI) -> None:
     shed.class_from_file(old=this)
     shed.def_(
         old=r'.. class:: pyb.USB_VCP(id=0)',
         new='def __init__(self, id: int = 0, /)',
     )
     shed.def_(
-        old=r'.. method:: USB_VCP.init(\*, flow=-1)',
+        old=r'.. method:: USB_VCP.init(*, flow=-1)',
         new='def init(self, *, flow: int = - 1) -> int',
     )
     shed.def_(
@@ -81,30 +81,30 @@ def _usb_vcp(this: str, shed: Typeshed):
     )
     shed.def_(
         old=r'.. method:: USB_VCP.write(buf)',
-        new='def write(self, buf: Union[_AnyWritableBuf, bytes], /) -> int',
+        new='def write(self, buf: _AnyReadableBuf, /) -> int',
     )
     shed.def_(
-        old=r'.. method:: USB_VCP.recv(data, \*, timeout=5000)',
+        old=r'.. method:: USB_VCP.recv(data, *, timeout=5000)',
         new=[
             'def recv(self, data: int, /, *, timeout: int = 5000) -> Optional[bytes]',
             'def recv(self, data: _AnyWritableBuf, /, *, timeout: int = 5000) -> Optional[int]'
         ],
     )
     shed.def_(
-        old=r'.. method:: USB_VCP.send(data, \*, timeout=5000)',
+        old=r'.. method:: USB_VCP.send(data, *, timeout=5000)',
         new='def send(self, buf: Union[_AnyWritableBuf, bytes, int], /, *, timeout: int = 5000) -> int',
     )
     shed.vars(end=None)
 
 
-def _usb_hid(this: str, shed: Typeshed) -> str:
+def _usb_hid(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(old=this)
     shed.def_(
         old=r'.. class:: pyb.USB_HID()',
         new='def __init__(self)',
     )
     shed.def_(
-        old=r'.. method:: USB_HID.recv(data, \*, timeout=5000)',
+        old=r'.. method:: USB_HID.recv(data, *, timeout=5000)',
         new=[
             'def recv(self, data: int, /, *, timeout: int = 5000) -> bytes',
             'def recv(self, data: _AnyWritableBuf, /, *, timeout: int = 5000) -> int'
@@ -119,7 +119,7 @@ def _usb_hid(this: str, shed: Typeshed) -> str:
     return nxt
 
 
-def _uart(this: str, shed: Typeshed) -> str:
+def _uart(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(old=this)
     shed.def_(
         old=r'.. class:: pyb.UART(bus, ...)',
@@ -147,7 +147,7 @@ def __init__(
     )
     shed.def_(
         old=(
-            r'.. method:: UART.init(baudrate, bits=8, parity=None, stop=1, \*, '
+            r'.. method:: UART.init(baudrate, bits=8, parity=None, stop=1, *, '
             r'timeout=0, flow=0, timeout_char=0, read_buf_len=64)'
         ),
         new='''
@@ -214,13 +214,13 @@ def init(
     return nxt
 
 
-def _timer_channel(*, old: str, end: str, shed: Typeshed):
+def _timer_channel(*, old: str, end: str, shed: RST2PyI) -> None:
     shed.consume_name_line(old)
     shed.consume_title_line()
     shed.consume_blank_line()
     methods = 'Methods'
     doc = []
-    for doc_line in shed.lines:
+    for doc_line in shed.rst:
         if doc_line.startswith(methods):
             shed.consume_header_line()
             shed.consume_blank_line()
@@ -228,13 +228,13 @@ def _timer_channel(*, old: str, end: str, shed: Typeshed):
         doc.append(f'   {doc_line}\n')
     else:
         assert False, f'Did not find: `{methods}`'
-    shed.typeshed.append(f'''
+    shed.pyi.append(f'''
 class TimerChannel(ABC): 
    """
 {''.join(doc).rstrip()}
    """
 '''
-                         )
+                    )
     shed.def_(
         old='.. method:: timerchannel.callback(fun)',
         new='''
@@ -285,7 +285,7 @@ def pulse_width_percent(self, value: Union[int, float], /) -> None
     )
 
 
-def _timer(this: str, shed: Typeshed) -> str:
+def _timer(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(
         old=this,
         post_doc='''
@@ -458,7 +458,7 @@ def __init__(
 '''],
     )
     shed.def_(
-        old=r'.. method:: Timer.init(\*, freq, prescaler, period, mode=Timer.UP, div=1, callback=None, deadtime=0)',
+        old=r'.. method:: Timer.init(*, freq, prescaler, period, mode=Timer.UP, div=1, callback=None, deadtime=0)',
         new=['''
 def init(
    self, 
@@ -594,7 +594,7 @@ def channel(
     return nxt
 
 
-def _switch(this: str, shed: Typeshed) -> str:
+def _switch(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(old=this)
     shed.def_(
         old=r'.. class:: pyb.Switch()',
@@ -617,7 +617,7 @@ def _switch(this: str, shed: Typeshed) -> str:
     return nxt
 
 
-def _spi(this: str, shed: Typeshed) -> str:
+def _spi(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(old=this)
     shed.def_(
         old='.. class:: pyb.SPI(bus, ...)',
@@ -661,7 +661,7 @@ def __init__(
     )
     shed.def_(
         old=(
-            r'.. method:: SPI.init(mode, baudrate=328125, \*, prescaler, '
+            r'.. method:: SPI.init(mode, baudrate=328125, *, prescaler, '
             r'polarity=1, phase=0, bits=8, firstbit=SPI.MSB, ti=False, crc=None)'
         ),
         new=['''
@@ -693,15 +693,15 @@ def init(
 '''],
     )
     shed.def_(
-        old=r'.. method:: SPI.recv(recv, \*, timeout=5000)',
+        old=r'.. method:: SPI.recv(recv, *, timeout=5000)',
         new='def recv(self, recv: Union[int, _AnyWritableBuf], /, *, timeout: int = 5000) -> _AnyWritableBuf',
     )
     shed.def_(
-        old=r'.. method:: SPI.send(send, \*, timeout=5000)',
+        old=r'.. method:: SPI.send(send, *, timeout=5000)',
         new='def send(self, send: Union[int, _AnyWritableBuf, bytes], /, *, timeout: int = 5000) -> None',
     )
     shed.def_(
-        old=r'.. method:: SPI.send_recv(send, recv=None, \*, timeout=5000)',
+        old=r'.. method:: SPI.send_recv(send, recv=None, *, timeout=5000)',
         new='''
 def send_recv(
    self, 
@@ -718,7 +718,7 @@ def send_recv(
     return nxt
 
 
-def _servo(this: str, shed: Typeshed) -> str:
+def _servo(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(old=this)
     shed.def_(
         old='.. class:: pyb.Servo(id)',
@@ -776,7 +776,7 @@ def calibration(
     return nxt
 
 
-def _rtc(this: str, shed: Typeshed) -> str:
+def _rtc(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(old=this)
     shed.def_(
         old='.. class:: pyb.RTC()',
@@ -806,12 +806,12 @@ def _rtc(this: str, shed: Typeshed) -> str:
     return nxt
 
 
-def _pin_af(*, end: str, shed: Typeshed):
+def _pin_af(*, end: str, shed: RST2PyI) -> None:
     shed.consume_name_line('class PinAF -- Pin Alternate Functions')
     shed.consume_title_line()
     shed.consume_blank_line()
     doc = []
-    for doc_line in shed.lines:
+    for doc_line in shed.rst:
         if doc_line.startswith('Methods'):
             shed.consume_header_line()
             shed.consume_blank_line()
@@ -819,7 +819,7 @@ def _pin_af(*, end: str, shed: Typeshed):
         doc.append(f'   {doc_line}\n')
     else:
         assert False, f'Expected `{end}`, but did not find it!'
-    shed.typeshed.append(f'''
+    shed.pyi.append(f'''
 class PinAF(ABC): 
    """
 {''.join(doc).rstrip()}
@@ -827,7 +827,7 @@ class PinAF(ABC):
 
    __slots__ = ()
 '''
-                         )
+                    )
     shed.def_(
         old='.. method:: pinaf.__str__()',
         new='''
@@ -859,7 +859,7 @@ def reg(self) -> int
     )
 
 
-def _pin(this: str, shed: Typeshed) -> str:
+def _pin(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(
         old=this,
         post_doc='''
@@ -1499,7 +1499,9 @@ def _pin(this: str, shed: Typeshed) -> str:
 ''')
     shed.def_(
         old='.. class:: pyb.Pin(id, ...)',
-        new='def __init__(self, id: str, /, mode: int = IN, pull: int = PULL_NONE, af: Union[str, int] = -1)',
+        new='''
+def __init__(self, id: Union["Pin", str], /, mode: int = IN, pull: int = PULL_NONE, af: Union[str, int] = -1)
+''',
     )
     shed.def_(
         old='.. classmethod:: Pin.debug([state])',
@@ -1588,7 +1590,7 @@ def mapper(fun: Callable[[str], "Pin"], /) -> None
     return nxt
 
 
-def _led(this: str, shed: Typeshed) -> str:
+def _led(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(old=this)
     shed.def_(
         old='.. class:: pyb.LED(id)',
@@ -1618,7 +1620,7 @@ def _led(this: str, shed: Typeshed) -> str:
     return nxt
 
 
-def _lcd(this: str, shed: Typeshed) -> str:
+def _lcd(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(old=this)
     shed.def_(
         old='.. class:: pyb.LCD(skin_position)',
@@ -1665,7 +1667,7 @@ def _lcd(this: str, shed: Typeshed) -> str:
     return nxt
 
 
-def _i2c(this: str, shed: Typeshed) -> str:
+def _i2c(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(old=this, )
     shed.def_(
         old=r'.. class:: pyb.I2C(bus, ...)',
@@ -1677,7 +1679,7 @@ def __init__(
    /, 
    *, 
    addr: int = 0x12, 
-   baudrate: int = 400000, 
+   baudrate: int = 400_000, 
    gencall: bool = False, 
    dma: bool = False
 )
@@ -1688,7 +1690,7 @@ def __init__(
         new='def deinit(self) -> None',
     )
     shed.def_(
-        old=r'.. method:: I2C.init(mode, \*, addr=0x12, baudrate=400000, gencall=False, dma=False)',
+        old=r'.. method:: I2C.init(mode, *, addr=0x12, baudrate=400000, gencall=False, dma=False)',
         new='''
 def init(
    self, 
@@ -1697,7 +1699,7 @@ def init(
    /, 
    *, 
    addr: int = 0x12, 
-   baudrate: int = 400000, 
+   baudrate: int = 400_000, 
    gencall: bool = False, 
    dma: bool = False
 ) -> None
@@ -1708,7 +1710,7 @@ def init(
         new='def is_ready(self, addr: int, /) -> bool',
     )
     shed.def_(
-        old=r'.. method:: I2C.mem_read(data, addr, memaddr, \*, timeout=5000, addr_size=8)',
+        old=r'.. method:: I2C.mem_read(data, addr, memaddr, *, timeout=5000, addr_size=8)',
         new='''
 def mem_read(
    self, 
@@ -1725,7 +1727,7 @@ def mem_read(
     return 'pyb.LCD.rst'
 
 
-def _flash(this: str, shed: Typeshed) -> str:
+def _flash(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(old=this, )
     shed.def_(
         old='.. class:: pyb.Flash()',
@@ -1735,14 +1737,14 @@ def __init__(self)
 ''',
     )
     shed.def_(
-        old=r'.. class:: pyb.Flash(\*, start=-1, len=-1)',
+        old=r'.. class:: pyb.Flash(*, start=-1, len=-1)',
         new='''
 @overload
 def __init__(self, *, start: int = -1, len: int = -1)
 ''',
     )
     shed.defs_with_common_description(
-        class_='Flash',
+        cmd='.. method:: Flash.',  # Needs `.` at end!
         old2new={
             'readblocks(block_num, buf)':
                 'def readblocks(self, blocknum: int, buf: bytes, offset: int = 0, /) -> None',
@@ -1755,13 +1757,14 @@ def __init__(self, *, start: int = -1, len: int = -1)
             'ioctl(cmd, arg)':
                 'def ioctl(self, op: int, arg: int) -> Optional[int]',
         },
+        end='Hardware Note'
     )
     nxt = 'pyb.I2C.rst'
     shed.extra_notes(end=nxt)
     return nxt
 
 
-def _ext_int(this: str, shed: Typeshed):
+def _ext_int(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(old=this, )
     shed.def_(
         old='.. class:: pyb.ExtInt(pin, mode, pull, callback)',
@@ -1795,7 +1798,7 @@ def regs() -> None
     return nxt
 
 
-def _dac(this: str, shed: Typeshed) -> str:
+def _dac(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(
         old=this,
         post_doc='''
@@ -1812,11 +1815,11 @@ def _dac(this: str, shed: Typeshed) -> str:
 ''',
     )
     shed.def_(
-        old=r'.. class:: pyb.DAC(port, bits=8, \*, buffering=None)',
+        old=r'.. class:: pyb.DAC(port, bits=8, *, buffering=None)',
         new='def __init__(self, port: Union[int, "Pin"], /, bits: int = 8, *, buffering: Optional[bool] = None)',
     )
     shed.def_(
-        old=r'.. method:: DAC.init(bits=8, \*, buffering=None)',
+        old=r'.. method:: DAC.init(bits=8, *, buffering=None)',
         new='def init(self, bits: int = 8, *, buffering: Optional[bool] = None) -> None',
     )
     shed.def_(
@@ -1837,14 +1840,14 @@ def _dac(this: str, shed: Typeshed) -> str:
     )
     nxt = 'pyb.ExtInt.rst'
     shed.def_(
-        old=r'.. method:: DAC.write_timed(data, freq, \*, mode=DAC.NORMAL)',
+        old=r'.. method:: DAC.write_timed(data, freq, *, mode=DAC.NORMAL)',
         new='def write_timed(self, data: _AnyWritableBuf, freq: Union[int, "Timer"], /, *, mode: int = NORMAL) -> None',
         end=nxt,
     )
     return nxt
 
 
-def _can(this: str, shed: Typeshed) -> str:
+def _can(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(old=this, )
     shed.def_(
         old='.. class:: pyb.CAN(bus, ...)',
@@ -1872,7 +1875,7 @@ def initfilterbanks(nr: int, /) -> None
 ''',
     )
     shed.def_(
-        old=r'.. method:: CAN.init(mode, extframe=False, prescaler=100, \*, sjw=1, bs1=6, bs2=8, auto_restart=False)',
+        old=r'.. method:: CAN.init(mode, extframe=False, prescaler=100, *, sjw=1, bs1=6, bs2=8, auto_restart=False)',
         new='''
 def init(
    self, 
@@ -1908,7 +1911,7 @@ def init(
         ],
     )
     shed.def_(
-        old=r'.. method:: CAN.setfilter(bank, mode, fifo, params, \*, rtr)',
+        old=r'.. method:: CAN.setfilter(bank, mode, fifo, params, *, rtr)',
         new=['''
 def setfilter(self, bank: int, mode: int, fifo: int, params: Sequence[int], /) -> None
 ''', '''
@@ -1933,7 +1936,7 @@ def setfilter(
         new='def any(self, fifo: int, /) -> bool',
     )
     shed.def_(
-        old=r'.. method:: CAN.recv(fifo, list=None, \*, timeout=5000)',
+        old=r'.. method:: CAN.recv(fifo, list=None, *, timeout=5000)',
         new=[
             'def recv(self, fifo: int, /, *, timeout: int = 5000) -> Tuple[int, bool, int, memoryview]',
             'def recv(self, fifo: int, list: None, /, *, timeout: int = 5000) -> Tuple[int, bool, int, memoryview]',
@@ -1941,7 +1944,7 @@ def setfilter(
         ],
     )
     shed.def_(
-        old=r'.. method:: CAN.send(data, id, \*, timeout=0, rtr=False)',
+        old=r'.. method:: CAN.send(data, id, *, timeout=0, rtr=False)',
         new='''
 def send(self, data: Union[int, _AnyWritableBuf], id: int, /, *, timeout: int = 0, rtr: bool = False) -> None
 ''',
@@ -1955,19 +1958,19 @@ def send(self, data: Union[int, _AnyWritableBuf], id: int, /, *, timeout: int = 
     return nxt
 
 
-def _adc_all(*, this: str, end: str, shed: Typeshed):
+def _adc_all(*, this: str, end: str, shed: RST2PyI) -> None:
     shed.consume_name_line(this)
     shed.consume_header_line()
     shed.consume_blank_line()
     doc = []
-    for doc_line in shed.lines:
+    for doc_line in shed.rst:
         if doc_line.lstrip().startswith(end):
-            shed.lines.push_line(doc_line)
+            shed.rst.push_line(doc_line)
             break
         doc.append(f'   {doc_line}\n')
     else:
         assert False, f'Did not find: {end}'
-    shed.typeshed.append(f'''
+    shed.pyi.append(f'''
 class ADCAll: 
    """
 {''.join(doc).rstrip()}
@@ -2012,10 +2015,10 @@ class ADCAll:
       Read MCU supply voltage (volts).
       """
 '''
-                         )
+                    )
 
 
-def _adc(this: str, shed: Typeshed) -> str:
+def _adc(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(old=this)
     shed.def_(
         old='.. class:: pyb.ADC(pin)',
@@ -2048,7 +2051,7 @@ def read_timed_multi(
     return nxt
 
 
-def _accel(shed: Typeshed) -> str:
+def _accel(shed: RST2PyI) -> str:
     shed.class_from_file(old='pyb.Accel.rst')
     shed.def_(
         old='.. class:: pyb.Accel()',
@@ -2080,7 +2083,7 @@ def _accel(shed: Typeshed) -> str:
     return nxt
 
 
-def _pyb(shed: Typeshed) -> None:
+def _pyb(shed: RST2PyI) -> None:
     shed.module(
         name='pyb',
         old='functions related to the board',
@@ -2157,7 +2160,14 @@ Keyboard human interface device (hid), see `hid` argument of `usb_mode`.
 
 _AnyWritableBuf = TypeVar('_AnyWritableBuf', bytearray, array, memoryview)
 """
-Type that allows either bytearray or array but not mixture of both; exclusively one or the other.
+Type that allows bytearray, array, or memoryview, but only one of these and not a mixture in a single declaration.
+"""
+
+
+_AnyReadableBuf = TypeVar('_AnyReadableBuf', bytearray, array, memoryview, bytes)
+"""
+Type that allows bytearray, array, memoryview, or bytes, 
+but only one of these and not a mixture in a single declaration.
 """
 ''',
     )
@@ -2269,7 +2279,7 @@ Type that allows either bytearray or array but not mixture of both; exclusively 
         indent=0
     )
     shed.def_(
-        old=r'.. function:: mount(device, mountpoint, \*, readonly=False, mkfs=False)',
+        old=r'.. function:: mount(device, mountpoint, *, readonly=False, mkfs=False)',
         new=['''
 def mount(
    device: _OldAbstractReadOnlyBlockDev, 
@@ -2337,4 +2347,3 @@ def usb_mode(
         indent=0,
         end='Classes'
     )
-    return shed

@@ -3,16 +3,17 @@
 
 from sys import argv
 
-import lines
+import rst
 from lcd160cr import lcd160cr
+from machine import machine
 from pyb import pyb
-from typeshed import Typeshed
+from rst2pyi import RST2PyI
 from uarray import uarray
 
-__author__ = lines.__author__
-__copyright_ = lines.__copyright__
-__license__ = lines.__license__
-__version__ = lines.__version__
+__author__ = rst.__author__
+__copyright_ = rst.__copyright__
+__license__ = rst.__license__
+__version__ = rst.__version__
 
 
 def main() -> None:
@@ -21,8 +22,9 @@ No destination directory given; usage (from `ByBoardTypeshedGenerator`'s directo
   1. `python3 main.py <destination directory>`.
   2. `./main.py <destination directory>` (if `main.py` is executable).
 '''
-    shed = Typeshed(output_dir=argv[1])
+    shed = RST2PyI(output_dir=argv[1])
     uarray(shed)
+    machine(shed)
     pyb(shed)
     lcd160cr(shed)
 

@@ -1,13 +1,13 @@
-import lines
-from typeshed import Typeshed
+import rst
+from rst2pyi import RST2PyI
 
-__author__ = lines.__author__
-__copyright__ = lines.__copyright__
-__license__ = lines.__license__
-__version__ = lines.__version__
+__author__ = rst.__author__
+__copyright__ = rst.__copyright__
+__license__ = rst.__license__
+__version__ = rst.__version__
 
 
-def uarray(shed: Typeshed):
+def uarray(shed: RST2PyI):
     shed.module(
         name='uarray',
         old='efficient arrays of numeric data',

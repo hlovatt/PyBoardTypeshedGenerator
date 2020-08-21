@@ -1,13 +1,13 @@
-import lines
-from typeshed import Typeshed
+import rst
+from rst2pyi import RST2PyI
 
-__author__ = lines.__author__
-__copyright__ = lines.__copyright__
-__license__ = lines.__license__
-__version__ = lines.__version__
+__author__ = rst.__author__
+__copyright__ = rst.__copyright__
+__license__ = rst.__license__
+__version__ = rst.__version__
 
 
-def lcd160cr(shed: Typeshed):
+def lcd160cr(shed: RST2PyI):
     module_post_doc = '''
 from typing import overload, Any, Union, Tuple, TypeVar, Optional
 
@@ -16,25 +16,35 @@ from uarray import array
 
 
 _AnyWritableBuf = TypeVar('_AnyWritableBuf', bytearray, array, memoryview)
+"""
+Type that allows bytearray, array, or memoryview, but only one of these and not a mixture in a single declaration.
+"""
+
+
+_AnyReadableBuf = TypeVar('_AnyReadableBuf', bytearray, array, memoryview, bytes)
+"""
+Type that allows bytearray, array, memoryview, or bytes, 
+but only one of these and not a mixture in a single declaration.
+"""
 '''
     shed.module(
         name='lcd160cr',
         old='control of LCD160CR display',
         post_doc=module_post_doc,
     )
-    shed.last_class_index = len(shed.typeshed) - 1
+    shed.last_class_index = len(shed.pyi) - 1
     shed.last_line_index = -(77 +
                              len(module_post_doc) +
-                             len(lines.__author__) +
-                             len(lines.__copyright__) +
-                             len(lines.__license__) +
-                             len(lines.__version__))
+                             len(rst.__author__) +
+                             len(rst.__copyright__) +
+                             len(rst.__license__) +
+                             len(rst.__version__))
     shed.extra_notes(end='class LCD160CR',)
     shed.consume_header_line(and_preceding_lines=True)
     shed.consume_blank_line()
     shed.class_(name='LCD160CR', end='Constructors')
     shed.def_(
-        old=r'.. class:: LCD160CR(connect=None, \*, pwr=None, i2c=None, spi=None, i2c_addr=98)',
+        old=r'.. class:: LCD160CR(connect=None, *, pwr=None, i2c=None, spi=None, i2c_addr=98)',
         new=[
             'def __init__(self, connect: str, /)',
             'def __init__(self, *, pwr: Pin, i2c: I2C, spi: SPI, i2c_addr: int = 98)'
@@ -111,7 +121,7 @@ def screen_dump(
     )
     shed.def_(
         old='.. method:: LCD160CR.screen_load(buf)',
-        new='def screen_load(self, buf: Union[_AnyWritableBuf, bytes], /) -> None',
+        new='def screen_load(self, buf: _AnyReadableBuf, /) -> None',
     )
     shed.def_(
         old='.. method:: LCD160CR.set_pos(x, y)',
@@ -143,7 +153,7 @@ def screen_dump(
     )
     line_def = '.. method:: LCD160CR.line(x1, y1, x2, y2)'
     shed.defs_with_common_description(
-        class_='LCD160CR',
+        cmd='.. method:: LCD160CR.',  # Needs `.` at end!
         old2new={
             'rect(x, y, w, h)':
                 'def rect(self, x: int, y: int, w: int, h: int, /) -> None',
@@ -160,7 +170,7 @@ def screen_dump(
     )
     poly_dot_def = '.. method:: LCD160CR.poly_dot(data)'
     shed.defs_with_common_description(
-        class_='LCD160CR',
+        cmd='.. method:: LCD160CR.',  # Needs `.` at end!
         old2new={
             'dot_no_clip(x, y)':
                 'def dot_no_clip(self, x: int, y: int, /) -> None',
@@ -177,11 +187,11 @@ def screen_dump(
     )
     shed.def_(
         old=poly_dot_def,
-        new='def poly_dot(self, data: Union[_AnyWritableBuf, bytes], /) -> None',
+        new='def poly_dot(self, data: _AnyReadableBuf, /) -> None',
     )
     shed.def_(
         old='.. method:: LCD160CR.poly_line(data)',
-        new='def poly_line(self, data: Union[_AnyWritableBuf, bytes], /) -> None',
+        new='def poly_line(self, data: _AnyReadableBuf, /) -> None',
     )
     shed.def_(
         old='.. method:: LCD160CR.touch_config(calib=False, save=False, irq=None)',
@@ -205,7 +215,7 @@ def screen_dump(
     )
     shed.def_(
         old='.. method:: LCD160CR.show_framebuf(buf)',
-        new='def show_framebuf(self, buf: Union[_AnyWritableBuf, bytes], /) -> None',
+        new='def show_framebuf(self, buf: _AnyReadableBuf, /) -> None',
     )
     shed.def_(
         old='.. method:: LCD160CR.set_scroll(on)',
@@ -238,16 +248,16 @@ def set_scroll_win(
     )
     shed.def_(
         old='.. method:: LCD160CR.jpeg(buf)',
-        new='def jpeg(self, buf: Union[_AnyWritableBuf, bytes], /) -> None',
+        new='def jpeg(self, buf: _AnyReadableBuf, /) -> None',
     )
     feed_wdt_def = '.. method:: LCD160CR.feed_wdt()'
     shed.defs_with_common_description(
-        class_='LCD160CR',
+        cmd='.. method:: LCD160CR.',  # Needs `.` at end!
         old2new={
             'jpeg_start(total_len)':
                 'def jpeg_start(self, total_len: int, /) -> None',
             'jpeg_data(buf)':
-                'def jpeg_data(self, buf: Union[_AnyWritableBuf, bytes], /) -> None',
+                'def jpeg_data(self, buf: _AnyReadableBuf, /) -> None',
         },
         end=feed_wdt_def
     )
