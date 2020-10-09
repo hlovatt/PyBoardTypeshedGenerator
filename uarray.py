@@ -4,10 +4,10 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = rst.__version__
+__version__ = "3.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
-def uarray(shed: RST2PyI):
+def uarray(shed: RST2PyI) -> None:
     shed.module(
         name='uarray',
         old='efficient arrays of numeric data',

@@ -1,31 +1,25 @@
+import repdefs
 import rst
 from rst2pyi import RST2PyI
 
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = rst.__version__
+__version__ = "3.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
-def lcd160cr(shed: RST2PyI):
-    module_post_doc = '''
+def lcd160cr(shed: RST2PyI) -> None:
+    module_post_doc = f'''
 from typing import overload, Any, Union, Tuple, TypeVar, Optional
 
 from pyb import Pin, I2C, SPI
 from uarray import array
 
 
-_AnyWritableBuf = TypeVar('_AnyWritableBuf', bytearray, array, memoryview)
-"""
-Type that allows bytearray, array, or memoryview, but only one of these and not a mixture in a single declaration.
-"""
+{repdefs.AnyWritableBuf}
 
 
-_AnyReadableBuf = TypeVar('_AnyReadableBuf', bytearray, array, memoryview, bytes)
-"""
-Type that allows bytearray, array, memoryview, or bytes, 
-but only one of these and not a mixture in a single declaration.
-"""
+{repdefs.AnyReadableBuf}
 '''
     shed.module(
         name='lcd160cr',

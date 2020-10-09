@@ -1,10 +1,11 @@
+import repdefs
 import rst
 from rst2pyi import RST2PyI
 
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = rst.__version__
+__version__ = "3.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def machine(shed: RST2PyI) -> None:
@@ -147,10 +148,10 @@ def _rtc(_: str, shed: RST2PyI) -> str:
 def _i2c(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(old=this, )
     shed.def_(
-        old=r'.. class:: I2C(id=-1, *, scl, sda, freq=400000)',
+        old=r'.. class:: I2C(id, *, scl, sda, freq=400000)',
         new=[
-            'def __init__(self, id: int = -1, /, *, freq: int = 400_000)',
-            'def __init__(self, id: int = -1, /, *, scl: Pin, sda: Pin, freq: int = 400_000)',
+            'def __init__(self, id: int, /, *, freq: int = 400_000)',
+            'def __init__(self, id: int, /, *, scl: Pin, sda: Pin, freq: int = 400_000)',
         ],
     )
     shed.def_(
@@ -422,7 +423,7 @@ def _pin(shed: RST2PyI) -> str:
 
 
 def _machine(shed: RST2PyI) -> None:
-    module_post_doc = '''
+    module_post_doc = f'''
 from typing import overload, Union, Tuple, TypeVar, Optional, NoReturn, List, Callable
 from typing import Type, Sequence, runtime_checkable, Protocol, ClassVar
 
@@ -430,33 +431,13 @@ import pyb
 from uarray import array
 
 
-@runtime_checkable
-class _AbstractBlockDev(Protocol):
-    """
-    A `Protocol` (structurally typed) with the defs needed by 
-    `usb_mode` argument `msc`.
-    """
-
-    __slots__ = ()
-
-    def readblocks(self, blocknum: int, buf: bytes, offset: int = 0, /) -> None: ... 
-
-    def writeblocks(self, blocknum: int, buf: bytes, offset: int = 0, /) -> None: ...
-
-    def ioctl(self, op: int, arg: int) -> Optional[int]: ...
+{repdefs.AbstractBlockDev}
 
 
-_AnyWritableBuf = TypeVar('_AnyWritableBuf', bytearray, array, memoryview)
-"""
-Type that allows bytearray, array, or memoryview, but only one of these and not a mixture in a single declaration.
-"""
+{repdefs.AnyWritableBuf}
 
 
-_AnyReadableBuf = TypeVar('_AnyReadableBuf', bytearray, array, memoryview, bytes)
-"""
-Type that allows bytearray, array, memoryview, or bytes, 
-but only one of these and not a mixture in a single declaration.
-"""
+{repdefs.AnyReadableBuf}
 '''
     shed.module(
         name='machine',

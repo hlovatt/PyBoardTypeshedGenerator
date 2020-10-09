@@ -7,7 +7,7 @@ import rst
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = rst.__version__
+__version__ = "3.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 @dataclass
@@ -104,6 +104,9 @@ class RST2PyI:
     def consume_name_line(self, name: str, *, and_preceding_lines: bool = False) -> None:
         self.consume_line(lambda s: name in s, msg=name, and_preceding_lines=and_preceding_lines)
 
+    def consume_synopsis_line(self, name: str, *, and_preceding_lines: bool = False) -> None:
+        self.consume_line(lambda s: name in s, msg=name, and_preceding_lines=and_preceding_lines)
+
     def module(
             self,
             *,
@@ -116,32 +119,33 @@ class RST2PyI:
         self.name = name
         url = self.input_base_url + name + '.rst'
         self.rst.push_url(url)
-        for line in self.rst:
-            if line.startswith(self._synopsis):
-                break
-        else:
-            assert False, f'Expected synopsis of `{old}`, but did not find it!'
+        self.consume_synopsis_line(old, and_preceding_lines=True)
         if new is None:
             new = old
+        doc = []
+        for doc_line in self.rst:
+            if self.is_last(doc_line, end):
+                break
+            doc.append(doc_line)
+        newline = '\n'
         self.pyi.append(f'''"""
 {new}
 
 Descriptions taken from 
 `{url}`, etc.
+
+{newline.join(doc).strip()}
 """
 
 __author__ = "{rst.__author__}"
 __copyright__ = "{rst.__copyright__}"
 __license__ = "{rst.__license__}"
-__version__ = "{rst.__version__}"
+__version__ = "3.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 {post_doc}
 '''
                         )
-        for line in self.rst:
-            if self.is_last(line, end):  # Skip over lines to end of synopsis.
-                break
 
     def class_from_file(
             self,
@@ -380,10 +384,10 @@ class {name}:
             names = []
             self.rst.push_line(line)  # Push back the current line so that it is re-read into `name_line`.
             for name_line in self.rst:
-                last_dot = name_line.rfind('.')
-                if last_dot < 0:
-                    break  # End of name list (all the names contain a dot).
-                names.append(name_line[last_dot + 1:])
+                end_rst_decl = max(name_line.rfind(':'), name_line.rfind('.'))
+                if end_rst_decl < 0:
+                    break  # End of name list (all the names contain a dot or colon).
+                names.append(name_line[end_rst_decl + 1:].strip())
             else:
                 assert names, 'No constant names found!'
             description_lines = []
