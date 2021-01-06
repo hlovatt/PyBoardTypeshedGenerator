@@ -1,8 +1,10 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import List, Set, Dict, Callable, Optional, Union, ClassVar
 
-from rst import RST
 import rst
+from class_ import Class
+from pyi import PYI
+from rst import RST
 
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
@@ -32,10 +34,8 @@ class RST2PyI:
     output_dir: str
     name: Optional[str] = None
     input_base_url: str = r'https://raw.githubusercontent.com/micropython/micropython/master/docs/library/'
-    pyi: List[str] = field(default_factory=list)
+    pyi: PYI = PYI()
     rst: RST = RST()
-    last_class_index: int = 0
-    last_line_index: int = 0
 
     _title_underline: ClassVar[Set[str]] = set('=')
     _header_underline: ClassVar[Set[str]] = set('-')
@@ -119,7 +119,7 @@ class RST2PyI:
         self.name = name
         url = self.input_base_url + name + '.rst'
         self.rst.push_url(url)
-        self.consume_synopsis_line(old, and_preceding_lines=True)
+        self.consume_synopsis_line(name=old, and_preceding_lines=True)
         if new is None:
             new = old
         doc = []
@@ -127,15 +127,17 @@ class RST2PyI:
             if self.is_last(doc_line, end):
                 break
             doc.append(doc_line)
-        newline = '\n'
-        self.pyi.append(f'''"""
+        new_line = '\n'  # Needed because you can't have a `\` inside a `{}` block in an f-string.
+        self.pyi.doc.append(f'''
 {new}
 
 Descriptions taken from 
 `{url}`, etc.
 
-{newline.join(doc).strip()}
-"""
+{new_line.join(doc).strip()}
+'''
+                            )
+        self.pyi.imports_vars_defs.append(f'''
 
 __author__ = "{rst.__author__}"
 __copyright__ = "{rst.__copyright__}"
@@ -145,7 +147,7 @@ __version__ = "3.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 {post_doc}
 '''
-                        )
+                                          )
 
     def class_from_file(
             self,
@@ -155,8 +157,6 @@ __version__ = "3.0.0"  # Version set by https://github.com/hlovatt/tag2ver
             post_doc: str = '',
             end: Optional[str] = None,
     ) -> None:
-        self.last_class_index = len(self.pyi)
-        self.last_line_index = -(len(post_doc) + 7)
         for line in self.rst:
             if line.lstrip().startswith(old):
                 url = self.input_base_url + old.strip()
@@ -185,23 +185,27 @@ __version__ = "3.0.0"  # Version set by https://github.com/hlovatt/tag2ver
             doc.append(f'   {doc_line}\n')
         else:
             assert doc, 'Did not find any class documentation.'
-        self.pyi.append(f'''
+        new_class = Class()
+        self.pyi.classes.append(new_class)
+        new_class.class_def_and_doc.append(f'''
 class {class_name}: 
    """
 {''.join(doc).rstrip()}
    """{post_doc}
 '''
-                        )
+                                           )
 
     def class_(self, *, name: str, end: str) -> None:
-        self.pyi.append(f'''
+        new_class = Class()
+        self.pyi.classes.append(new_class)
+        new_line = '\n'
+        new_class.class_def_and_doc.append(f'''
 class {name}:
    """
+   {new_line.join(self.extra_notes(end=end, first_line=''))}
    """
-''')
-        self.last_class_index = len(self.pyi) - 1
-        self.last_line_index = -7
-        self.extra_notes(end=end, first_line='')
+'''
+                                           )
 
     def defs_with_common_description(
             self,
@@ -250,7 +254,7 @@ class {name}:
             *,
             old: str,
             new: Union[str, List[str]],
-            extra_docs: List[str] = [],
+            extra_docs: List[str] = (),
             indent: int = 3,
             end: str = _definitions
     ) -> None:
@@ -285,7 +289,7 @@ class {name}:
 
     def _add_def_or_defs(self, doc: List[str], indent: int, new: Union[List[str], str]):
         if not doc[0].strip():
-            del doc[0]  # Some doc comments have a leading blank line!
+            del doc[0]  # Some class_def_and_doc comments have a leading blank line!
         in_str, return_plus_in_str = RST2PyI._indent_strings(indent)
         doc_str = RST2PyI._doc_str_gen(doc, in_str, return_plus_in_str)
         if isinstance(new, str):
@@ -309,34 +313,25 @@ class {name}:
 '''
 
     def _add_def(self, new: str, doc_str: str, in_str: str, return_plus_in_str: str) -> None:
-        self.pyi.append(f'{in_str}{return_plus_in_str.join(new.rstrip().splitlines())}:{doc_str}')
+        self.pyi.classes[-1].defs.append(f'{in_str}{return_plus_in_str.join(new.rstrip().splitlines())}:{doc_str}')
+
+    def _extras(self, *, description: str, indent: int, end: str, first_line: str) -> List[str]:
+        extras = [first_line]
+        indent_str = indent * ' '
+        for extra_line in self.rst:
+            if self.is_last(extra_line, end):
+                break
+            extras.append(indent_str + extra_line)
+        else:
+            assert extras, f'No extra {description} found before end-of-file reached!'
+        assert extras, f'No extra {description} before `{end}` reached!'
+        return extras
 
     def extra_docs(self, *, indent: int = 3, end: str = _definitions) -> List[str]:
-        doc = []
-        indent_str = indent * ' '
-        for doc_line in self.rst:
-            if self.is_last(doc_line, end):
-                break
-            doc.append(indent_str + doc_line)
-        else:
-            assert doc, 'No extra documentation found before end-of-file reached!'
-        assert doc, f'No extra documentation before `{end}` reached!'
-        return doc
+        return self._extras(description='documentation', indent=indent, end=end, first_line='')
 
-    def extra_notes(self, *, end: str, first_line: str = '   \n'):
-        doc = [first_line]
-        for doc_line in self.rst:
-            if self.is_last(doc_line, end):
-                break
-            doc.append(f'   {doc_line}\n')
-        else:
-            assert doc, 'No extra notes found before end-of-file reached!'
-        assert doc, f'No extra notes found before `{end}` reached!'
-        self.pyi[self.last_class_index] = \
-            self.pyi[self.last_class_index][:self.last_line_index] + \
-            ''.join(doc).rstrip() + \
-            '\n' + \
-            self.pyi[self.last_class_index][self.last_line_index:]
+    def extra_notes(self, *, end: str, first_line: str = '   \n') -> List[str]:
+        return self._extras(description='notes', indent=3, end=end, first_line=first_line)
 
     def vars(
             self,
@@ -349,7 +344,7 @@ class {name}:
         Add var definitions to current typeshed.
         Class-vars (`class_var=True`) and instance-vars (`class_var=False`)
         are added to the typeshed at `self.last_class_index + 1`,
-        i.e. inside the class definition immediately after the doc comment.
+        i.e. inside the class definition immediately after the class_def_and_doc comment.
         Module vars (`class_var=None`) are added at `self.last_class_index`,
         i.e. immediately before the class definition.
         If there is no class definition yet, i.e. `self.last_class_index` is 0,
@@ -384,10 +379,13 @@ class {name}:
             names = []
             self.rst.push_line(line)  # Push back the current line so that it is re-read into `name_line`.
             for name_line in self.rst:
-                end_rst_decl = max(name_line.rfind(':'), name_line.rfind('.'))
-                if end_rst_decl < 0:
-                    break  # End of name list (all the names contain a dot or colon).
-                names.append(name_line[end_rst_decl + 1:].strip())
+                last_dot = name_line.rfind('.')
+                if last_dot < 0:
+                    break  # End of name list (all the names contain a dot).
+                trial_name = name_line[last_dot + 1:]
+                data_dec_str = ' data:: '
+                name = trial_name[len(data_dec_str):] if trial_name.startswith(data_dec_str) else trial_name
+                names.append(name)
             else:
                 assert names, 'No constant names found!'
             description_lines = []
@@ -411,17 +409,14 @@ class {name}:
 '''
                                     )
             dec_str = '\n'.join(declarations) + '\n\n'
-            if class_var is None and self.last_class_index == 0:  # Module level no classes yet.
-                self.pyi.append(dec_str)
+            if class_var is None:  # Module level no classes yet.
+                self.pyi.imports_vars_defs.append(dec_str)
             else:
-                typeshed_pos = self.last_class_index if class_var is None else self.last_class_index + 1
-                self.pyi.insert(typeshed_pos, dec_str)
-            if class_var is None and self.last_class_index != 0:
-                self.last_class_index += 1
+                self.pyi.classes[-1].vars.append(dec_str)
             typeshed_modified = True
 
     def preview(self) -> None:
-        print('\n'.join(self.pyi))
+        print(self.pyi)
 
     def write(self) -> None:
         """
@@ -431,8 +426,6 @@ class {name}:
         """
         assert not self.rst, f'Not all input lines processed! Remaining: {self.rst}'
         with open(self.output_dir + self.name + '.pyi', 'w') as f:
-            f.write('\n'.join(self.pyi))
+            f.write(str(self.pyi))
         self.name = None
         self.pyi.clear()
-        self.last_line_index = 0
-        self.last_class_index = 0

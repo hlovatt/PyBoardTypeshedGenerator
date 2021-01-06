@@ -26,14 +26,7 @@ from uarray import array
         old='control of LCD160CR display',
         post_doc=module_post_doc,
     )
-    shed.last_class_index = len(shed.pyi) - 1
-    shed.last_line_index = -(77 +
-                             len(module_post_doc) +
-                             len(rst.__author__) +
-                             len(rst.__copyright__) +
-                             len(rst.__license__) +
-                             len(rst.__version__))
-    shed.extra_notes(end='class LCD160CR',)
+    shed.pyi.doc += shed.extra_notes(end='class LCD160CR',)
     shed.consume_header_line(and_preceding_lines=True)
     shed.consume_blank_line()
     shed.class_(name='LCD160CR', end='Constructors')

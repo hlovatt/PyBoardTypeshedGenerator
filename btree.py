@@ -11,7 +11,7 @@ __version__ = "3.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 def btree(shed: RST2PyI) -> None:
     module_post_doc = f'''
 from abc import abstractmethod
-from typing import Protocol, Iterator, AnyStr, runtime_checkable, Optional, TypeVar, overload
+from typing import Protocol, Iterator, AnyStr, runtime_checkable, Optional, TypeVar
 
 from uarray import array
 
@@ -69,14 +69,7 @@ class _IOBase(Protocol):
         post_doc=module_post_doc,
         end='Functions',
     )
-    shed.last_class_index = len(shed.pyi) - 1
-    shed.last_line_index = -(77 +
-                             len(module_post_doc) +
-                             len(rst.__author__) +
-                             len(rst.__copyright__) +
-                             len(rst.__license__) +
-                             len(rst.__version__))
-    shed.extra_notes(end='Functions')
+    shed.pyi.doc += shed.extra_notes(end='Functions')
     shed.def_(
         old=r'.. function:: open(stream, *, flags=0, pagesize=0, cachesize=0, minkeypage=0)',
         new='''
@@ -99,18 +92,12 @@ def open(stream: _IOBase, /, *, flags: int = 0, pagesize: int = 0, cachesize: in
         cmd='.. method:: btree.',
         old2new={
             '__getitem__(key)':
-                '''
-@overload
-def __getitem__(self, key: bytes, /) -> bytes
-''',
+                'def __getitem__(self, key: bytes, /) -> bytes',
             'get(key, default=None, /)':
-                '''
-@overload
-def __getitem__(self, key: bytes, default: Optional[bytes] = None, /) -> bytes
-''',
+                'def get(self, key: bytes, default: Optional[bytes] = None, /) -> bytes',
             '__setitem__(key, val)':
                 'def __setitem__(self, key: bytes, val: bytes, /) -> bytes',
-            '__detitem__(key)':
+            '__delitem__(key)':
                 'def __delitem__(self, key: bytes, /) -> None',
             '__contains__(key)':
                 'def __contains__(self, key: bytes, /) -> bool',

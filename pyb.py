@@ -1,5 +1,6 @@
 import repdefs
 import rst
+from class_ import Class
 from rst2pyi import RST2PyI
 
 __author__ = rst.__author__
@@ -211,7 +212,7 @@ def init(
     )
     shed.vars(end='Flow Control')
     nxt = 'pyb.USB_HID.rst'
-    shed.extra_notes(end=nxt)
+    shed.pyi.doc += shed.extra_notes(end=nxt)
     return nxt
 
 
@@ -229,13 +230,15 @@ def _timer_channel(*, old: str, end: str, shed: RST2PyI) -> None:
         doc.append(f'   {doc_line}\n')
     else:
         assert False, f'Did not find: `{methods}`'
-    shed.pyi.append(f'''
+    new_class = Class()
+    new_class.class_def_and_doc.append(f'''
 class TimerChannel(ABC): 
    """
 {''.join(doc).rstrip()}
    """
 '''
-                    )
+                                       )
+    shed.pyi.classes.append(new_class)
     shed.def_(
         old='.. method:: timerchannel.callback(fun)',
         new='''
@@ -820,7 +823,9 @@ def _pin_af(*, end: str, shed: RST2PyI) -> None:
         doc.append(f'   {doc_line}\n')
     else:
         assert False, f'Expected `{end}`, but did not find it!'
-    shed.pyi.append(f'''
+    new_class = Class()
+    shed.pyi.classes.append(new_class)
+    new_class.class_def_and_doc.append(f'''
 class PinAF(ABC): 
    """
 {''.join(doc).rstrip()}
@@ -828,7 +833,7 @@ class PinAF(ABC):
 
    __slots__ = ()
 '''
-                    )
+                                       )
     shed.def_(
         old='.. method:: pinaf.__str__()',
         new='''
@@ -1761,7 +1766,7 @@ def __init__(self, *, start: int = -1, len: int = -1)
         end='Hardware Note'
     )
     nxt = 'pyb.I2C.rst'
-    shed.extra_notes(end=nxt)
+    shed.pyi.doc += shed.extra_notes(end=nxt)
     return nxt
 
 
@@ -1876,7 +1881,10 @@ def initfilterbanks(nr: int, /) -> None
 ''',
     )
     shed.def_(
-        old=r'.. method:: CAN.init(mode, extframe=False, prescaler=100, *, sjw=1, bs1=6, bs2=8, auto_restart=False)',
+        old=(
+            r'.. method:: CAN.init(mode, extframe=False, prescaler=100, *, sjw=1, bs1=6, '
+            r'bs2=8, auto_restart=False, baudrate=0, sample_point=75)'
+        ),
         new='''
 def init(
    self, 
@@ -1888,7 +1896,9 @@ def init(
    sjw: int = 1, 
    bs1: int = 6, 
    bs2: int = 8, 
-   auto_restart: bool = False
+   auto_restart: bool = False,
+   baudrate: int = 0,
+   sample_point: int = 75
 ) -> None
 ''',
     )
@@ -1971,7 +1981,9 @@ def _adc_all(*, this: str, end: str, shed: RST2PyI) -> None:
         doc.append(f'   {doc_line}\n')
     else:
         assert False, f'Did not find: {end}'
-    shed.pyi.append(f'''
+    new_class = Class()
+    shed.pyi.classes.append(new_class)
+    new_class.class_def_and_doc.append(f'''
 class ADCAll: 
    """
 {''.join(doc).rstrip()}
@@ -1981,7 +1993,7 @@ class ADCAll:
       """
       Create a multi-channel ADC instance.
 
-      ``resolution`` is the number of bits for all the ADC's (even those not enabled); one of: 
+      ``resolution`` is the number of bits for all the ADCs (even those not enabled); one of: 
       14, 12, 10, or 8 bits.
 
       To avoid unwanted activation of analog inputs (channel 0..15) a second parameter, ``mask``, 
@@ -2016,7 +2028,7 @@ class ADCAll:
       Read MCU supply voltage (volts).
       """
 '''
-                    )
+                                       )
 
 
 def _adc(this: str, shed: RST2PyI) -> str:
@@ -2080,7 +2092,7 @@ def _accel(shed: RST2PyI) -> str:
         end='Hardware Note'
     )
     nxt = 'pyb.ADC.rst'
-    shed.extra_notes(end=nxt)
+    shed.pyi.doc += shed.extra_notes(end=nxt)
     return nxt
 
 

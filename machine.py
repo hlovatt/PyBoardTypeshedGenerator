@@ -46,7 +46,15 @@ def __init__(
 ''',
         end='Implementation-specific details',
     )
-    shed.extra_docs()
+    shed.pyi.doc += shed.extra_docs()
+    shed.pyi.imports_vars_defs.append('''
+def readblocks(self, blocknum: int, buf: bytes, offset: int = 0, /) -> None: ... 
+
+def writeblocks(self, blocknum: int, buf: bytes, offset: int = 0, /) -> None: ...
+
+def ioctl(self, op: int, arg: int) -> Optional[int]: ...
+'''
+                                      )
 
 
 def _sd(this: str, shed: RST2PyI) -> str:
@@ -139,7 +147,7 @@ def init(
 
 
 def _rtc(_: str, shed: RST2PyI) -> str:
-    shed.pyi.append('RTC: Type[pyb.RTC] = pyb.RTC\n')
+    shed.pyi.imports_vars_defs.append('RTC: Type[pyb.RTC] = pyb.RTC\n')
     nxt = 'machine.Timer.rst'
     shed.consume(end=nxt)
     return nxt
@@ -347,7 +355,7 @@ def init(
 
 
 def _uart(_: str, shed: RST2PyI) -> str:
-    shed.pyi.append('UART: Type[pyb.UART] = pyb.UART\n')
+    shed.pyi.imports_vars_defs.append('UART: Type[pyb.UART] = pyb.UART\n')
     nxt = 'machine.SPI.rst'
     shed.consume(end=nxt)
     return nxt
@@ -416,7 +424,7 @@ def __init__(
 
 
 def _pin(shed: RST2PyI) -> str:
-    shed.pyi.append('Pin: Type[pyb.Pin] = pyb.Pin\n')
+    shed.pyi.imports_vars_defs.append('Pin: Type[pyb.Pin] = pyb.Pin\n')
     nxt = 'machine.Signal.rst'
     shed.consume(end=nxt)
     return nxt
@@ -424,6 +432,7 @@ def _pin(shed: RST2PyI) -> str:
 
 def _machine(shed: RST2PyI) -> None:
     module_post_doc = f'''
+from abc import abstractmethod
 from typing import overload, Union, Tuple, TypeVar, Optional, NoReturn, List, Callable
 from typing import Type, Sequence, runtime_checkable, Protocol, ClassVar
 
@@ -445,14 +454,7 @@ from uarray import array
         post_doc=module_post_doc,
         end='The ``machine`` module contains specific functions related to the hardware'
     )
-    shed.last_class_index = len(shed.pyi) - 1
-    shed.last_line_index = -(77 +
-                             len(module_post_doc) +
-                             len(rst.__author__) +
-                             len(rst.__copyright__) +
-                             len(rst.__license__) +
-                             len(rst.__version__))
-    shed.extra_notes(end='Reset related functions')
+    shed.pyi.doc += shed.extra_notes(end='Reset related functions')
     shed.def_(
         old='.. function:: reset()',
         new='def reset() -> NoReturn',
