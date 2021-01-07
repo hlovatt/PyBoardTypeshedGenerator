@@ -9,28 +9,33 @@ Note:
 """
 
 from dataclasses import dataclass, field
-from typing import List
+from typing import List, Optional
 
 import rst
 
 __author__ = rst.__author__
 __copyright_ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "3.0.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "3.1.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 @dataclass
 class Class:
-    class_def_and_doc: List[str] = field(default_factory=list)
-    vars: List[str] = field(default_factory=list)
+    class_def: Optional[str] = None
+    doc: List[str] = field(default_factory=list)
+    imports_vars: List[str] = field(default_factory=list)
     defs: List[str] = field(default_factory=list)
 
     def __str__(self) -> str:
+        assert self.class_def, f'No class definition string! {self.class_def}'
         new_line = '\n'  # Can't have `\` inside `{}` in an f-string!
         return f'''
-{new_line.join(self.class_def_and_doc)}
+{self.class_def}
+   """
+{new_line.join(self.doc)}
+   """
 
-{new_line.join(self.vars)}
+{new_line.join(self.imports_vars)}
 
 {new_line.join(self.defs)}
 '''.lstrip(new_line)

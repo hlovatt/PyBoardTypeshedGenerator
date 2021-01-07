@@ -1,3 +1,7 @@
+"""
+Routines to converts `.rst` documentation files into `.pyi` typeshed stub interfaces.
+"""
+
 from dataclasses import dataclass
 from typing import List, Set, Dict, Callable, Optional, Union, ClassVar
 
@@ -9,7 +13,7 @@ from rst import RST
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "3.0.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "3.1.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 @dataclass
@@ -23,7 +27,7 @@ class RST2PyI:
       3. Declare the `def_`s in the module (functions).
       4. Declare the `class_from_file`s and/or `class_`s in the module.
       5. Declare the `def_`s inside the classes (methods and static methods).
-      6. `.rst` files might at any point contain `extra_notes`, `vars`, and `defs_with_common_description`.
+      6. `.rst` files might at any point contain `extra_notes`, `imports_vars`, and `defs_with_common_description`.
       7. `preview` the conversions so far (useful for debugging).
       8. `write` the finished conversion to the `.pyi` file (the point of the exercise!).
       9. Repeat 2 to 8 for each module.
@@ -142,7 +146,7 @@ Descriptions taken from
 __author__ = "{rst.__author__}"
 __copyright__ = "{rst.__copyright__}"
 __license__ = "{rst.__license__}"
-__version__ = "3.0.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "3.1.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 {post_doc}
@@ -182,30 +186,20 @@ __version__ = "3.0.0"  # Version set by https://github.com/hlovatt/tag2ver
                 assert not doc[-1].strip(), f'Expected a blank line, got `{doc[-1]}`!'
                 del doc[-1]
                 break
-            doc.append(f'   {doc_line}\n')
+            doc.append(f'   {doc_line}')
         else:
             assert doc, 'Did not find any class documentation.'
         new_class = Class()
         self.pyi.classes.append(new_class)
-        new_class.class_def_and_doc.append(f'''
-class {class_name}: 
-   """
-{''.join(doc).rstrip()}
-   """{post_doc}
-'''
-                                           )
+        new_class.class_def = f'class {class_name}:'
+        new_class.doc = doc
+        new_class.imports_vars.append(post_doc)
 
     def class_(self, *, name: str, end: str) -> None:
         new_class = Class()
         self.pyi.classes.append(new_class)
-        new_line = '\n'
-        new_class.class_def_and_doc.append(f'''
-class {name}:
-   """
-   {new_line.join(self.extra_notes(end=end, first_line=''))}
-   """
-'''
-                                           )
+        new_class.class_def = f'class {name}:'
+        new_class.doc = self.extra_notes(end=end, first_line='')
 
     def defs_with_common_description(
             self,
@@ -215,6 +209,7 @@ class {name}:
             end: Optional[str] = None,
             indent: int = 3
     ) -> None:
+        method_def = indent != 0
         for line in self.rst:
             if self.is_last(line, end):
                 break
@@ -245,7 +240,7 @@ class {name}:
             else:
                 assert doc, 'No description found!'
             for new in new_defs:
-                self._add_def_or_defs(doc, indent, new)
+                self._add_def_or_defs(method_def, doc, indent, new)
         else:
             assert False, 'No defs found!'
 
@@ -258,6 +253,7 @@ class {name}:
             indent: int = 3,
             end: str = _definitions
     ) -> None:
+        method_def = indent != 0
         old = old.strip()
         self.consume_name_line(old, and_preceding_lines=True)
         self.consume_line(
@@ -285,18 +281,18 @@ class {name}:
         assert doc, f'No documentation found before `{end}` reached!'
         if extra_docs:
             doc.extend(extra_docs)
-        self._add_def_or_defs(doc, indent, new)
+        self._add_def_or_defs(method_def, doc, indent, new)
 
-    def _add_def_or_defs(self, doc: List[str], indent: int, new: Union[List[str], str]):
+    def _add_def_or_defs(self, method_def: bool, doc: List[str], indent: int, new: Union[List[str], str]):
         if not doc[0].strip():
             del doc[0]  # Some class_def_and_doc comments have a leading blank line!
         in_str, return_plus_in_str = RST2PyI._indent_strings(indent)
         doc_str = RST2PyI._doc_str_gen(doc, in_str, return_plus_in_str)
         if isinstance(new, str):
-            self._add_def(new, doc_str, in_str, return_plus_in_str)
+            self._add_def(method_def, new, doc_str, in_str, return_plus_in_str)
         else:
             for new_def in new:
-                self._add_def('@overload\n' + new_def.lstrip(), doc_str, in_str, return_plus_in_str)
+                self._add_def(method_def, '@overload\n' + new_def.lstrip(), doc_str, in_str, return_plus_in_str)
 
     @staticmethod
     def _indent_strings(indent: int):
@@ -312,8 +308,9 @@ class {name}:
 {in_str}   """
 '''
 
-    def _add_def(self, new: str, doc_str: str, in_str: str, return_plus_in_str: str) -> None:
-        self.pyi.classes[-1].defs.append(f'{in_str}{return_plus_in_str.join(new.rstrip().splitlines())}:{doc_str}')
+    def _add_def(self, method_def: bool, new: str, doc_str: str, in_str: str, return_plus_in_str: str) -> None:
+        where = self.pyi.classes[-1].defs if method_def else self.pyi.imports_vars_defs
+        where.append(f'{in_str}{return_plus_in_str.join(new.rstrip().splitlines())}:{doc_str}')
 
     def _extras(self, *, description: str, indent: int, end: str, first_line: str) -> List[str]:
         extras = [first_line]
@@ -342,13 +339,13 @@ class {name}:
     ) -> None:
         """
         Add var definitions to current typeshed.
-        Class-vars (`class_var=True`) and instance-vars (`class_var=False`)
+        Class-imports_vars (`class_var=True`) and instance-imports_vars (`class_var=False`)
         are added to the typeshed at `self.last_class_index + 1`,
         i.e. inside the class definition immediately after the class_def_and_doc comment.
-        Module vars (`class_var=None`) are added at `self.last_class_index`,
+        Module imports_vars (`class_var=None`) are added at `self.last_class_index`,
         i.e. immediately before the class definition.
         If there is no class definition yet, i.e. `self.last_class_index` is 0,
-        then the vars are added to the end of `self.pyi`.
+        then the imports_vars are added to the end of `self.pyi`.
         `self.last_class_index` is typically set by `self.class_` or `self.class_from_file`.
         if `class_var=None` and `self.last_class_index` is not 0
         then `self.last_class_index` is incremented by this method,
@@ -412,7 +409,7 @@ class {name}:
             if class_var is None:  # Module level no classes yet.
                 self.pyi.imports_vars_defs.append(dec_str)
             else:
-                self.pyi.classes[-1].vars.append(dec_str)
+                self.pyi.classes[-1].imports_vars.append(dec_str)
             typeshed_modified = True
 
     def preview(self) -> None:

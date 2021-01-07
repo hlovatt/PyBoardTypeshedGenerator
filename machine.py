@@ -1,3 +1,7 @@
+"""
+Generate `pyi` from corresponding `rst` docs.
+"""
+
 import repdefs
 import rst
 from rst2pyi import RST2PyI
@@ -5,7 +9,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "3.0.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "3.1.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def machine(shed: RST2PyI) -> None:
@@ -46,15 +50,14 @@ def __init__(
 ''',
         end='Implementation-specific details',
     )
-    shed.pyi.doc += shed.extra_docs()
-    shed.pyi.imports_vars_defs.append('''
-def readblocks(self, blocknum: int, buf: bytes, offset: int = 0, /) -> None: ... 
+    shed.pyi.classes[-1].defs.append('''
+      def readblocks(self, blocknum: int, buf: bytes, offset: int = 0, /) -> None: ... 
 
-def writeblocks(self, blocknum: int, buf: bytes, offset: int = 0, /) -> None: ...
+      def writeblocks(self, blocknum: int, buf: bytes, offset: int = 0, /) -> None: ...
 
-def ioctl(self, op: int, arg: int) -> Optional[int]: ...
-'''
-                                      )
+      def ioctl(self, op: int, arg: int) -> Optional[int]: ...
+''')
+    shed.pyi.classes[-1].doc += shed.extra_docs()
 
 
 def _sd(this: str, shed: RST2PyI) -> str:
@@ -67,8 +70,7 @@ def __init__(
    id: int = 0, 
    pins: Union[Tuple[str, str, str], Tuple[Pin, Pin, Pin]] = ("GP10", "GP11", "GP15")
 )
-''',
-    )
+''')
     shed.def_(
         old=r".. method:: SD.init(id=0, pins=('GP10', 'GP11', 'GP15'))",
         new='''

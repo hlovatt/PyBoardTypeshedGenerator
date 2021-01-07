@@ -1,3 +1,7 @@
+"""
+Generate `pyi` from corresponding `rst` docs.
+"""
+
 import repdefs
 import rst
 from class_ import Class
@@ -6,7 +10,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "3.0.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "3.1.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def pyb(shed: RST2PyI) -> None:
@@ -231,13 +235,8 @@ def _timer_channel(*, old: str, end: str, shed: RST2PyI) -> None:
     else:
         assert False, f'Did not find: `{methods}`'
     new_class = Class()
-    new_class.class_def_and_doc.append(f'''
-class TimerChannel(ABC): 
-   """
-{''.join(doc).rstrip()}
-   """
-'''
-                                       )
+    new_class.class_def = f'class TimerChannel(ABC):'
+    new_class.doc = doc
     shed.pyi.classes.append(new_class)
     shed.def_(
         old='.. method:: timerchannel.callback(fun)',
@@ -825,15 +824,9 @@ def _pin_af(*, end: str, shed: RST2PyI) -> None:
         assert False, f'Expected `{end}`, but did not find it!'
     new_class = Class()
     shed.pyi.classes.append(new_class)
-    new_class.class_def_and_doc.append(f'''
-class PinAF(ABC): 
-   """
-{''.join(doc).rstrip()}
-   """
-
-   __slots__ = ()
-'''
-                                       )
+    new_class.class_def = 'class PinAF(ABC):'
+    new_class.doc = doc
+    new_class.imports_vars.append('   __slots__ = ()')
     shed.def_(
         old='.. method:: pinaf.__str__()',
         new='''
@@ -1983,12 +1976,9 @@ def _adc_all(*, this: str, end: str, shed: RST2PyI) -> None:
         assert False, f'Did not find: {end}'
     new_class = Class()
     shed.pyi.classes.append(new_class)
-    new_class.class_def_and_doc.append(f'''
-class ADCAll: 
-   """
-{''.join(doc).rstrip()}
-   """
-
+    new_class.class_def = 'class ADCAll:'
+    new_class.doc = doc
+    new_class.defs.append(f'''
    def __init__(self, resolution: int, mask: int = 0xffffffff, /):
       """
       Create a multi-channel ADC instance.
@@ -2027,8 +2017,7 @@ class ADCAll:
       """
       Read MCU supply voltage (volts).
       """
-'''
-                                       )
+''')
 
 
 def _adc(this: str, shed: RST2PyI) -> str:

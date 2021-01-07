@@ -11,7 +11,7 @@ from class_ import Class
 __author__ = rst.__author__
 __copyright_ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "3.0.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "3.1.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 @dataclass
@@ -19,9 +19,6 @@ class PYI:
     doc: List[str] = field(default_factory=list)
     imports_vars_defs: List[str] = field(default_factory=list)
     classes: List[Class] = field(default_factory=list)
-
-    def __post_init__(self):
-        self.classes.append(Class())
 
     def __str__(self) -> str:
         new_line = '\n'  # Can't have `\` inside `{}` in an f-string!
@@ -39,4 +36,3 @@ class PYI:
         self.doc.clear()
         self.imports_vars_defs.clear()
         self.classes.clear()
-        self.classes.append(Class())

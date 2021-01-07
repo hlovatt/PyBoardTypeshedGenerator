@@ -1,10 +1,14 @@
+"""
+Generate `pyi` from corresponding `rst` docs.
+"""
+
 import rst
 from rst2pyi import RST2PyI
 
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "3.0.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "3.1.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def uarray(shed: RST2PyI) -> None:
