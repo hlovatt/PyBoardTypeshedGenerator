@@ -10,7 +10,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "3.2.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "3.3.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def pyb(shed: RST2PyI) -> None:
@@ -433,33 +433,8 @@ def __init__(
    callback: Optional[Callable[["Timer"], None]] = None, 
    deadtime: int = 0
 )
-''', '''
-def __init__(self, id: int, /)
-''', '''
-def __init__(
-   self, 
-   id: int, 
-   /, 
-   *, 
-   freq: int, 
-   mode: int = UP, 
-   div: int = 1, 
-   callback: Optional[Callable[["Timer"], None]] = None, 
-)
-''', '''
-def __init__(
-   self, 
-   id: int, 
-   /, 
-   *, 
-   prescaler: int, 
-   period: int, 
-   mode: int = UP, 
-   div: int = 1, 
-   callback: Optional[Callable[["Timer"], None]] = None, 
-)
 '''],
-    )
+)
     shed.def_(
         old=r'.. method:: Timer.init(*, freq, prescaler, period, mode=Timer.UP, div=1, callback=None, deadtime=0)',
         new=['''

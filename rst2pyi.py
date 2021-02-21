@@ -13,7 +13,7 @@ from rst import RST
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "3.2.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "3.3.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 @dataclass
@@ -36,8 +36,8 @@ class RST2PyI:
     """
 
     output_dir: str
-    name: Optional[str] = None
-    input_base_url: str = r'https://raw.githubusercontent.com/micropython/micropython/master/docs/library/'
+    _name: Optional[str] = None
+    _input_base_url: str = r'https://raw.githubusercontent.com/micropython/micropython/master/docs/library/'
     pyi: PYI = PYI()
     rst: RST = RST()
 
@@ -120,8 +120,8 @@ class RST2PyI:
             post_doc: str = '',
             end: str = _definitions
     ) -> None:
-        self.name = name
-        url = self.input_base_url + name + '.rst'
+        self._name = name
+        url = self._input_base_url + name + '.rst'
         self.rst.push_url(url)
         self.consume_synopsis_line(name=old, and_preceding_lines=True)
         if new is None:
@@ -146,7 +146,7 @@ Descriptions taken from
 __author__ = "{rst.__author__}"
 __copyright__ = "{rst.__copyright__}"
 __license__ = "{rst.__license__}"
-__version__ = "3.2.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "3.3.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 {post_doc}
@@ -163,7 +163,7 @@ __version__ = "3.2.0"  # Version set by https://github.com/hlovatt/tag2ver
     ) -> None:
         for line in self.rst:
             if line.lstrip().startswith(old):
-                url = self.input_base_url + old.strip()
+                url = self._input_base_url + old.strip()
                 self.rst.push_url(url)
                 break
         else:
@@ -222,7 +222,7 @@ __version__ = "3.2.0"  # Version set by https://github.com/hlovatt/tag2ver
             self.rst.push_line(line)  # Push back the current line so that it is re-read into `def_line`.
             for def_line in self.rst:
                 if not def_line:
-                    break  # End of name list.
+                    break  # End of _name list.
                 new = old2new[def_line[len(cmd):]]
                 if new:  # A blank translation or an empty list means the method signature(s) is(are) not required.
                     if isinstance(new, list):
@@ -378,7 +378,7 @@ __version__ = "3.2.0"  # Version set by https://github.com/hlovatt/tag2ver
             for name_line in self.rst:
                 last_dot = name_line.rfind('.')
                 if last_dot < 0:
-                    break  # End of name list (all the names contain a dot).
+                    break  # End of _name list (all the names contain a dot).
                 trial_name = name_line[last_dot + 1:]
                 data_dec_str = ' data:: '
                 name = trial_name[len(data_dec_str):] if trial_name.startswith(data_dec_str) else trial_name
@@ -422,7 +422,7 @@ __version__ = "3.2.0"  # Version set by https://github.com/hlovatt/tag2ver
         :return: `None`
         """
         assert not self.rst, f'Not all input lines processed! Remaining: {self.rst}'
-        with open(self.output_dir + self.name + '.pyi', 'w') as f:
+        with open(self.output_dir + self._name + '.pyi', 'w') as f:
             f.write(str(self.pyi))
-        self.name = None
+        self._name = None
         self.pyi.clear()

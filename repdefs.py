@@ -8,7 +8,7 @@ import rst
 __author__ = rst.__author__
 __copyright_ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "3.2.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "3.3.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 AbstractBlockDev = '''
 @runtime_checkable
