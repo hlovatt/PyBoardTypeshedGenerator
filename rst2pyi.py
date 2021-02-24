@@ -13,7 +13,7 @@ from rst import RST
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "3.3.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "3.4.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 @dataclass
@@ -146,7 +146,7 @@ Descriptions taken from
 __author__ = "{rst.__author__}"
 __copyright__ = "{rst.__copyright__}"
 __license__ = "{rst.__license__}"
-__version__ = "3.3.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "3.4.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 {post_doc}
@@ -207,7 +207,8 @@ __version__ = "3.3.0"  # Version set by https://github.com/hlovatt/tag2ver
             cmd: str,
             old2new: Dict[str, Union[str, List[str]]],
             end: Optional[str] = None,
-            indent: int = 3
+            indent: int = 3,
+            extra_doc_indent = 0,
     ) -> None:
         method_def = indent != 0
         for line in self.rst:
@@ -240,7 +241,7 @@ __version__ = "3.3.0"  # Version set by https://github.com/hlovatt/tag2ver
             else:
                 assert doc, 'No description found!'
             for new in new_defs:
-                self._add_def_or_defs(method_def, doc, indent, new)
+                self._add_def_or_defs(method_def, doc, indent, extra_doc_indent, new)
         else:
             assert False, 'No defs found!'
 
@@ -251,6 +252,7 @@ __version__ = "3.3.0"  # Version set by https://github.com/hlovatt/tag2ver
             new: Union[str, List[str]],
             extra_docs: List[str] = (),
             indent: int = 3,
+            extra_doc_indent: int = 0,
             end: str = _definitions
     ) -> None:
         method_def = indent != 0
@@ -281,35 +283,54 @@ __version__ = "3.3.0"  # Version set by https://github.com/hlovatt/tag2ver
         assert doc, f'No documentation found before `{end}` reached!'
         if extra_docs:
             doc.extend(extra_docs)
-        self._add_def_or_defs(method_def, doc, indent, new)
+        self._add_def_or_defs(method_def, doc, indent, extra_doc_indent, new)
 
-    def _add_def_or_defs(self, method_def: bool, doc: List[str], indent: int, new: Union[List[str], str]):
+    def _add_def_or_defs(
+            self,
+            method_def: bool,
+            doc: List[str],
+            indent: int,
+            extra_doc_indent: int,
+            new: Union[List[str], str]
+    ):
         if not doc[0].strip():
             del doc[0]  # Some class_def_and_doc comments have a leading blank line!
-        in_str, return_plus_in_str = RST2PyI._indent_strings(indent)
-        doc_str = RST2PyI._doc_str_gen(doc, in_str, return_plus_in_str)
+        first_line_indent = RST2PyI._indent(doc[0])  # Some lines, e.g. note lines, are not/incorrectly indented.
+        for i in range(1, len(doc)):
+            line_indent = RST2PyI._indent(doc[i])
+            indent_diff = first_line_indent - line_indent
+            if indent_diff > 0:
+                doc[i] = indent_diff * ' ' + doc[i]
+        in_str, doc_in_str = RST2PyI._indent_strings(indent, extra_doc_indent)
+        doc_str = RST2PyI._doc_str_gen(doc, in_str, doc_in_str)
         if isinstance(new, str):
-            self._add_def(method_def, new, doc_str, in_str, return_plus_in_str)
+            self._add_def(method_def, new, doc_str, in_str)
         else:
             for new_def in new:
-                self._add_def(method_def, '@overload\n' + new_def.lstrip(), doc_str, in_str, return_plus_in_str)
+                self._add_def(method_def, '@overload\n' + new_def.lstrip(), doc_str, in_str)
 
     @staticmethod
-    def _indent_strings(indent: int):
+    def _indent(s: str) -> int:
+        return len(s) - len(s.lstrip())
+
+    @staticmethod
+    def _indent_strings(indent: int, extra_doc_indent: int):
         in_str = indent * ' '
-        return_plus_in_str = '\n' + in_str
-        return in_str, return_plus_in_str
+        doc_in_str = in_str + extra_doc_indent * ' '
+        return in_str, doc_in_str
 
     @staticmethod
-    def _doc_str_gen(doc: List[str], in_str: str, return_plus_in_str: str):
+    def _doc_str_gen(doc: List[str], in_str: str, doc_in_str: str):
+        return_plus_doc_in_str = '\n' + doc_in_str
         return f'''
 {in_str}   """
-{in_str}{return_plus_in_str.join(doc).rstrip()}
+{doc_in_str}{return_plus_doc_in_str.join(doc).rstrip()}
 {in_str}   """
 '''
 
-    def _add_def(self, method_def: bool, new: str, doc_str: str, in_str: str, return_plus_in_str: str) -> None:
+    def _add_def(self, method_def: bool, new: str, doc_str: str, in_str: str) -> None:
         where = self.pyi.classes[-1].defs if method_def else self.pyi.imports_vars_defs
+        return_plus_in_str = '\n' + in_str
         where.append(f'{in_str}{return_plus_in_str.join(new.rstrip().splitlines())}:{doc_str}')
 
     def _extras(self, *, description: str, indent: int, end: str, first_line: str) -> List[str]:
@@ -339,27 +360,17 @@ __version__ = "3.3.0"  # Version set by https://github.com/hlovatt/tag2ver
     ) -> None:
         """
         Add var definitions to current typeshed.
-        Class-imports_vars (`class_var=True`) and instance-imports_vars (`class_var=False`)
-        are added to the typeshed at `self.last_class_index + 1`,
-        i.e. inside the class definition immediately after the class_def_and_doc comment.
-        Module imports_vars (`class_var=None`) are added at `self.last_class_index`,
-        i.e. immediately before the class definition.
-        If there is no class definition yet, i.e. `self.last_class_index` is 0,
-        then the imports_vars are added to the end of `self.pyi`.
-        `self.last_class_index` is typically set by `self.class_` or `self.class_from_file`.
-        if `class_var=None` and `self.last_class_index` is not 0
-        then `self.last_class_index` is incremented by this method,
-        so that `self.last_class_index` still points to the class.
-        However subsequent calls to this method with `class_var` either true or false (not module var)
-        insert the declarations immediately below the class declaration,
-        i.e. in reverse order!
+        Class-vars (`class_var=True`) and instance-vars (`class_var=False`)
+        are added to the top of the current class`,
+        i.e. inside the class definition after the class doc-comment and import statements.
+        Module-vars (`class_var=None`) are added at at the top of the file,
+        i.e. after the file doc-comment.
 
         :param type_: the type of the var as a string (defaults to `int`)
         :param class_var: true (default) if class variables are to be added,
         false for instance, and `None` for file-scope variables.
         :param end: the end of field parsing string prefix (defaults to `self._definitions`) and
         `None` means parse to end of file.
-        :return: `None`
         """
         type_hint = f'ClassVar[{type_}]' if class_var else type_
         typeshed_modified = False

@@ -12,6 +12,7 @@ from framebuf import framebuf
 from lcd160cr import lcd160cr
 from machine import machine
 from micropython import micropython
+from network import network
 from pyb import pyb
 from rst2pyi import RST2PyI
 from uarray import uarray
@@ -19,7 +20,7 @@ from uarray import uarray
 __author__ = rst.__author__
 __copyright_ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "3.3.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "3.4.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def main() -> None:
@@ -32,6 +33,7 @@ Usage (from `PyBoardTypeshedGenerator`'s directory) one of:
     assert len(argv) > 1, 'No destination directory given.' + usage
     assert len(argv) == 2, 'Extra argument(s) given.' + usage
     shed = RST2PyI(output_dir=argv[1])
+    network(shed)
     micropython(shed)
     framebuf(shed)
     btree(shed)
