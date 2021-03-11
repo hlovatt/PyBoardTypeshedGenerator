@@ -9,7 +9,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "3.5.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "3.6.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def ubluetooth(shed: RST2PyI) -> None:
@@ -20,7 +20,6 @@ def ubluetooth(shed: RST2PyI) -> None:
 from typing import overload, Any, Union, Tuple, Callable, Optional, TypeVar
 
 from uarray import array
-
 
 {repdefs.AnyReadableBuf}
 {repdefs.AnyWritableBuf}

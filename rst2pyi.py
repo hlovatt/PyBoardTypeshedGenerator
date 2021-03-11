@@ -13,7 +13,7 @@ from rst import RST
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "3.5.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "3.6.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 @dataclass
@@ -72,11 +72,6 @@ class RST2PyI:
             return True
         return False
 
-    def consume(self, *, end: str):
-        for line in self.rst:
-            if self.is_last(line, end):
-                break
-
     def consume_line(self, test: Callable[[str], bool], *, msg: str, and_preceding_lines: bool = False) -> None:
         if and_preceding_lines:
             for line in self.rst:
@@ -87,6 +82,9 @@ class RST2PyI:
         else:
             line = next(self.rst)
             assert test(line), f'Expected {msg}, got `{line}`!'
+
+    def consume(self, *, end: str) -> None:
+        self.consume_line(lambda l: self.is_last(l, end), msg=end, and_preceding_lines=True)
 
     def consume_title_line(self, *, and_preceding_lines: bool = False) -> None:
         self.consume_line(
@@ -146,7 +144,7 @@ Descriptions taken from
 __author__ = "{rst.__author__}"
 __copyright__ = "{rst.__copyright__}"
 __license__ = "{rst.__license__}"
-__version__ = "3.5.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "3.6.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 {post_doc}
