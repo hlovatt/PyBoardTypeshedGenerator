@@ -9,7 +9,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "3.6.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "3.6.1"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def ucryptolib(shed: RST2PyI) -> None:
@@ -23,14 +23,13 @@ from uarray import array
 
 {repdefs.AnyReadableBuf}
 {repdefs.AnyWritableBuf}
-
-# noinspection PyPep8Naming
 ''',
         end=r'Classes'
     )
     shed.consume(end='.. class:: aes')
     rst_name = r'.. classmethod:: __init__(key, mode, [IV])'
     shed.class_(
+        pre_str='# noinspection PyPep8Naming',
         name='aes',
         end=rst_name,
     )

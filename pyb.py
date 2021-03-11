@@ -10,7 +10,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "3.6.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "3.6.1"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def pyb(shed: RST2PyI) -> None:
@@ -126,7 +126,10 @@ def _usb_hid(this: str, shed: RST2PyI) -> str:
 
 
 def _uart(this: str, shed: RST2PyI) -> str:
-    shed.class_from_file(old=this)
+    shed.class_from_file(
+        pre_str='# noinspection PyShadowingNames',
+        old=this,
+    )
     shed.def_(
         old=r'.. class:: pyb.UART(bus, ...)',
         new=['''
@@ -290,6 +293,7 @@ def pulse_width_percent(self, value: Union[int, float], /) -> None
 
 def _timer(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(
+        pre_str='# noinspection PyShadowingNames',
         old=this,
         post_doc='''
 
@@ -1774,6 +1778,7 @@ def regs() -> None
 
 def _dac(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(
+        pre_str='# noinspection PyShadowingNames',
         old=this,
         post_doc='''
       
@@ -2279,6 +2284,7 @@ def mount(
         indent=0
     )
     shed.def_(
+        pre_str='# noinspection PyShadowingNames',
         old=(
             '.. function:: usb_mode('
             '[modestr], port=-1, vid=0xf055, pid=-1, msc=(), hid=pyb.hid_mouse, high_speed=False)'

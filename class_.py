@@ -16,11 +16,12 @@ import rst
 __author__ = rst.__author__
 __copyright_ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "3.6.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "3.6.1"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 @dataclass
 class Class:
+    pre_str: str = ''
     class_def: Optional[str] = None
     doc: List[str] = field(default_factory=list)
     imports_vars: List[str] = field(default_factory=list)
@@ -28,9 +29,11 @@ class Class:
 
     def __str__(self) -> str:
         assert self.class_def, f'No class definition string! {self.class_def}'
+        if self.pre_str and not self.pre_str.endswith('\n'):
+            self.pre_str += '\n'  # Terminate with a return non-empty, non-terminated pre strings.
         new_line = '\n'  # Can't have `\` inside `{}` in an f-string!
         return f'''
-{self.class_def}
+{self.pre_str}{self.class_def}
    """
 {new_line.join(self.doc)}
    """

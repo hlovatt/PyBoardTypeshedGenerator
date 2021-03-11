@@ -13,7 +13,7 @@ from rst import RST
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "3.6.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "3.6.1"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 @dataclass
@@ -144,7 +144,7 @@ Descriptions taken from
 __author__ = "{rst.__author__}"
 __copyright__ = "{rst.__copyright__}"
 __license__ = "{rst.__license__}"
-__version__ = "3.6.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "3.6.1"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 {post_doc}
@@ -154,6 +154,7 @@ __version__ = "3.6.0"  # Version set by https://github.com/hlovatt/tag2ver
     def class_from_file(
             self,
             *,
+            pre_str: str = '',
             old: str,
             super_class: Optional[str] = None,
             post_doc: str = '',
@@ -187,14 +188,14 @@ __version__ = "3.6.0"  # Version set by https://github.com/hlovatt/tag2ver
             doc.append(f'   {doc_line}')
         else:
             assert doc, 'Did not find any class documentation.'
-        new_class = Class()
+        new_class = Class(pre_str=pre_str)
         self.pyi.classes.append(new_class)
         new_class.class_def = f'class {class_name}:'
         new_class.doc = doc
         new_class.imports_vars.append(post_doc)
 
-    def class_(self, *, name: str, end: str) -> None:
-        new_class = Class()
+    def class_(self, *, pre_str: str = '', name: str, end: str) -> None:
+        new_class = Class(pre_str=pre_str)
         self.pyi.classes.append(new_class)
         new_class.class_def = f'class {name}:'
         new_class.doc = self.extra_notes(end=end, first_line='')
@@ -202,6 +203,7 @@ __version__ = "3.6.0"  # Version set by https://github.com/hlovatt/tag2ver
     def defs_with_common_description(
             self,
             *,
+            pre_str: str = '',
             cmd: str,
             old2new: Dict[str, Union[str, List[str]]],
             end: Optional[str] = None,
@@ -239,13 +241,14 @@ __version__ = "3.6.0"  # Version set by https://github.com/hlovatt/tag2ver
             else:
                 assert doc, 'No description found!'
             for new in new_defs:
-                self._add_def_or_defs(method_def, doc, indent, extra_doc_indent, new)
+                self._add_def_or_defs(method_def, doc, indent, extra_doc_indent, new, pre_str)
         else:
             assert False, 'No defs found!'
 
     def def_(
             self,
             *,
+            pre_str: str = '',
             old: str,
             new: Union[str, List[str]],
             extra_docs: List[str] = (),
@@ -281,7 +284,7 @@ __version__ = "3.6.0"  # Version set by https://github.com/hlovatt/tag2ver
         assert doc, f'No documentation found before `{end}` reached!'
         if extra_docs:
             doc.extend(extra_docs)
-        self._add_def_or_defs(method_def, doc, indent, extra_doc_indent, new)
+        self._add_def_or_defs(method_def, doc, indent, extra_doc_indent, new, pre_str)
 
     def _add_def_or_defs(
             self,
@@ -289,7 +292,8 @@ __version__ = "3.6.0"  # Version set by https://github.com/hlovatt/tag2ver
             doc: List[str],
             indent: int,
             extra_doc_indent: int,
-            new: Union[List[str], str]
+            new: Union[List[str], str],
+            pre_str: str = '',
     ):
         if not doc[0].strip():
             del doc[0]  # Some class_def_and_doc comments have a leading blank line!
@@ -302,10 +306,10 @@ __version__ = "3.6.0"  # Version set by https://github.com/hlovatt/tag2ver
         in_str, doc_in_str = RST2PyI._indent_strings(indent, extra_doc_indent)
         doc_str = RST2PyI._doc_str_gen(doc, in_str, doc_in_str)
         if isinstance(new, str):
-            self._add_def(method_def, new, doc_str, in_str)
+            self._add_def(method_def, new, doc_str, in_str, pre_str)
         else:
             for new_def in new:
-                self._add_def(method_def, '@overload\n' + new_def.lstrip(), doc_str, in_str)
+                self._add_def(method_def, '@overload\n' + new_def.lstrip(), doc_str, in_str, pre_str)
 
     @staticmethod
     def _indent(s: str) -> int:
@@ -326,9 +330,13 @@ __version__ = "3.6.0"  # Version set by https://github.com/hlovatt/tag2ver
 {in_str}   """
 '''
 
-    def _add_def(self, method_def: bool, new: str, doc_str: str, in_str: str) -> None:
+    def _add_def(self, method_def: bool, new: str, doc_str: str, in_str: str, pre_str: str) -> None:
         where = self.pyi.classes[-1].defs if method_def else self.pyi.imports_vars_defs
+        if pre_str:
+            if not pre_str.endswith('\n'):
+                pre_str += '\n'  # Terminate a non-empty, non-terminated pre-string with a return.
         return_plus_in_str = '\n' + in_str
+        in_str = pre_str + in_str  # Every def has the pre-string prepended.
         where.append(f'{in_str}{return_plus_in_str.join(new.rstrip().splitlines())}:{doc_str}')
 
     def _extras(self, *, description: str, indent: int, end: str, first_line: str) -> List[str]:

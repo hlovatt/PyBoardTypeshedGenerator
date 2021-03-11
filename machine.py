@@ -9,7 +9,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "3.6.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "3.6.1"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def machine(shed: RST2PyI) -> None:
@@ -31,7 +31,7 @@ def machine(shed: RST2PyI) -> None:
 
 def _sd_card(this: str, shed: RST2PyI) -> None:
     con = '.. class:: SDCard(slot=1, width=1, cd=None, wp=None, sck=None, miso=None, mosi=None, cs=None, freq=20000000)'
-    shed.class_from_file(old=this, super_class='_AbstractBlockDev', end=con)
+    shed.class_from_file(pre_str='# noinspection PyShadowingNames', old=this, super_class='_AbstractBlockDev', end=con)
     shed.def_(
         old=con,
         new='''
@@ -156,7 +156,7 @@ def _rtc(_: str, shed: RST2PyI) -> str:
 
 
 def _i2c(this: str, shed: RST2PyI) -> str:
-    shed.class_from_file(old=this, )
+    shed.class_from_file(pre_str='# noinspection PyShadowingNames', old=this, )
     shed.def_(
         old=r'.. class:: I2C(id, *, scl, sda, freq=400000)',
         new=[
