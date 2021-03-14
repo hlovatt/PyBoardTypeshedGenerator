@@ -10,7 +10,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "3.6.1"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "3.7.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def pyb(shed: RST2PyI) -> None:
@@ -839,6 +839,7 @@ def reg(self) -> int
 
 def _pin(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(
+        pre_str='# noinspection PyNestedDecorators',
         old=this,
         post_doc='''
    

@@ -18,11 +18,12 @@ from rst2pyi import RST2PyI
 from uarray import uarray
 from ubluetooth import ubluetooth
 from ucryptolib import ucryptolib
+from uctypes import uctypes
 
 __author__ = rst.__author__
 __copyright_ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "3.6.1"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "3.7.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def main() -> None:
@@ -35,6 +36,7 @@ Usage (from `PyBoardTypeshedGenerator`'s directory) one of:
     assert len(argv) > 1, 'No destination directory given.' + usage
     assert len(argv) == 2, 'Extra argument(s) given.' + usage
     shed = RST2PyI(output_dir=argv[1])
+    uctypes(shed)
     ucryptolib(shed)
     ubluetooth(shed)
     network(shed)

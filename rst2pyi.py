@@ -3,7 +3,7 @@ Routines to converts `.rst` documentation files into `.pyi` typeshed stub interf
 """
 
 from dataclasses import dataclass
-from typing import List, Set, Dict, Callable, Optional, Union, ClassVar
+from typing import List, Set, Dict, Callable, Optional, Union, ClassVar, Final
 
 import rst
 from class_ import Class
@@ -13,7 +13,7 @@ from rst import RST
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "3.6.1"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "3.7.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 @dataclass
@@ -37,7 +37,7 @@ class RST2PyI:
 
     output_dir: str
     _name: Optional[str] = None
-    _input_base_url: str = r'https://raw.githubusercontent.com/micropython/micropython/master/docs/library/'
+    _input_base_url: Final[str] = r'https://raw.githubusercontent.com/micropython/micropython/master/docs/library/'
     pyi: PYI = PYI()
     rst: RST = RST()
 
@@ -46,6 +46,7 @@ class RST2PyI:
     _synopsis: ClassVar[str] = '   :synopsis: '
     _definitions: ClassVar[str] = '.. '
     _note: ClassVar[str] = '.. note::'
+    _data_dec_str: ClassVar[str] = ' data:: '
 
     def is_last(self, line: str, end: Optional[str]) -> bool:
         """
@@ -144,7 +145,7 @@ Descriptions taken from
 __author__ = "{rst.__author__}"
 __copyright__ = "{rst.__copyright__}"
 __license__ = "{rst.__license__}"
-__version__ = "3.6.1"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "3.7.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 {post_doc}
@@ -208,7 +209,7 @@ __version__ = "3.6.1"  # Version set by https://github.com/hlovatt/tag2ver
             old2new: Dict[str, Union[str, List[str]]],
             end: Optional[str] = None,
             indent: int = 3,
-            extra_doc_indent = 0,
+            extra_doc_indent: int = 0,
     ) -> None:
         method_def = indent != 0
         for line in self.rst:
@@ -339,7 +340,7 @@ __version__ = "3.6.1"  # Version set by https://github.com/hlovatt/tag2ver
         in_str = pre_str + in_str  # Every def has the pre-string prepended.
         where.append(f'{in_str}{return_plus_in_str.join(new.rstrip().splitlines())}:{doc_str}')
 
-    def _extras(self, *, description: str, indent: int, end: str, first_line: str) -> List[str]:
+    def _extras(self, *, description: str, indent: int, end: Optional[str], first_line: str) -> List[str]:
         extras = [first_line]
         indent_str = indent * ' '
         for extra_line in self.rst:
@@ -351,10 +352,10 @@ __version__ = "3.6.1"  # Version set by https://github.com/hlovatt/tag2ver
         assert extras, f'No extra {description} before `{end}` reached!'
         return extras
 
-    def extra_docs(self, *, indent: int = 3, end: str = _definitions) -> List[str]:
+    def extra_docs(self, *, indent: int = 3, end: Optional[str] = _definitions) -> List[str]:
         return self._extras(description='documentation', indent=indent, end=end, first_line='')
 
-    def extra_notes(self, *, end: str, first_line: str = '   \n') -> List[str]:
+    def extra_notes(self, *, end: Optional[str], first_line: str = '   \n') -> List[str]:
         return self._extras(description='notes', indent=3, end=end, first_line=first_line)
 
     def vars(
@@ -381,25 +382,27 @@ __version__ = "3.6.1"  # Version set by https://github.com/hlovatt/tag2ver
         type_hint = f'ClassVar[{type_}]' if class_var else type_
         typeshed_modified = False
         for line in self.rst:
-            if self.is_last(line, end):
-                assert typeshed_modified, 'No constants found!'
-                break
             if not line.strip():  # Ignore blank lines.
                 continue
-            if not line.startswith('.. data:: '):
-                self.rst.push_line(line)
+            if (typeshed_modified or not line.startswith('.. data:: ')) and self.is_last(line, end):
                 assert typeshed_modified, 'No constants found!'
-                return
+                break
             names = []
+            last_dot = line.rfind('.')
+            name_indent = ' ' * max(len(RST2PyI._data_dec_str) + 2, last_dot)
             self.rst.push_line(line)  # Push back the current line so that it is re-read into `name_line`.
             for name_line in self.rst:
-                last_dot = name_line.rfind('.')
-                if last_dot < 0:
-                    break  # End of _name list (all the names contain a dot).
-                trial_name = name_line[last_dot + 1:]
-                data_dec_str = ' data:: '
-                name = trial_name[len(data_dec_str):] if trial_name.startswith(data_dec_str) else trial_name
-                names.append(name)
+                if name_line.startswith(name_indent):
+                    name = name_line[len(name_indent):]
+                else:
+                    last_dot = name_line.rfind('.')
+                    if last_dot < 0:
+                        break  # End of vars listed in file (all the names contain a dot or are indented as first name).
+                    temp_name = name_line[last_dot + 1:]
+                    name = temp_name \
+                        if last_dot >= 0 and not temp_name.startswith(RST2PyI._data_dec_str) \
+                        else temp_name[len(RST2PyI._data_dec_str):]
+                names.append(name.rstrip())
             else:
                 assert names, 'No constant names found!'
             description_lines = []
@@ -414,16 +417,16 @@ __version__ = "3.6.1"  # Version set by https://github.com/hlovatt/tag2ver
             description = "\n".join(description_lines).rstrip()
             indent_str = '' if class_var is None else '   '
             declarations = []
-            for const_name in names:
+            for var_name in names:
                 declarations.append(f'''
-{indent_str}{const_name}: {type_hint} = ...
+{indent_str}{var_name}: {type_hint} = ...
 {indent_str}"""
 {description}
 {indent_str}"""
 '''
                                     )
             dec_str = '\n'.join(declarations) + '\n\n'
-            if class_var is None:  # Module level no classes yet.
+            if class_var is None:  # Module level.
                 self.pyi.imports_vars_defs.append(dec_str)
             else:
                 self.pyi.classes[-1].imports_vars.append(dec_str)
