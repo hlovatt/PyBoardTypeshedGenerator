@@ -11,7 +11,7 @@ from class_ import Class
 __author__ = rst.__author__
 __copyright_ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "3.7.1"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "3.7.2"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 @dataclass

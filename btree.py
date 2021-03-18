@@ -9,13 +9,13 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "3.7.1"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "3.7.2"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def btree(shed: RST2PyI) -> None:
     module_post_doc = f'''
 from abc import abstractmethod
-from typing import Protocol, Iterable, AnyStr, runtime_checkable, Optional, TypeVar
+from typing import Protocol, Iterable, AnyStr, runtime_checkable, Optional, TypeVar, Tuple
 
 from uarray import array
 
