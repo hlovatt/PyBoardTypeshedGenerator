@@ -9,13 +9,13 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "3.7.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "3.7.1"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def btree(shed: RST2PyI) -> None:
     module_post_doc = f'''
 from abc import abstractmethod
-from typing import Protocol, Iterator, AnyStr, runtime_checkable, Optional, TypeVar
+from typing import Protocol, Iterable, AnyStr, runtime_checkable, Optional, TypeVar
 
 from uarray import array
 
@@ -77,12 +77,12 @@ class _IOBase(Protocol):
     shed.def_(
         old=r'.. function:: open(stream, *, flags=0, pagesize=0, cachesize=0, minkeypage=0)',
         new='''
-def open(stream: _IOBase, /, *, flags: int = 0, pagesize: int = 0, cachesize: int = 0, minkeypage: int = 0) -> btree
+def open(stream: _IOBase, /, *, flags: int = 0, pagesize: int = 0, cachesize: int = 0, minkeypage: int = 0) -> "_BTree"
 ''',
         indent=0
     )
     close_str = '.. method:: btree.close()'
-    shed.class_(name='btree', end=close_str)
+    shed.class_(name='_BTree', end=close_str)
     shed.def_(
         old=close_str,
         new='def close(self) -> None',
@@ -98,9 +98,9 @@ def open(stream: _IOBase, /, *, flags: int = 0, pagesize: int = 0, cachesize: in
             '__getitem__(key)':
                 'def __getitem__(self, key: bytes, /) -> bytes',
             'get(key, default=None, /)':
-                'def get(self, key: bytes, default: Optional[bytes] = None, /) -> bytes',
+                'def get(self, key: bytes, default: Optional[bytes] = None, /) -> Optional[bytes]',
             '__setitem__(key, val)':
-                'def __setitem__(self, key: bytes, val: bytes, /) -> bytes',
+                'def __setitem__(self, key: bytes, val: bytes, /) -> None',
             '__delitem__(key)':
                 'def __delitem__(self, key: bytes, /) -> None',
             '__contains__(key)':
@@ -110,22 +110,41 @@ def open(stream: _IOBase, /, *, flags: int = 0, pagesize: int = 0, cachesize: in
     )
     shed.def_(
         old=iter_str,
-        new='def __iter__(self) -> Iterator[bytes]',
+        new='def __iter__(self) -> Iterable[bytes]',
     )
     shed.defs_with_common_description(
         cmd='.. method:: btree.',
         old2new={
             'keys([start_key, [end_key, [flags]]])':
                 '''
-def keys(self, start_key: Optional[bytes] = None, end_key: Optional[bytes] = None, flags: int = 0, /) -> bytes
+def keys(
+   self, 
+   start_key: Optional[bytes] = None, 
+   end_key: Optional[bytes] = None, 
+   flags: 
+   int = 0, 
+   /
+) -> Iterable[bytes]
 ''',
             'values([start_key, [end_key, [flags]]])':
                 '''
-def values(self, start_key: Optional[bytes] = None, end_key: Optional[bytes] = None, flags: int = 0, /) -> bytes
+def values(
+   self, 
+   start_key: Optional[bytes] = None, 
+   end_key: Optional[bytes] = None, 
+   flags: int = 0, 
+   /
+) -> Iterable[bytes]
 ''',
             'items([start_key, [end_key, [flags]]])':
                 '''
-def items(self, start_key: Optional[bytes] = None, end_key: Optional[bytes] = None, flags: int = 0, /) -> bytes
+def items(
+   self, 
+   start_key: Optional[bytes] = None, 
+   end_key: Optional[bytes] = None, 
+   flags: int = 0, 
+   /
+) -> Iterable[Tuple[bytes, bytes]]
 ''',
         },
         end='Constants'
