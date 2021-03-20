@@ -10,7 +10,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "3.7.2"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "3.7.3"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def pyb(shed: RST2PyI) -> None:
@@ -38,47 +38,50 @@ def pyb(shed: RST2PyI) -> None:
 
 
 def _usb_vcp(this: str, shed: RST2PyI) -> None:
-    shed.class_from_file(old=this)
+    shed.class_from_file(
+        pre_str='# noinspection PyPep8Naming',
+        old=this,
+    )
     shed.def_(
-        old=r'.. class:: pyb.USB_VCP(id=0)',
+        old=R'.. class:: pyb.USB_VCP(id=0)',
         new='def __init__(self, id: int = 0, /)',
     )
     shed.def_(
-        old=r'.. method:: USB_VCP.init(*, flow=-1)',
+        old=R'.. method:: USB_VCP.init(*, flow=-1)',
         new='def init(self, *, flow: int = - 1) -> int',
     )
     shed.def_(
-        old=r'.. method:: USB_VCP.setinterrupt(chr)',
+        old=R'.. method:: USB_VCP.setinterrupt(chr)',
         new='def setinterrupt(self, chr: int, /) -> None',
     )
     shed.def_(
-        old=r'.. method:: USB_VCP.isconnected()',
+        old=R'.. method:: USB_VCP.isconnected()',
         new='def isconnected(self) -> bool',
     )
     shed.def_(
-        old=r'.. method:: USB_VCP.any()',
+        old=R'.. method:: USB_VCP.any()',
         new='def any(self) -> bool',
     )
     shed.def_(
-        old=r'.. method:: USB_VCP.close()',
+        old=R'.. method:: USB_VCP.close()',
         new='def close(self) -> None',
     )
     shed.def_(
-        old=r'.. method:: USB_VCP.read([nbytes])',
+        old=R'.. method:: USB_VCP.read([nbytes])',
         new=[
             'def read(self) -> Optional[bytes]',
             'def read(self, nbytes, /) -> Optional[bytes]'
         ],
     )
     shed.def_(
-        old=r'.. method:: USB_VCP.readinto(buf, [maxlen])',
+        old=R'.. method:: USB_VCP.readinto(buf, [maxlen])',
         new=[
             'def readinto(self, buf: _AnyWritableBuf, /) -> Optional[int]',
             'def readinto(self, buf: _AnyWritableBuf, maxlen: int, /) -> Optional[int]'
         ],
     )
     shed.def_(
-        old=r'.. method:: USB_VCP.readline()',
+        old=R'.. method:: USB_VCP.readline()',
         new='def readline(self) -> Optional[bytes]',
     )
     shed.def_(
@@ -104,7 +107,10 @@ def _usb_vcp(this: str, shed: RST2PyI) -> None:
 
 
 def _usb_hid(this: str, shed: RST2PyI) -> str:
-    shed.class_from_file(old=this)
+    shed.class_from_file(
+        pre_str='# noinspection PyPep8Naming',
+        old=this,
+    )
     shed.def_(
         old=r'.. class:: pyb.USB_HID()',
         new='def __init__(self)',
@@ -293,7 +299,7 @@ def pulse_width_percent(self, value: Union[int, float], /) -> None
 
 def _timer(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(
-        pre_str='# noinspection PyShadowingNames',
+        pre_str='# noinspection PyShadowingNames,PyUnresolvedReferences',
         old=this,
         post_doc='''
 
@@ -985,6 +991,7 @@ def _pin(this: str, shed: RST2PyI) -> str:
    """
    
    
+   # noinspection PyPep8Naming
    class board:
       """
       The board pins (board nomenclature, e.g. `X1`) that are bought out onto pads on a PyBoard.
@@ -1236,6 +1243,7 @@ def _pin(this: str, shed: RST2PyI) -> str:
       """
    
    
+   # noinspection PyPep8Naming
    class cpu:
       """
       The CPU pins (CPU nomenclature, e.g. `A0`) that are bought out onto pads on a PyBoard.

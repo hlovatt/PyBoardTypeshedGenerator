@@ -8,7 +8,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "3.7.2"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "3.7.3"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def uarray(shed: RST2PyI) -> None:
@@ -20,22 +20,26 @@ from typing import overload, Sequence, Any, MutableSequence, Generic, Text, Type
 
 _T = TypeVar("_T", int, float, Text)
 ''',
-        end=r'|see_cpython_module| :mod:`python:array`.'
+        end=R'|see_cpython_module| :mod:`python:array`.'
     )
-    shed.class_(name='array(MutableSequence[_T], Generic[_T])', end='Classes')
+    shed.class_(
+        pre_str='# noinspection PyPep8Naming',
+        name='array(MutableSequence[_T], Generic[_T])',
+        end='Classes',
+    )
     shed.def_(
-        old=r'.. class:: array(typecode, [iterable])',
+        old=R'.. class:: array(typecode, [iterable])',
         new=[
             'def __init__(self, typecode: str, /)',
             'def __init__(self, typecode: str, iterable: Sequence[Any], /)'
         ],
     )
     shed.def_(
-        old=r'    .. method:: append(val)',
+        old=R'    .. method:: append(val)',
         new='def append(self, val: Any, /) -> None',
     )
     shed.def_(
-        old=r'    .. method:: extend(iterable)',
+        old=R'    .. method:: extend(iterable)',
         new='def extend(self, iterable: Sequence[Any], /) -> None',
     )
     # Methods not present in `rst` file.

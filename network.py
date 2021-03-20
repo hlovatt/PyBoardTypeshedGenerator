@@ -8,7 +8,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "3.7.2"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "3.7.3"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def network(shed: RST2PyI) -> None:
@@ -24,7 +24,7 @@ def network(shed: RST2PyI) -> None:
 
 def _network_func(shed: RST2PyI) -> None:
     shed.def_(
-        old=r'.. function:: phy_mode([mode])',
+        old=R'.. function:: phy_mode([mode])',
         new=[
             'def phy_mode(self) -> int',
             'def phy_mode(self, mode: int, /) -> None'
@@ -36,22 +36,22 @@ def _network_func(shed: RST2PyI) -> None:
 def _wiznet5k(this: str, shed: RST2PyI) -> None:
     shed.class_from_file(old=this)
     shed.def_(
-        old=r'.. class:: WIZNET5K(spi, pin_cs, pin_rst)',
+        old=R'.. class:: WIZNET5K(spi, pin_cs, pin_rst)',
         new='def __init__(self, spi: pyb.SPI, pin_cs: pyb.Pin, pin_rst: pyb.Pin, /)',
     )
     shed.def_(
-        old=r'.. method:: WIZNET5K.isconnected()',
+        old=R'.. method:: WIZNET5K.isconnected()',
         new='def isconnected(self) -> bool',
     )
     shed.def_(
-        old=r'.. method:: WIZNET5K.ifconfig([(ip, subnet, gateway, dns)])',
+        old=R'.. method:: WIZNET5K.ifconfig([(ip, subnet, gateway, dns)])',
         new=[
             'def ifconfig(self) -> Tuple[str, str, str, str]',
             'def ifconfig(self, config: Tuple[str, str, str, str], /)',
         ],
     )
     shed.def_(
-        old=r'.. method:: WIZNET5K.regs()',
+        old=R'.. method:: WIZNET5K.regs()',
         new='def regs(self) -> Any',
         end='Network functions',
     )
@@ -60,11 +60,11 @@ def _wiznet5k(this: str, shed: RST2PyI) -> None:
 def _cc3k(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(old=this)
     shed.def_(
-        old=r'.. class:: CC3K(spi, pin_cs, pin_en, pin_irq)',
+        old=R'.. class:: CC3K(spi, pin_cs, pin_en, pin_irq)',
         new='def __init__(self, spi: pyb.SPI, pin_cs: pyb.Pin, pin_en: pyb.Pin, pin_irq: pyb.Pin, /)',
     )
     shed.def_(
-        old=r'.. method:: CC3K.connect(ssid, key=None, *, security=WPA2, bssid=None)',
+        old=R'.. method:: CC3K.connect(ssid, key=None, *, security=WPA2, bssid=None)',
         new='''
 def connect(
    self, 
@@ -78,23 +78,23 @@ def connect(
 ''',
     )
     shed.def_(
-        old=r'.. method:: CC3K.disconnect()',
+        old=R'.. method:: CC3K.disconnect()',
         new='def disconnect(self) -> None',
     )
     shed.def_(
-        old=r'.. method:: CC3K.isconnected()',
+        old=R'.. method:: CC3K.isconnected()',
         new='def isconnected(self) -> bool',
     )
     shed.def_(
-        old=r'.. method:: CC3K.ifconfig()',
+        old=R'.. method:: CC3K.ifconfig()',
         new='def ifconfig(self) -> Tuple[str, str, str, str, str, str, str]',
     )
     shed.def_(
-        old=r'.. method:: CC3K.patch_version()',
+        old=R'.. method:: CC3K.patch_version()',
         new='def patch_version(self) -> str',
     )
     shed.def_(
-        old=r".. method:: CC3K.patch_program('pgm')",
+        old=R".. method:: CC3K.patch_program('pgm')",
         new='def patch_program(self, cmd: str, /) -> None',
     )
     end = 'network.WIZNET5K.rst'
@@ -108,7 +108,7 @@ def connect(
 def _wlanwipy(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(old=this)
     shed.def_(
-        old=r'.. class:: WLANWiPy(id=0, ...)',
+        old=R'.. class:: WLANWiPy(id=0, ...)',
         new=['''
 def __init__(self, id: int = 0, /)
 ''', '''
@@ -117,11 +117,11 @@ def __init__(self, id: int, /, *, mode: int, ssid: str, auth: Tuple[str, str], c
              ],
     )
     shed.def_(
-        old=r'.. method:: WLANWiPy.init(mode, *, ssid, auth, channel, antenna)',
+        old=R'.. method:: WLANWiPy.init(mode, *, ssid, auth, channel, antenna)',
         new='def init(self, mode: int, /, *, ssid: str, auth: Tuple[str, str], channel: int, antenna: int) -> bool',
     )
     shed.def_(
-        old=r'.. method:: WLANWiPy.connect(ssid, *, auth=None, bssid=None, timeout=None)',
+        old=R'.. method:: WLANWiPy.connect(ssid, *, auth=None, bssid=None, timeout=None)',
         new='''
 def connect(
    self, 
@@ -135,68 +135,68 @@ def connect(
 ''',
     )
     shed.def_(
-        old=r'.. method:: WLANWiPy.scan()',
+        old=R'.. method:: WLANWiPy.scan()',
         new='def scan(self) -> Tuple[str, bytes, int, Optional[int], int]',
     )
     shed.def_(
-        old=r'.. method:: WLANWiPy.disconnect()',
+        old=R'.. method:: WLANWiPy.disconnect()',
         new='def disconnect(self) -> None',
     )
     shed.def_(
-        old=r'.. method:: WLANWiPy.isconnected()',
+        old=R'.. method:: WLANWiPy.isconnected()',
         new='def isconnected(self) -> bool',
     )
     shed.def_(
-        old=r".. method:: WLANWiPy.ifconfig(if_id=0, config=['dhcp' or configtuple])",
+        old=R".. method:: WLANWiPy.ifconfig(if_id=0, config=['dhcp' or configtuple])",
         new=[
             'def ifconfig(self, if_id: int = 0, /) -> Tuple[str, str, str, str]',
             'def ifconfig(self, if_id: int = 0, /, *, config: Union[str, Tuple[str, str, str, str]]) -> None',
         ],
     )
     shed.def_(
-        old=r'.. method:: WLANWiPy.mode([mode])',
+        old=R'.. method:: WLANWiPy.mode([mode])',
         new=[
             'def mode(self) -> int',
             'def mode(self, mode: int, /) -> None'
         ],
     )
     shed.def_(
-        old=r'.. method:: WLANWiPy.ssid([ssid])',
+        old=R'.. method:: WLANWiPy.ssid([ssid])',
         new=[
             'def ssid(self) -> str',
             'def ssid(self, ssid: str, /) -> None'
         ],
     )
     shed.def_(
-        old=r'.. method:: WLANWiPy.auth([auth])',
+        old=R'.. method:: WLANWiPy.auth([auth])',
         new=[
             'def auth(self) -> int',
             'def auth(self, auth: int, /) -> None'
         ],
     )
     shed.def_(
-        old=r'.. method:: WLANWiPy.channel([channel])',
+        old=R'.. method:: WLANWiPy.channel([channel])',
         new=[
             'def channel(self) -> int',
             'def channel(self, channel: int, /) -> None'
         ],
     )
     shed.def_(
-        old=r'.. method:: WLANWiPy.antenna([antenna])',
+        old=R'.. method:: WLANWiPy.antenna([antenna])',
         new=[
             'def antenna(self) -> int',
             'def antenna(self, antenna: int, /) -> None'
         ],
     )
     shed.def_(
-        old=r'.. method:: WLANWiPy.mac([mac_addr])',
+        old=R'.. method:: WLANWiPy.mac([mac_addr])',
         new=[
             'def mac(self) -> bytes',
             'def mac(self, mac: bytes, /) -> None'
         ],
     )
     shed.def_(
-        old=r'.. method:: WLANWiPy.irq(*, handler, wake)',
+        old=R'.. method:: WLANWiPy.irq(*, handler, wake)',
         new='def irq(self, *, handler: Callable[[], None], wake: int) -> Any',
     )
     end = 'network.CC3K.rst'
@@ -210,19 +210,19 @@ def connect(
 def _wlan(shed: RST2PyI) -> str:
     shed.class_from_file(old='network.WLAN.rst')
     shed.def_(
-        old=r'.. class:: WLAN(interface_id)',
+        old=R'.. class:: WLAN(interface_id)',
         new='def __init__(self, interface_id: int, /)',
         extra_doc_indent=3,
     )
     shed.def_(
-        old=r'.. method:: WLAN.active([is_active])',
+        old=R'.. method:: WLAN.active([is_active])',
         new=[
             'def active(self, /) -> bool',
             'def active(self, is_active: bool, /) -> None',
         ],
     )
     shed.def_(
-        old=r'.. method:: WLAN.connect(ssid=None, password=None, *, bssid=None)',
+        old=R'.. method:: WLAN.connect(ssid=None, password=None, *, bssid=None)',
         new='''
 def connect(
    self, 
@@ -235,26 +235,26 @@ def connect(
 ''',
     )
     shed.def_(
-        old=r'.. method:: WLAN.disconnect()',
+        old=R'.. method:: WLAN.disconnect()',
         new='def disconnect(self) -> None',
     )
     shed.def_(
-        old=r'.. method:: WLAN.scan()',
+        old=R'.. method:: WLAN.scan()',
         new='def scan(self) -> Tuple[str, bytes, int, int, int]',
     )
     shed.def_(
-        old=r'.. method:: WLAN.status([param])',
+        old=R'.. method:: WLAN.status([param])',
         new=[
             'def status(self) -> int',
             'def status(self, param: str, /) -> int'
         ],
     )
     shed.def_(
-        old=r'.. method:: WLAN.isconnected()',
+        old=R'.. method:: WLAN.isconnected()',
         new='def isconnected(self) -> bool',
     )
     shed.def_(
-        old=r'.. method:: WLAN.ifconfig([(ip, subnet, gateway, dns)])',
+        old=R'.. method:: WLAN.ifconfig([(ip, subnet, gateway, dns)])',
         new=[
             'def ifconfig(self) -> Tuple[str, str, str, str]',
             'def ifconfig(self, ip_mask_gateway_dns: Tuple[str, str, str, str], /) -> None',
@@ -300,9 +300,9 @@ MODE_11G: int = ...
 MODE_11N: int = ...
 """IEEE 802.11n"""
 ''',
-        end=r'Common network adapter interface',
+        end=R'Common network adapter interface',
     )
-    constructor = r'.. class:: AbstractNIC(id=None, ...)'
+    constructor = R'.. class:: AbstractNIC(id=None, ...)'
     shed.class_(name='AbstractNIC(Protocol)', end=constructor)
     shed.def_(
         old=constructor,
@@ -313,7 +313,7 @@ def __init__(self, id: Any = None, /, *args: Any, **kwargs: Any)
         extra_doc_indent=3
     )
     shed.def_(
-        old=r'.. method:: AbstractNIC.active([is_active])',
+        old=R'.. method:: AbstractNIC.active([is_active])',
         new=['''
 @abstractmethod
 def active(self, /) -> bool
@@ -324,7 +324,7 @@ def active(self, is_active: bool, /) -> None
              ],
     )
     shed.def_(
-        old=r'.. method:: AbstractNIC.connect([service_id, key=None, *, ...])',
+        old=R'.. method:: AbstractNIC.connect([service_id, key=None, *, ...])',
         new=['''
 @abstractmethod
 def connect(self, key: Optional[str] = None, /, **kwargs: Any) -> None
@@ -335,28 +335,28 @@ def connect(self, service_id: Any, key: Optional[str] = None, /, **kwargs: Any) 
              ]
     )
     shed.def_(
-        old=r'.. method:: AbstractNIC.disconnect()',
+        old=R'.. method:: AbstractNIC.disconnect()',
         new='''
 @abstractmethod
 def disconnect(self) -> None
 '''
     )
     shed.def_(
-        old=r'.. method:: AbstractNIC.isconnected()',
+        old=R'.. method:: AbstractNIC.isconnected()',
         new='''
 @abstractmethod
 def isconnected(self) -> bool
 '''
     )
     shed.def_(
-        old=r'.. method:: AbstractNIC.scan(*, ...)',
+        old=R'.. method:: AbstractNIC.scan(*, ...)',
         new='''
 @abstractmethod
 def scan(self, **kwargs: Any) -> List[Tuple[str, ...]]
 '''
     )
     shed.def_(
-        old=r'.. method:: AbstractNIC.status([param])',
+        old=R'.. method:: AbstractNIC.status([param])',
         new=['''
 @abstractmethod
 def status(self) -> Any
@@ -367,7 +367,7 @@ def status(self, param: str, /) -> Any
              ]
     )
     shed.def_(
-        old=r'.. method:: AbstractNIC.ifconfig([(ip, subnet, gateway, dns)])',
+        old=R'.. method:: AbstractNIC.ifconfig([(ip, subnet, gateway, dns)])',
         new=['''
 @abstractmethod
 def ifconfig(self) -> Tuple[str, str, str, str]

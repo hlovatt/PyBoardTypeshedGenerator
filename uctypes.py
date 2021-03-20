@@ -9,7 +9,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "3.7.2"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "3.7.3"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def uctypes(shed: RST2PyI) -> None:
@@ -27,6 +27,7 @@ from uarray import array
     )
     rst_name = r'.. class:: struct(addr, descriptor, layout_type=NATIVE, /)'
     shed.class_(
+        pre_str='# noinspection PyPep8Naming',
         name='struct',
         end=rst_name,
     )
@@ -39,14 +40,14 @@ from uarray import array
         '_pointer_to_an_aggregate_property = Tuple[int, "_property"]',
         '_bitfield_property = int',
         ('_property = Union['
-            '_scalar_property, '
-            '_recursive_property, '
-            '_array_property, '
-            '_array_of_aggregate_property, '
-            '_pointer_to_a_primitive_property, '
-            '_pointer_to_an_aggregate_property, '
-            '_bitfield_property'
-        ']'),
+         '_scalar_property, '
+         '_recursive_property, '
+         '_array_property, '
+         '_array_of_aggregate_property, '
+         '_pointer_to_a_primitive_property, '
+         '_pointer_to_an_aggregate_property, '
+         '_bitfield_property'
+         ']'),
         '_descriptor = Tuple[str, _property]',
     ]
     shed.def_(
