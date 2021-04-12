@@ -9,7 +9,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "3.7.4"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "4.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def lcd160cr(shed: RST2PyI) -> None:
@@ -17,7 +17,7 @@ def lcd160cr(shed: RST2PyI) -> None:
         name='lcd160cr',
         old='control of LCD160CR display',
         post_doc=f'''
-from typing import overload, Any, Union, Tuple, TypeVar, Optional
+from typing import overload, Any, Union, Tuple, TypeVar, Optional, Final
 
 from pyb import Pin, I2C, SPI
 from uarray import array
@@ -34,7 +34,7 @@ from uarray import array
     shed.consume_blank_line()
     shed.class_(name='LCD160CR', end='Constructors')
     shed.def_(
-        old=r'.. class:: LCD160CR(connect=None, *, pwr=None, i2c=None, spi=None, i2c_addr=98)',
+        old=R'.. class:: LCD160CR(connect=None, *, pwr=None, i2c=None, spi=None, i2c_addr=98)',
         new=[
             'def __init__(self, connect: str, /)',
             'def __init__(self, *, pwr: Pin, i2c: I2C, spi: SPI, i2c_addr: int = 98)'
@@ -54,7 +54,14 @@ def rgb(r: int, g: int, b: int, /) -> int
 def clip_line(data: Any, w: int, h: int, /) -> int
 ''',
     )
-    shed.vars(class_var=False, end='Setup commands')
+    shed.vars(
+        old=[
+            '.. data:: LCD160CR.w',
+            '.. data:: LCD160CR.h'
+        ],
+        class_var=False,
+        end='Setup commands'
+    )
     shed.def_(
         old='.. method:: LCD160CR.set_power(on)',
         new='def set_power(self, on: bool, /) -> None',
@@ -259,6 +266,23 @@ def set_scroll_win(
         old='.. method:: LCD160CR.reset()',
         new='def reset(self) -> None',
     )
-    shed.vars(type_='str', class_var=None, end='.. data:: lcd160cr.STARTUP_DECO_NONE')
-    shed.vars(class_var=None, end=None)
+    shed.vars(
+        old=[
+            '.. data:: lcd160cr.PORTRAIT',
+            'lcd160cr.LANDSCAPE',
+            'lcd160cr.PORTRAIT_UPSIDEDOWN',
+            'lcd160cr.LANDSCAPE_UPSIDEDOWN',
+        ],
+        type_='str',
+        class_var=None
+    )
+    shed.vars(
+        old=[
+            '.. data:: lcd160cr.STARTUP_DECO_NONE',
+            'lcd160cr.STARTUP_DECO_MLOGO',
+            'lcd160cr.STARTUP_DECO_INFO',
+        ],
+        class_var=None,
+        end=None
+    )
     shed.write()

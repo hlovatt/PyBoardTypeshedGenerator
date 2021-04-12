@@ -9,7 +9,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "3.7.4"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "4.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def machine(shed: RST2PyI) -> None:
@@ -63,7 +63,7 @@ def __init__(
 def _sd(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(old=this,)
     shed.def_(
-        old=r'.. class:: SD(id,... )',
+        old=R'.. class:: SD(id,... )',
         new='''
 def __init__(
    self, 
@@ -83,7 +83,7 @@ def init(
     )
     nxt = 'machine.SDCard.rst'
     shed.def_(
-        old=r'.. method:: SD.deinit()',
+        old=R'.. method:: SD.deinit()',
         new='def deinit(self) -> None',
         end=nxt,
     )
@@ -108,7 +108,7 @@ def _wdt(this: str, shed: RST2PyI) -> str:
 def _timer(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(old=this,)
     shed.def_(
-        old=r'.. class:: Timer(id, ...)',
+        old=R'.. class:: Timer(id, ...)',
         new=['''
 def __init__(
    self, 
@@ -128,7 +128,7 @@ def __init__(
 '''],
     )
     shed.def_(
-        old=r'.. method:: Timer.init(*, mode=Timer.PERIODIC, period=-1, callback=None)',
+        old=R'.. method:: Timer.init(*, mode=Timer.PERIODIC, period=-1, callback=None)',
         new='''
 def init(
    self, 
@@ -140,87 +140,170 @@ def init(
 ''',
     )
     shed.def_(
-        old=r'.. method:: Timer.deinit()',
+        old=R'.. method:: Timer.deinit()',
         new='def deinit(self) -> None',
     )
     nxt = 'machine.WDT.rst'
-    shed.vars(class_var=True, end=nxt)
+    shed.vars(
+        old=[
+            '.. data:: Timer.ONE_SHOT',
+            'Timer.PERIODIC',
+        ],
+        end=nxt
+    )
     return nxt
 
 
-def _rtc(_: str, shed: RST2PyI) -> str:
-    shed.pyi.imports_vars_defs.append('RTC: Type[pyb.RTC] = pyb.RTC\n')
+def _rtc(this: str, shed: RST2PyI) -> str:
+    disclaimer = ['The documentation for RTC is in a poor state; better to experiment and use `dir`!']
+    shed.class_from_file(old=this, extra_docs=disclaimer, end='Constructors')
+    shed.def_(
+        old='.. class:: RTC(id=0, ...)',
+        new=[
+            'def __init__(self, id: int = 0, /, *, datetime: Tuple[int, int, int])',
+            'def __init__(self, id: int = 0, /, *, datetime: Tuple[int, int, int, int])',
+            'def __init__(self, id: int = 0, /, *, datetime: Tuple[int, int, int, int, int])',
+            'def __init__(self, id: int = 0, /, *, datetime: Tuple[int, int, int, int, int, int])',
+            'def __init__(self, id: int = 0, /, *, datetime: Tuple[int, int, int, int, int, int, int])',
+            'def __init__(self, id: int = 0, /, *, datetime: Tuple[int, int, int, int, int, int, int, int])',
+        ],
+        extra_docs=disclaimer,
+        end='Methods',
+    )
+    shed.def_(
+        old='.. method:: RTC.init(datetime)',
+        new=[
+            'def init(self) -> None',
+            'def init(self, datetime: Tuple[int, int, int], /) -> None',
+            'def init(self, datetime: Tuple[int, int, int, int], /) -> None',
+            'def init(self, datetime: Tuple[int, int, int, int, int], /) -> None',
+            'def init(self, datetime: Tuple[int, int, int, int, int, int], /) -> None',
+            'def init(self, datetime: Tuple[int, int, int, int, int, int, int], /) -> None',
+            'def init(self, datetime: Tuple[int, int, int, int, int, int, int, int], /) -> None',
+        ],
+        extra_docs=disclaimer,
+    )
+    shed.def_(
+        old='.. method:: RTC.now()',
+        new='def now(self) -> Tuple[int, int, int, int, int, int, int, int]',
+        extra_docs=disclaimer,
+    )
+    shed.def_(
+        old='.. method:: RTC.deinit()',
+        new='def deinit(self) -> None',
+        extra_docs=disclaimer,
+    )
+    shed.def_(
+        old='.. method:: RTC.alarm(id, time, *, repeat=False)',
+        new=[
+            'def alarm(self, id: int, time: int, /, *, repeat: bool = False) -> None',
+            'def alarm(self, id: int, time: Tuple[int, int, int], /) -> None',
+            'def alarm(self, id: int, time: Tuple[int, int, int, int], /) -> None',
+            'def alarm(self, id: int, time: Tuple[int, int, int, int, int], /) -> None',
+            'def alarm(self, id: int, time: Tuple[int, int, int, int, int, int], /) -> None',
+            'def alarm(self, id: int, time: Tuple[int, int, int, int, int, int, int], /) -> None',
+            'def alarm(self, id: int, time: Tuple[int, int, int, int, int, int, int, int], /) -> None',
+        ],
+        extra_docs=disclaimer,
+    )
+    shed.def_(
+        old='.. method:: RTC.alarm_left(alarm_id=0)',
+        new='def alarm_left(self, alarm_id: int = 0, /) -> int',
+        extra_docs=disclaimer,
+    )
+    shed.def_(
+        old='.. method:: RTC.cancel(alarm_id=0)',
+        new='def cancel(self, alarm_id: int = 0, /) -> None',
+        extra_docs=disclaimer,
+    )
+    shed.def_(
+        old='.. method:: RTC.irq(*, trigger, handler=None, wake=machine.IDLE)',
+        new='''
+def irq(
+   self, 
+   /, 
+   *, 
+   trigger: int, 
+   handler: Optional[Callable[["RTC"], None]] = None, 
+   wake: int = IDLE
+) -> None
+''',
+    )
     nxt = 'machine.Timer.rst'
-    shed.consume(end=nxt)
+    shed.vars(
+        old='.. data:: RTC.ALARM0',
+        extra_docs=disclaimer,
+        end=nxt,
+    )
     return nxt
 
 
 def _i2c(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(pre_str='# noinspection PyShadowingNames', old=this, )
     shed.def_(
-        old=r'.. class:: I2C(id, *, scl, sda, freq=400000)',
+        old=R'.. class:: I2C(id, *, scl, sda, freq=400000)',
         new=[
             'def __init__(self, id: int, /, *, freq: int = 400_000)',
             'def __init__(self, id: int, /, *, scl: Pin, sda: Pin, freq: int = 400_000)',
         ],
     )
     shed.def_(
-        old=r'.. method:: I2C.init(scl, sda, *, freq=400000)',
+        old=R'.. method:: I2C.init(scl, sda, *, freq=400000)',
         new=[
             'def init(self, *, freq: int = 400_000) -> None',
             'def init(self, *, scl: Pin, sda: Pin, freq: int = 400_000) -> None',
         ],
     )
     shed.def_(
-        old=r'.. method:: I2C.deinit()',
+        old=R'.. method:: I2C.deinit()',
         new='def deinit(self) -> None',
     )
     primitive_docs_start = 'Primitive I2C operations'
     shed.def_(
-        old=r'.. method:: I2C.scan()',
+        old=R'.. method:: I2C.scan()',
         new='def scan(self) -> List[int]',
         end=primitive_docs_start
     )
     primitive_docs = shed.extra_docs()
     shed.def_(
-        old=r'.. method:: I2C.start()',
+        old=R'.. method:: I2C.start()',
         new='def start(self) -> None',
         extra_docs=primitive_docs
     )
     shed.def_(
-        old=r'.. method:: I2C.stop()',
+        old=R'.. method:: I2C.stop()',
         new='def stop(self) -> None',
         extra_docs=primitive_docs
     )
     shed.def_(
-        old=r'.. method:: I2C.readinto(buf, nack=True, /)',
+        old=R'.. method:: I2C.readinto(buf, nack=True, /)',
         new='def readinto(self, buf: _AnyWritableBuf, nack: bool = True, /) -> None',
         extra_docs=primitive_docs
     )
     shed.def_(
-        old=r'.. method:: I2C.write(buf)',
+        old=R'.. method:: I2C.write(buf)',
         new='def write(self, buf: _AnyReadableBuf, /) -> int',
         extra_docs=primitive_docs,
         end='Standard bus operations',
     )
     standard_docs = shed.extra_docs()
     shed.def_(
-        old=r'.. method:: I2C.readfrom(addr, nbytes, stop=True, /)',
+        old=R'.. method:: I2C.readfrom(addr, nbytes, stop=True, /)',
         new='def readfrom(self, addr: int, nbytes: int, stop: bool = True, /) -> bytes',
         extra_docs=standard_docs
     )
     shed.def_(
-        old=r'.. method:: I2C.readfrom_into(addr, buf, stop=True, /)',
+        old=R'.. method:: I2C.readfrom_into(addr, buf, stop=True, /)',
         new='def readfrom_into(self, addr: int, buf: _AnyWritableBuf, stop: bool = True, /) -> None',
         extra_docs=standard_docs
     )
     shed.def_(
-        old=r'.. method:: I2C.writeto(addr, buf, stop=True, /)',
-        new='def writeto(self, addr: int, buf: _AnyWritableBuf, stop: bool = True, /) -> int',
+        old=R'.. method:: I2C.writeto(addr, buf, stop=True, /)',
+        new='def writeto(self, addr: int, buf: _AnyReadableBuf, stop: bool = True, /) -> int',
         extra_docs=standard_docs
     )
     shed.def_(
-        old=r'.. method:: I2C.writevto(addr, vector, stop=True, /)',
+        old=R'.. method:: I2C.writevto(addr, vector, stop=True, /)',
         new='''
 def writevto(
    self, 
@@ -235,12 +318,12 @@ def writevto(
     )
     memory_docs = shed.extra_docs()
     shed.def_(
-        old=r'.. method:: I2C.readfrom_mem(addr, memaddr, nbytes, *, addrsize=8)',
+        old=R'.. method:: I2C.readfrom_mem(addr, memaddr, nbytes, *, addrsize=8)',
         new='def readfrom_mem(self, addr: int, memaddr: int, nbytes: int, /, *, addrsize: int = 8) -> bytes',
         extra_docs=memory_docs
     )
     shed.def_(
-        old=r'.. method:: I2C.readfrom_mem_into(addr, memaddr, buf, *, addrsize=8)',
+        old=R'.. method:: I2C.readfrom_mem_into(addr, memaddr, buf, *, addrsize=8)',
         new='''
 def readfrom_mem_into(
    self, 
@@ -256,7 +339,7 @@ def readfrom_mem_into(
     )
     rtc = 'machine.RTC.rst'
     shed.def_(
-        old=r'.. method:: I2C.writeto_mem(addr, memaddr, buf, *, addrsize=8',
+        old=R'.. method:: I2C.writeto_mem(addr, memaddr, buf, *, addrsize=8',
         new='def writeto_mem(self, addr: int, memaddr: int, buf: _AnyReadableBuf, /, *, addrsize: int = 8) -> None',
         extra_docs=memory_docs,
         end=rtc
@@ -302,8 +385,8 @@ def __init__(
     )
     shed.def_(
         old=(
-            r'.. method:: SPI.init(baudrate=1000000, *, polarity=0, phase=0, bits=8, '
-            r'firstbit=SPI.MSB, sck=None, mosi=None, miso=None, pins=(SCK, MOSI, MISO))'
+            R'.. method:: SPI.init(baudrate=1000000, *, polarity=0, phase=0, bits=8, '
+            R'firstbit=SPI.MSB, sck=None, mosi=None, miso=None, pins=(SCK, MOSI, MISO))'
         ),
         new=['''
 def init(
@@ -332,34 +415,185 @@ def init(
 '''],
     )
     shed.def_(
-        old=r'.. method:: SPI.deinit()',
+        old=R'.. method:: SPI.deinit()',
         new='def deinit(self) -> None',
     )
     shed.def_(
-        old=r'.. method:: SPI.read(nbytes, write=0x00)',
+        old=R'.. method:: SPI.read(nbytes, write=0x00)',
         new='def read(self, nbytes: int, write: int = 0x00, /) -> bytes',
     )
     shed.def_(
-        old=r'.. method:: SPI.readinto(buf, write=0x00)',
+        old=R'.. method:: SPI.readinto(buf, write=0x00)',
         new='def readinto(self, buf: _AnyWritableBuf, write: int = 0x00, /) -> Optional[int]',
     )
     shed.def_(
-        old=r'.. method:: SPI.write(buf)',
+        old=R'.. method:: SPI.write(buf)',
         new='def write(self, buf: _AnyReadableBuf, /) -> Optional[int]',
     )
     shed.def_(
-        old=r'.. method:: SPI.write_readinto(write_buf, read_buf)',
+        old=R'.. method:: SPI.write_readinto(write_buf, read_buf)',
         new='def write_readinto(self, write_buf: _AnyReadableBuf, read_buf: _AnyWritableBuf, /) -> Optional[int]',
     )
+    shed.vars(old='.. data:: SPI.MASTER')
+    shed.vars(old='.. data:: SPI.MSB')
     nxt = 'machine.I2C.rst'
-    shed.vars(end=nxt)
+    shed.vars(old='.. data:: SPI.LSB', end=nxt)
     return nxt
 
 
-def _uart(_: str, shed: RST2PyI) -> str:
-    shed.pyi.imports_vars_defs.append('UART: Type[pyb.UART] = pyb.UART\n')
+def _uart(this: str, shed: RST2PyI) -> str:
+    shed.class_from_file(old=this, end='Constructors')
+    shed.def_(
+        old='.. class:: UART(id, ...)',
+        new=[
+            '''
+def __init__(
+   self,
+   id: Union[int, str],
+   baudrate: int = 9600, 
+   bits: int = 8, 
+   parity: Optional[int] = None, 
+   stop: int = 1, 
+   /, 
+   *, 
+   tx: Optional[Pin] = None,
+   rx: Optional[Pin] = None,
+   txbuf: Optional[int] = None,
+   rxbuf: Optional[int] = None,
+   timeout: Optional[int] = None,
+   timeout_char: Optional[int] = None,
+   invert: Optional[int] = None,
+)
+''',
+            '''
+def __init__(
+   self,
+   id: Union[int, str],
+   baudrate: int = 9600, 
+   bits: int = 8, 
+   parity: Optional[int] = None, 
+   stop: int = 1, 
+   /, 
+   *, 
+   pins: Optional[Tuple[Pin, Pin]] = None,
+)
+''',
+            '''
+def __init__(
+   self,
+   id: Union[int, str],
+   baudrate: int = 9600, 
+   bits: int = 8, 
+   parity: Optional[int] = None, 
+   stop: int = 1, 
+   /, 
+   *, 
+   pins: Optional[Tuple[Pin, Pin, Pin, Pin]] = None,
+)
+''',
+        ],
+        end='Methods',
+    )
+    shed.def_(
+        old='.. method:: UART.init(baudrate=9600, bits=8, parity=None, stop=1, *, ...)',
+        new=[
+            '''
+def init(
+   self,
+   baudrate: int = 9600, 
+   bits: int = 8, 
+   parity: Optional[int] = None, 
+   stop: int = 1, 
+   /, 
+   *, 
+   tx: Optional[Pin] = None,
+   rx: Optional[Pin] = None,
+   txbuf: Optional[int] = None,
+   rxbuf: Optional[int] = None,
+   timeout: Optional[int] = None,
+   timeout_char: Optional[int] = None,
+   invert: Optional[int] = None,
+) -> None
+''',
+            '''
+def init(
+   self,
+   baudrate: int = 9600, 
+   bits: int = 8, 
+   parity: Optional[int] = None, 
+   stop: int = 1, 
+   /, 
+   *, 
+   pins: Optional[Tuple[Pin, Pin]] = None,
+) -> None
+''',
+            '''
+def init(
+   self,
+   baudrate: int = 9600, 
+   bits: int = 8, 
+   parity: Optional[int] = None, 
+   stop: int = 1, 
+   /, 
+   *, 
+   pins: Optional[Tuple[Pin, Pin, Pin, Pin]] = None,
+) -> None
+''',
+        ],
+    )
+    shed.def_(
+        old='.. method:: UART.deinit()',
+        new='def deinit(self) -> None',
+    )
+    shed.def_(
+        old='.. method:: UART.any()',
+        new='def any(self) -> int',
+    )
+    shed.def_(
+        old='.. method:: UART.read([nbytes])',
+        new=[
+            'def read(self) -> Optional[bytes]',
+            'def read(self, nbytes: int, /) -> Optional[bytes]',
+        ]
+    )
+    shed.def_(
+        old='.. method:: UART.readinto(buf[, nbytes])',
+        new=[
+            'def readinto(self, buf: _AnyWritableBuf, /) -> Optional[int]',
+            'def readinto(self, buf: _AnyWritableBuf, nbytes: int, /) -> Optional[int]',
+        ]
+    )
+    shed.def_(
+        old='.. method:: UART.readline()',
+        new='def readline(self) -> Optional[bytes]',
+    )
+    shed.def_(
+        old='.. method:: UART.write(buf)',
+        new='def write(self, buf: _AnyReadableBuf, /) -> Optional[int]',
+    )
+    shed.def_(
+        old='.. method:: UART.sendbreak()',
+        new='def sendbreak(self) -> None',
+    )
+    shed.def_(
+        old='.. method:: UART.irq(trigger, priority=1, handler=None, wake=machine.IDLE)',
+        new='''
+def irq(
+   self, 
+   trigger: int, 
+   priority: int = 1, 
+   handler: Optional[Callable[["UART"], None]] = None, 
+   wake: int = IDLE, 
+   /
+) -> Any
+''',
+        end='Constants',
+    )
     nxt = 'machine.SPI.rst'
-    shed.consume(end=nxt)
+    shed.vars(
+        old='.. data:: UART.RX_ANY',
+        end=nxt,
+    )
     return nxt
 
 
@@ -383,42 +617,44 @@ def _signal(this: str, shed: RST2PyI) -> str:
     shed.defs_with_common_description(
         cmd='.. class:: ',
         old2new={
-            r'Signal(pin_obj, invert=False)':
+            R'Signal(pin_obj, invert=False)':
                 '''
 @overload
 def __init__(self, pin_obj: Pin, invert: bool = False, /)
 ''',
-            r'Signal(pin_arguments..., *, invert=False)':
+            R'Signal(pin_arguments..., *, invert=False)':
                 '''
 @overload
 def __init__(
    self, 
    id: Union[Pin, str], 
    /, 
-   mode: int = Pin.IN, 
-   pull: int = Pin.PULL_NONE, 
-   af: Union[str, int] = -1, 
+   mode: int = -1, 
+   pull: int = -1, 
    *, 
-   invert: bool = False
+   value: Any = None,
+   drive: Optional[int] = None,
+   alt: Optional[int] = None,
+   invert: bool = False,
 )
 ''',
         },
         end='Methods',
     )
     shed.def_(
-        old=r'.. method:: Signal.value([x])',
+        old=R'.. method:: Signal.value([x])',
         new=[
             'def value(self) -> int',
-            'def value(self, x: int) -> None'
+            'def value(self, x: Any, /) -> None'
         ],
     )
     shed.def_(
-        old=r'.. method:: Signal.on()',
+        old=R'.. method:: Signal.on()',
         new='def on(self) -> None',
     )
     nxt = 'machine.ADC.rst'
     shed.def_(
-        old=r'.. method:: Signal.off()',
+        old=R'.. method:: Signal.off()',
         new='def off(self) -> None',
         end=nxt
     )
@@ -426,9 +662,146 @@ def __init__(
 
 
 def _pin(shed: RST2PyI) -> str:
-    shed.pyi.imports_vars_defs.append('Pin: Type[pyb.Pin] = pyb.Pin\n')
+    shed.class_from_file(
+        old='machine.Pin.rst',
+        end='Constructors',
+    )
+    shed.def_(
+        old='.. class:: Pin(id, mode=-1, pull=-1, *, value, drive, alt)',
+        new='''
+def __init__(
+   self, 
+   id: Any, 
+   /,
+   mode: int = -1, 
+   pull: int = -1, 
+   *,
+   value: Any = None,
+   drive: Optional[int] = None,
+   alt: Optional[int] = None
+)
+''',
+        end='Methods',
+    )
+    shed.def_(
+        old='.. method:: Pin.init(mode=-1, pull=-1, *, value, drive, alt)',
+        new='''
+def init(
+   self, 
+   mode: int = -1, 
+   pull: int = -1, 
+   *,
+   value: Any = None,
+   drive: Optional[int] = None,
+   alt: Optional[int] = None
+) -> None
+''',
+    )
+    shed.def_(
+        old='.. method:: Pin.value([x])',
+        new=[
+            'def value(self) -> int',
+            'def value(self, x: Any, /) -> None',
+        ]
+    )
+    shed.def_(
+        old='.. method:: Pin.__call__([x])',
+        new=[
+            'def __call__(self) -> int',
+            'def __call__(self, x: Any, /) -> None',
+        ]
+    )
+    shed.def_(
+        old='.. method:: Pin.on()',
+        new='def on(self) -> None'
+    )
+    shed.def_(
+        old='.. method:: Pin.off()',
+        new='def off(self) -> None'
+    )
+    shed.def_(
+        old=(
+            '.. method:: Pin.irq(handler=None, trigger=(Pin.IRQ_FALLING | Pin.IRQ_RISING), *, '
+            'priority=1, wake=None, hard=False)'
+        ),
+        new='''
+def irq(
+   self,
+   /,
+   handler: Optional[Callable[["Pin"], None]] = None, 
+   trigger: int = (IRQ_FALLING | IRQ_RISING), 
+   *, 
+   priority: int = 1, 
+   wake: Optional[int] = None, 
+   hard: bool = False,
+) -> Optional[Callable[["Pin"], None]]
+''',
+        end='The following methods are not part of the core Pin API and only implemented on certain ports.'
+    )
+    low = '.. method:: Pin.low()'
+    shed.consume(end=low)
+    shed.def_(
+        old=low,
+        new='def low(self) -> None'
+    )
+    shed.def_(
+        old='.. method:: Pin.high()',
+        new='def high(self) -> None'
+    )
+    shed.def_(
+        old='.. method:: Pin.mode([mode])',
+        new=[
+            'def mode(self) -> int',
+            'def mode(self, mode: int, /) -> None',
+        ]
+    )
+    shed.def_(
+        old='.. method:: Pin.pull([pull])',
+        new=[
+            'def pull(self) -> int',
+            'def pull(self, pull: int, /) -> None',
+        ]
+    )
+    shed.def_(
+        old='.. method:: Pin.drive([drive])',
+        new=[
+            'def dive(self) -> int',
+            'def drive(self, drive: int, /) -> None',
+        ]
+    )
+    shed.vars(
+        old=[
+            '.. data:: Pin.IN',
+            'Pin.OUT',
+            'Pin.OPEN_DRAIN',
+            'Pin.ALT',
+            'Pin.ALT_OPEN_DRAIN',
+        ],
+    )
+    shed.vars(
+        old=[
+            '.. data:: Pin.PULL_UP',
+            'Pin.PULL_DOWN',
+            'Pin.PULL_HOLD',
+        ],
+    )
+    shed.vars(
+        old=[
+            '.. data:: Pin.LOW_POWER',
+            'Pin.MED_POWER',
+            'Pin.HIGH_POWER',
+        ],
+    )
     nxt = 'machine.Signal.rst'
-    shed.consume(end=nxt)
+    shed.vars(
+        old=[
+            '.. data:: Pin.IRQ_FALLING',
+            'Pin.IRQ_RISING',
+            'Pin.IRQ_LOW_LEVEL',
+            'Pin.IRQ_HIGH_LEVEL',
+        ],
+        end=nxt,
+    )
     return nxt
 
 
@@ -436,9 +809,8 @@ def _machine(shed: RST2PyI) -> None:
     module_post_doc = f'''
 from abc import abstractmethod
 from typing import overload, Union, Tuple, TypeVar, Optional, NoReturn, List, Callable
-from typing import Type, Sequence, runtime_checkable, Protocol, ClassVar
+from typing import Sequence, runtime_checkable, Protocol, ClassVar, Any, Final
 
-import pyb
 from uarray import array
 
 
@@ -533,5 +905,32 @@ from uarray import array
         new='def rng() -> int',
         indent=0
     )
-    shed.consume(end='.. data:: machine.IDLE')
-    shed.vars(class_var=None, end='Classes')
+    idle = '.. data:: machine.IDLE'
+    shed.consume(end=idle)
+    shed.vars(
+        old=[
+            '.. data:: machine.IDLE',
+            'machine.SLEEP',
+            'machine.DEEPSLEEP',
+        ],
+        class_var=None,
+    )
+    shed.vars(
+        old=[
+            '.. data:: machine.PWRON_RESET',
+            'machine.HARD_RESET',
+            'machine.WDT_RESET',
+            'machine.DEEPSLEEP_RESET',
+            'machine.SOFT_RESET',
+        ],
+        class_var=None,
+    )
+    shed.vars(
+        old=[
+            '.. data:: machine.WLAN_WAKE',
+            'machine.PIN_WAKE',
+            'machine.RTC_WAKE',
+        ],
+        class_var=None,
+        end='Classes',
+    )

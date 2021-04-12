@@ -9,13 +9,13 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "3.7.4"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "4.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def btree(shed: RST2PyI) -> None:
     module_post_doc = f'''
 from abc import abstractmethod
-from typing import Protocol, Iterable, AnyStr, runtime_checkable, Optional, TypeVar, Tuple
+from typing import Protocol, Iterable, AnyStr, runtime_checkable, Optional, TypeVar, Tuple, Final
 
 from uarray import array
 
@@ -121,8 +121,7 @@ def keys(
    self, 
    start_key: Optional[bytes] = None, 
    end_key: Optional[bytes] = None, 
-   flags: 
-   int = 0, 
+   flags: int = 0, 
    /
 ) -> Iterable[bytes]
 ''',
@@ -150,5 +149,6 @@ def items(
         end='Constants'
     )
     shed.consume_header_line(and_preceding_lines=True)
-    shed.vars(class_var=None, end=None)
+    shed.vars(old='.. data:: INCL', class_var=None)
+    shed.vars(old='.. data:: DESC', class_var=None, end=None)
     shed.write()

@@ -8,7 +8,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "3.7.4"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "4.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def network(shed: RST2PyI) -> None:
@@ -99,7 +99,11 @@ def connect(
     )
     end = 'network.WIZNET5K.rst'
     shed.vars(
-        class_var=True,
+        old=[
+            '.. data:: CC3K.WEP',
+            '.. data:: CC3K.WPA',
+            '.. data:: CC3K.WPA2',
+        ],
         end=end,
     )
     return end
@@ -199,9 +203,25 @@ def connect(
         old=R'.. method:: WLANWiPy.irq(*, handler, wake)',
         new='def irq(self, *, handler: Callable[[], None], wake: int) -> Any',
     )
+    shed.vars(
+        old=[
+            '.. data:: WLANWiPy.STA',
+            '.. data:: WLANWiPy.AP',
+        ],
+    )
+    shed.vars(
+        old=[
+            '.. data:: WLANWiPy.WEP',
+            '.. data:: WLANWiPy.WPA',
+            '.. data:: WLANWiPy.WPA2',
+        ],
+    )
     end = 'network.CC3K.rst'
     shed.vars(
-        class_var=True,
+        old=[
+            '.. data:: WLANWiPy.INT_ANT',
+            '.. data:: WLANWiPy.EXT_ANT',
+        ],
         end=end,
     )
     return end

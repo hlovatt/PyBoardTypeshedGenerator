@@ -13,7 +13,7 @@ from rst import RST
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "3.7.4"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "4.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 @dataclass
@@ -37,7 +37,7 @@ class RST2PyI:
 
     output_dir: str
     _name: Optional[str] = None
-    _input_base_url: Final[str] = r'https://raw.githubusercontent.com/micropython/micropython/master/docs/library/'
+    _input_base_url: Final[str] = R'https://raw.githubusercontent.com/micropython/micropython/master/docs/library/'
     pyi: PYI = PYI()
     rst: RST = RST()
 
@@ -46,7 +46,7 @@ class RST2PyI:
     _synopsis: ClassVar[str] = '   :synopsis: '
     _definitions: ClassVar[str] = '.. '
     _note: ClassVar[str] = '.. note::'
-    _data_dec_str: ClassVar[str] = ' data:: '
+    _data_dec_str: ClassVar[str] = '.. data:: '
 
     def is_last(self, line: str, end: Optional[str]) -> bool:
         """
@@ -145,7 +145,7 @@ Descriptions taken from
 __author__ = "{rst.__author__}"
 __copyright__ = "{rst.__copyright__}"
 __license__ = "{rst.__license__}"
-__version__ = "3.7.4"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "4.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 {post_doc}
@@ -158,6 +158,7 @@ __version__ = "3.7.4"  # Version set by https://github.com/hlovatt/tag2ver
             pre_str: str = '',
             old: str,
             super_class: Optional[str] = None,
+            extra_docs: List[str] = (),
             post_doc: str = '',
             end: Optional[str] = None,
     ) -> None:
@@ -189,6 +190,9 @@ __version__ = "3.7.4"  # Version set by https://github.com/hlovatt/tag2ver
             doc.append(f'   {doc_line}')
         else:
             assert doc, 'Did not find any class documentation.'
+        if extra_docs:
+            new_line = '\n'  # Can't have `\n` in between `{}` in f-string.
+            doc.append(f'\n   {new_line.join(extra_docs)}')
         new_class = Class(pre_str=pre_str)
         self.pyi.classes.append(new_class)
         new_class.class_def = f'class {class_name}:'
@@ -361,76 +365,82 @@ __version__ = "3.7.4"  # Version set by https://github.com/hlovatt/tag2ver
     def vars(
             self,
             *,
+            old: Union[str, List[str]],
             type_: str = 'int',
             class_var: Optional[bool] = True,
-            end: Optional[str] = _definitions
+            final_: bool = True,
+            extra_docs: List[str] = (),
+            end: Optional[str] = _definitions,
     ) -> None:
         """
-        Add var definitions to current typeshed.
+        Add var definition(s) to current typeshed.
+        A single definition is added if `old` is `str`;
+        multiple, with the same description, if `old` is a list of `str`.
         Class-vars (`class_var=True`) and instance-vars (`class_var=False`)
         are added to the top of the current class`,
         i.e. inside the class definition after the class doc-comment and import statements.
         Module-vars (`class_var=None`) are added at at the top of the file,
         i.e. after the file doc-comment.
 
-        :param type_: the type of the var as a string (defaults to `int`)
-        :param class_var: true (default) if class variables are to be added,
-        false for instance, and `None` for file-scope variables.
+        :param old: the text string(s) in the RST file.
+        :param type_: the type of the var(s) as a string (defaults to `int`)
+        :param class_var: true (default) if class variable(s) are to be added,
+        false for instance, and `None` for file-scope.
+        :param final_: true (default) if the variable(s) are final (a class var's finality is inferred from `__init__`
+        and therefore this argument is ignored if `class_var=True` (the default)).
+        :param extra_docs: extra documentation not in `rst` file; list of strings to be appended to end of doc string.
         :param end: the end of field parsing string prefix (defaults to `self._definitions`) and
         `None` means parse to end of file.
         """
-        type_hint = f'ClassVar[{type_}]' if class_var else type_
-        typeshed_modified = False
+        old_list: List[str] = old if isinstance(old, list) else [old]
+        type_hint = f'ClassVar[{type_}]' if class_var else f'Final[{type_}]' if final_ else type_
+        indent_str = ' ' * (0 if class_var is None else 3)
         for line in self.rst:
-            if not line.strip():  # Ignore blank lines.
+            if not line.strip().startswith(RST2PyI._data_dec_str):  # Ignore lines up to declaration
                 continue
-            if (typeshed_modified or not line.startswith('.. data:: ')) and self.is_last(line, end):
-                assert typeshed_modified, 'No constants found!'
-                break
-            names = []
-            last_dot = line.rfind('.')
-            name_indent = ' ' * max(len(RST2PyI._data_dec_str) + 2, last_dot)
-            self.rst.push_line(line)  # Push back the current line so that it is re-read into `name_line`.
+            self.rst.push_line(line)  # Push the line back; it is the start of the declaration.
+            names: List[str] = []
+            old_iter = iter(old_list)
             for name_line in self.rst:
-                if name_line.startswith(name_indent):
-                    name = name_line[len(name_indent):]
-                else:
-                    last_dot = name_line.rfind('.')
-                    if last_dot < 0:
-                        break  # End of vars listed in file (all the names contain a dot or are indented as first name).
-                    temp_name = name_line[last_dot + 1:]
-                    name = temp_name \
-                        if last_dot >= 0 and not temp_name.startswith(RST2PyI._data_dec_str) \
-                        else temp_name[len(RST2PyI._data_dec_str):]
-                names.append(name.rstrip())
+                stripped_name = name_line.strip()
+                if not stripped_name:
+                    break  # There should always be a blank line following declaration(s).
+                stripped_old = next(old_iter).strip()
+                assert stripped_name == stripped_old, f'`{stripped_old}` not found, found `{stripped_name}`!'
+                full_name = stripped_name[len(RST2PyI._data_dec_str):] \
+                    if stripped_name.startswith(RST2PyI._data_dec_str) else stripped_name
+                dot_index = full_name.find('.')
+                name = full_name[dot_index + 1:] if dot_index >= 0 else full_name
+                names.append(name)
             else:
-                assert names, 'No constant names found!'
-            description_lines = []
-            for desc_line in self.rst:
-                if self.is_last(desc_line, self._definitions) or self.is_last(desc_line, end):
+                assert False, f'No description of `{old}` found!'
+            documentation: List[str] = []
+            for doc_line in self.rst:
+                if self.is_last(doc_line, end):
                     break
-                description_lines.append(desc_line)
+                documentation.append(doc_line)
             else:
-                assert description_lines, 'No description found!'
-            while not description_lines[0]:
-                del description_lines[0]  # Remove leading blank lines.
-            description = "\n".join(description_lines).rstrip()
-            indent_str = '' if class_var is None else '   '
-            declarations = []
+                assert documentation, 'No documentation found!'
+            for extra_doc in extra_docs:
+                documentation.append(f'{indent_str}{extra_doc}')
+            documentation_str = '\n'.join(documentation).strip()
+            declarations: List[str] = []
             for var_name in names:
                 declarations.append(f'''
 {indent_str}{var_name}: {type_hint} = ...
 {indent_str}"""
-{description}
+{documentation_str}
 {indent_str}"""
 '''
                                     )
-            dec_str = '\n'.join(declarations) + '\n\n'
+            declaration_str = '\n'.join(declarations) + '\n\n'
             if class_var is None:  # Module level.
-                self.pyi.imports_vars_defs.append(dec_str)
+                self.pyi.imports_vars_defs.append(declaration_str)
             else:
-                self.pyi.classes[-1].imports_vars.append(dec_str)
-            typeshed_modified = True
+                self.pyi.classes[-1].imports_vars.append(declaration_str)
+            break  # Declaration finished.
+        else:
+            assert end is None, 'No variable(s) found and end of file reached!'
 
     def preview(self) -> None:
         print(self.pyi)

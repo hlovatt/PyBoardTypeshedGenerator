@@ -9,20 +9,20 @@ Note:
 """
 
 from dataclasses import dataclass, field
-from typing import List, Optional
+from typing import List
 
 import rst
 
 __author__ = rst.__author__
 __copyright_ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "3.7.4"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "4.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 @dataclass
 class Class:
     pre_str: str = ''
-    class_def: Optional[str] = None
+    class_def: str = ''
     doc: List[str] = field(default_factory=list)
     imports_vars: List[str] = field(default_factory=list)
     defs: List[str] = field(default_factory=list)

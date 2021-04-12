@@ -9,7 +9,7 @@ import repdefs
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "3.7.4"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "4.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def framebuf(shed: RST2PyI) -> None:
@@ -17,7 +17,7 @@ def framebuf(shed: RST2PyI) -> None:
         name='framebuf',
         old='Frame buffer manipulation',
         post_doc=f'''
-from typing import TypeVar, overload
+from typing import TypeVar, overload, Final
 
 from uarray import array
 
@@ -84,5 +84,11 @@ from uarray import array
             'def blit(self, fbuf: "FrameBuffer", x: int, y: int, key: int, /) -> None'
         ],
     )
-    shed.vars(class_var=None, end=None)
+    shed.vars(old='.. data:: framebuf.MONO_VLSB', class_var=None)
+    shed.vars(old='.. data:: framebuf.MONO_HLSB', class_var=None)
+    shed.vars(old='.. data:: framebuf.MONO_HMSB', class_var=None)
+    shed.vars(old='.. data:: framebuf.RGB565', class_var=None)
+    shed.vars(old='.. data:: framebuf.GS2_HMSB', class_var=None)
+    shed.vars(old='.. data:: framebuf.GS4_HMSB', class_var=None)
+    shed.vars(old='.. data:: framebuf.GS8', class_var=None, end=None)
     shed.write()

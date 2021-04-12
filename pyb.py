@@ -10,7 +10,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "3.7.4"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "4.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def pyb(shed: RST2PyI) -> None:
@@ -85,25 +85,31 @@ def _usb_vcp(this: str, shed: RST2PyI) -> None:
         new='def readline(self) -> Optional[bytes]',
     )
     shed.def_(
-        old=r'.. method:: USB_VCP.readlines()',
+        old=R'.. method:: USB_VCP.readlines()',
         new='def readlines(self) -> Optional[List[bytes]]',
     )
     shed.def_(
-        old=r'.. method:: USB_VCP.write(buf)',
+        old=R'.. method:: USB_VCP.write(buf)',
         new='def write(self, buf: _AnyReadableBuf, /) -> int',
     )
     shed.def_(
-        old=r'.. method:: USB_VCP.recv(data, *, timeout=5000)',
+        old=R'.. method:: USB_VCP.recv(data, *, timeout=5000)',
         new=[
             'def recv(self, data: int, /, *, timeout: int = 5000) -> Optional[bytes]',
             'def recv(self, data: _AnyWritableBuf, /, *, timeout: int = 5000) -> Optional[int]'
         ],
     )
     shed.def_(
-        old=r'.. method:: USB_VCP.send(data, *, timeout=5000)',
+        old=R'.. method:: USB_VCP.send(data, *, timeout=5000)',
         new='def send(self, buf: Union[_AnyWritableBuf, bytes, int], /, *, timeout: int = 5000) -> int',
     )
-    shed.vars(end=None)
+    shed.vars(
+        old=[
+            '.. data:: USB_VCP.RTS',
+            'USB_VCP.CTS',
+        ],
+        end=None,
+    )
 
 
 def _usb_hid(this: str, shed: RST2PyI) -> str:
@@ -112,11 +118,11 @@ def _usb_hid(this: str, shed: RST2PyI) -> str:
         old=this,
     )
     shed.def_(
-        old=r'.. class:: pyb.USB_HID()',
+        old=R'.. class:: pyb.USB_HID()',
         new='def __init__(self)',
     )
     shed.def_(
-        old=r'.. method:: USB_HID.recv(data, *, timeout=5000)',
+        old=R'.. method:: USB_HID.recv(data, *, timeout=5000)',
         new=[
             'def recv(self, data: int, /, *, timeout: int = 5000) -> bytes',
             'def recv(self, data: _AnyWritableBuf, /, *, timeout: int = 5000) -> int'
@@ -124,7 +130,7 @@ def _usb_hid(this: str, shed: RST2PyI) -> str:
     )
     nxt = 'pyb.USB_VCP.rst'
     shed.def_(
-        old=r'.. method:: USB_HID.send(data)',
+        old=R'.. method:: USB_HID.send(data)',
         new='def send(self, data: Sequence[int]) -> None',
         end=nxt
     )
@@ -137,7 +143,7 @@ def _uart(this: str, shed: RST2PyI) -> str:
         old=this,
     )
     shed.def_(
-        old=r'.. class:: pyb.UART(bus, ...)',
+        old=R'.. class:: pyb.UART(bus, ...)',
         new=['''
 def __init__(
    self, 
@@ -162,8 +168,8 @@ def __init__(
     )
     shed.def_(
         old=(
-            r'.. method:: UART.init(baudrate, bits=8, parity=None, stop=1, *, '
-            r'timeout=0, flow=0, timeout_char=0, read_buf_len=64)'
+            R'.. method:: UART.init(baudrate, bits=8, parity=None, stop=1, *, '
+            R'timeout=0, flow=0, timeout_char=0, read_buf_len=64)'
         ),
         new='''
 def init(
@@ -182,48 +188,54 @@ def init(
 ''',
     )
     shed.def_(
-        old=r'.. method:: UART.deinit()',
+        old=R'.. method:: UART.deinit()',
         new='def deinit(self) -> None',
     )
     shed.def_(
-        old=r'.. method:: UART.any()',
+        old=R'.. method:: UART.any()',
         new='def any(self) -> int',
     )
     shed.def_(
-        old=r'.. method:: UART.read([nbytes])',
+        old=R'.. method:: UART.read([nbytes])',
         new=[
             'def read(self) -> Optional[bytes]',
             'def read(self, nbytes: int, /) -> Optional[bytes]'
         ],
     )
     shed.def_(
-        old=r'.. method:: UART.readchar()',
+        old=R'.. method:: UART.readchar()',
         new='def readchar(self) -> int',
     )
     shed.def_(
-        old=r'.. method:: UART.readinto(buf[, nbytes])',
+        old=R'.. method:: UART.readinto(buf[, nbytes])',
         new=[
             'def readinto(self, buf: _AnyWritableBuf, /) -> Optional[int]',
             'def readinto(self, buf: _AnyWritableBuf, nbytes: int, /) -> Optional[int]'
         ],
     )
     shed.def_(
-        old=r'.. method:: UART.readline()',
+        old=R'.. method:: UART.readline()',
         new='def readline(self) -> Optional[str]',
     )
     shed.def_(
-        old=r'.. method:: UART.write(buf)',
+        old=R'.. method:: UART.write(buf)',
         new='def write(self, buf: _AnyWritableBuf, /) -> Optional[int]',
     )
     shed.def_(
-        old=r'.. method:: UART.writechar(char)',
+        old=R'.. method:: UART.writechar(char)',
         new='def writechar(self, char: int, /) -> None',
     )
     shed.def_(
-        old=r'.. method:: UART.sendbreak()',
+        old=R'.. method:: UART.sendbreak()',
         new='def sendbreak(self) -> None',
     )
-    shed.vars(end='Flow Control')
+    shed.vars(
+        old=[
+            '.. data:: UART.RTS',
+            'UART.CTS',
+        ],
+        end='Flow Control'
+    )
     nxt = 'pyb.USB_HID.rst'
     shed.pyi.doc += shed.extra_notes(end=nxt)
     return nxt
@@ -411,7 +423,7 @@ def _timer(this: str, shed: RST2PyI) -> str:
 '''
     )
     shed.def_(
-        old=r'.. class:: pyb.Timer(id, ...)',
+        old=R'.. class:: pyb.Timer(id, ...)',
         new=['''
 def __init__(
    self, 
@@ -446,7 +458,7 @@ def __init__(
 '''],
     )
     shed.def_(
-        old=r'.. method:: Timer.init(*, freq, prescaler, period, mode=Timer.UP, div=1, callback=None, deadtime=0)',
+        old=R'.. method:: Timer.init(*, freq, prescaler, period, mode=Timer.UP, div=1, callback=None, deadtime=0)',
         new=['''
 def init(
    self, 
@@ -471,15 +483,15 @@ def init(
 '''],
     )
     shed.def_(
-        old=r'.. method:: Timer.deinit()',
+        old=R'.. method:: Timer.deinit()',
         new='def deinit(self) -> None',
     )
     shed.def_(
-        old=r'.. method:: Timer.callback(fun)',
+        old=R'.. method:: Timer.callback(fun)',
         new='def callback(self, fun: Optional[Callable[["Timer"], None]], /) -> None',
     )
     shed.def_(
-        old=r'.. method:: Timer.channel(channel, mode, ...)',
+        old=R'.. method:: Timer.channel(channel, mode, ...)',
         new=['''
 def channel(
    self, 
@@ -573,7 +585,7 @@ def channel(
     )
     timer_channel = 'class TimerChannel --- setup a channel for a timer'
     shed.def_(
-        old=r'.. method:: Timer.source_freq()',
+        old=R'.. method:: Timer.source_freq()',
         new='def source_freq(self) -> int',
         end=timer_channel,
     )
@@ -585,20 +597,20 @@ def channel(
 def _switch(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(old=this)
     shed.def_(
-        old=r'.. class:: pyb.Switch()',
+        old=R'.. class:: pyb.Switch()',
         new='def __init__(self)',
     )
     shed.def_(
-        old=r'.. method:: Switch.__call__()',
+        old=R'.. method:: Switch.__call__()',
         new='def __call__(self) -> bool',
     )
     shed.def_(
-        old=r'.. method:: Switch.value()',
+        old=R'.. method:: Switch.value()',
         new='def value(self) -> bool',
     )
     nxt = 'pyb.Timer.rst'
     shed.def_(
-        old=r'.. method:: Switch.callback(fun)',
+        old=R'.. method:: Switch.callback(fun)',
         new='def callback(self, fun: Optional[Callable[[], None]]) -> None',
         end=nxt
     )
@@ -644,7 +656,7 @@ def __init__(
 '''],
     )
     shed.def_(
-        old=r'.. method:: SPI.deinit()',
+        old=R'.. method:: SPI.deinit()',
         new='def deinit(self) -> None',
     )
     shed.def_(
@@ -701,8 +713,20 @@ def send_recv(
 ) -> _AnyWritableBuf
 ''',
     )
+    shed.vars(
+        old=[
+            '.. data:: SPI.MASTER',
+            '.. data:: SPI.SLAVE',
+        ],
+    )
     nxt = 'pyb.Switch.rst'
-    shed.vars(end=nxt)
+    shed.vars(
+        old=[
+            '.. data:: SPI.LSB',
+            '.. data:: SPI.MSB',
+        ],
+        end=nxt,
+    )
     return nxt
 
 
@@ -1571,7 +1595,15 @@ def mapper(fun: Callable[[str], "Pin"], /) -> None
         old='.. method:: Pin.pull()',
         new='def pull(self) -> int',
     )
-    shed.vars(end='class PinAF -- Pin Alternate Functions')
+    shed.vars(old='.. data:: Pin.AF_OD')
+    shed.vars(old='.. data:: Pin.AF_PP')
+    shed.vars(old='.. data:: Pin.ANALOG')
+    shed.vars(old='.. data:: Pin.IN')
+    shed.vars(old='.. data:: Pin.OUT_OD')
+    shed.vars(old='.. data:: Pin.OUT_PP')
+    shed.vars(old='.. data:: Pin.PULL_DOWN')
+    shed.vars(old='.. data:: Pin.PULL_NONE')
+    shed.vars(old='.. data:: Pin.PULL_UP', end='class PinAF -- Pin Alternate Functions')
     nxt = 'pyb.RTC.rst'
     _pin_af(end=nxt, shed=shed)
     return nxt
@@ -1780,8 +1812,10 @@ def regs() -> None
         old='.. method:: ExtInt.swint()',
         new='def swint(self) -> None',
     )
+    shed.vars(old='.. data:: ExtInt.IRQ_FALLING')
+    shed.vars(old='.. data:: ExtInt.IRQ_RISING')
     nxt = 'pyb.Flash.rst'
-    shed.vars(end=nxt)
+    shed.vars(old='.. data:: ExtInt.IRQ_RISING_FALLING', end=nxt)
     return nxt
 
 
@@ -1946,8 +1980,33 @@ def send(self, data: Union[int, _AnyWritableBuf], id: int, /, *, timeout: int = 
         old='.. method:: CAN.rxcallback(fifo, fun)',
         new='def rxcallback(self, fifo: int, fun: Callable[["CAN"], None], /) -> None',
     )
+    shed.vars(
+        old=[
+            '.. data:: CAN.NORMAL',
+            'CAN.LOOPBACK',
+            'CAN.SILENT',
+            'CAN.SILENT_LOOPBACK',
+        ],
+    )
+    shed.vars(
+        old=[
+            '.. data:: CAN.STOPPED',
+            'CAN.ERROR_ACTIVE',
+            'CAN.ERROR_WARNING',
+            'CAN.ERROR_PASSIVE',
+            'CAN.BUS_OFF',
+        ],
+    )
     nxt = 'pyb.DAC.rst'
-    shed.vars(end=nxt)
+    shed.vars(
+        old=[
+            '.. data:: CAN.LIST16',
+            'CAN.MASK16',
+            'CAN.LIST32',
+            'CAN.MASK32',
+        ],
+        end=nxt,
+    )
     return nxt
 
 
