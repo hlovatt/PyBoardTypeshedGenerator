@@ -1545,8 +1545,17 @@ def mapper(fun: Callable[[str], "Pin"], /) -> None
 '''],
     )
     shed.def_(
-        old='.. method:: Pin.init(mode, pull=Pin.PULL_NONE, af=-1)',
-        new='def init(self, mode: int = IN, pull: int = PULL_NONE, af: Union[str, int] = -1) -> None',
+        old=r'.. method:: Pin.init(mode, pull=Pin.PULL_NONE, \*, value=None, alt=-1)',
+        new='''
+def init(
+   self, 
+   mode: int = IN, 
+   pull: int = PULL_NONE, 
+   *, 
+   value: Any = None, 
+   alt: Union[str, int] = -1
+) -> None
+''',
     )
     shed.def_(
         old='.. method:: Pin.value([value])',

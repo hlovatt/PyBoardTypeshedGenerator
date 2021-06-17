@@ -46,6 +46,7 @@ class RST2PyI:
     _synopsis: ClassVar[str] = '   :synopsis: '
     _definitions: ClassVar[str] = '.. '
     _note: ClassVar[str] = '.. note::'
+    _admonition: ClassVar[str] = '.. admonition::'
     _data_dec_str: ClassVar[str] = '.. data:: '
 
     def is_last(self, line: str, end: Optional[str]) -> bool:
@@ -56,9 +57,9 @@ class RST2PyI:
 
           1. If `end` is `None` return false.
           2. White space is stripped from the start to account for indentation.
-          3. If the line starts with definition `self._note` then it is not an end line
-          (this is because the default end line is `self._definitions`,
-          but the note definition is part of the current parsing unit - its a note!).
+          3. If the line starts with definition either `self._note` or `self._admonition` then it is not an end line
+          (this is because the default end line is a definition, in particular see `self._definitions`,
+          but both the note and admonition definitions are part of the current parsing unit).
           4. `end` is compared to the start of `line` (to allow partial matches).
 
         :param line: The line to be tested.
@@ -68,7 +69,7 @@ class RST2PyI:
         if end is None:
             return False
         s_line = line.lstrip()
-        if not s_line.startswith(self._note) and s_line.startswith(end):
+        if not (s_line.startswith(self._note) or s_line.startswith(self._admonition)) and s_line.startswith(end):
             self.rst.push_line(line)
             return True
         return False
@@ -116,6 +117,7 @@ class RST2PyI:
             name: str,
             old: str,
             new: Optional[str] = None,
+            extra_doc: str = '',
             post_doc: str = '',
             end: str = _definitions
     ) -> None:
@@ -138,6 +140,8 @@ Descriptions taken from
 `{url}`, etc.
 
 {new_line.join(doc).strip()}
+
+{extra_doc}
 '''
                             )
         self.pyi.imports_vars_defs.append(f'''

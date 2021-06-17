@@ -855,8 +855,11 @@ from uarray import array
         indent=0
     )
     shed.def_(
-        old='.. function:: freq()',
-        new='def freq() -> int',
+        old='.. function:: freq([hz])',
+        new=[
+            'def freq() -> int',
+            'def freq(hz: int, /) -> None',
+        ],
         indent=0
     )
     shed.def_(
