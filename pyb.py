@@ -1511,7 +1511,16 @@ def _pin(this: str, shed: RST2PyI) -> str:
     shed.def_(
         old='.. class:: pyb.Pin(id, ...)',
         new='''
-def __init__(self, id: Union["Pin", str], /, mode: int = IN, pull: int = PULL_NONE, af: Union[str, int] = -1)
+def __init__(
+   self, 
+   id: Union["Pin", str], 
+   /, 
+   mode: int = IN, 
+   pull: int = PULL_NONE, 
+   *,
+   value: Any = None,
+   alt: Union[str, int] = -1,
+)
 ''',
     )
     shed.def_(
@@ -1553,7 +1562,7 @@ def init(
    pull: int = PULL_NONE, 
    *, 
    value: Any = None, 
-   alt: Union[str, int] = -1
+   alt: Union[str, int] = -1,
 ) -> None
 ''',
     )
@@ -2205,6 +2214,14 @@ Keyboard human interface device (hid), see `hid` argument of `usb_mode`.
 
 
 {repdefs.AnyReadableBuf}
+
+@overload
+def country() -> str:
+    """Return the current ISO 3166-1, Alpha-2, country code, eg US, GB, DE, AU."""
+
+@overload
+def country(alpha_2_code: str) -> None:
+    """Set the ISO 3166-1, Alpha-2, country code, eg US, GB, DE, AU."""
 ''',
     )
     shed.def_(

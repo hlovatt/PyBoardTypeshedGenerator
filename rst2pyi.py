@@ -117,7 +117,6 @@ class RST2PyI:
             name: str,
             old: str,
             new: Optional[str] = None,
-            extra_doc: str = '',
             post_doc: str = '',
             end: str = _definitions
     ) -> None:
@@ -140,8 +139,6 @@ Descriptions taken from
 `{url}`, etc.
 
 {new_line.join(doc).strip()}
-
-{extra_doc}
 '''
                             )
         self.pyi.imports_vars_defs.append(f'''
@@ -203,11 +200,13 @@ __version__ = "4.0.0"  # Version set by https://github.com/hlovatt/tag2ver
         new_class.doc = doc
         new_class.imports_vars.append(post_doc)
 
-    def class_(self, *, pre_str: str = '', name: str, end: str) -> None:
+    def class_(self, *, pre_str: str = '', name: str, extra_docs: List[str] = (), end: str) -> None:
         new_class = Class(pre_str=pre_str)
         self.pyi.classes.append(new_class)
         new_class.class_def = f'class {name}:'
         new_class.doc = self.extra_notes(end=end, first_line='')
+        if extra_docs:
+            new_class.doc += extra_docs
 
     def defs_with_common_description(
             self,
