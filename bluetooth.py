@@ -9,12 +9,12 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "4.0.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "5.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
-def ubluetooth(shed: RST2PyI) -> None:
+def bluetooth(shed: RST2PyI) -> None:
     shed.module(
-        name='ubluetooth',
+        name='bluetooth',
         old='Low-level Bluetooth radio functionality',
         post_doc=f'''
 from typing import overload, Any, Union, Tuple, Callable, Optional, TypeVar
@@ -140,8 +140,8 @@ def gatts_register_services(
         extra_docs=extra_docs,
     )
     shed.def_(
-        old=R'.. method:: BLE.gatts_write(value_handle, data, /)',
-        new='def gatts_write(self, value_handle: memoryview, data: bytes, /) -> None',
+        old=R'.. method:: BLE.gatts_write(value_handle, data, send_update=False, /)',
+        new='def gatts_write(self, value_handle: memoryview, data: bytes, send_update: bool = False, /) -> None',
         extra_docs=extra_docs,
     )
     shed.def_(

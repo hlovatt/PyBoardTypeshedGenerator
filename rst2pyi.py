@@ -1,7 +1,7 @@
 """
 Routines to converts `.rst` documentation files into `.pyi` typeshed stub interfaces.
 """
-
+import os
 from dataclasses import dataclass
 from typing import List, Set, Dict, Callable, Optional, Union, ClassVar, Final
 
@@ -13,7 +13,7 @@ from rst import RST
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "4.0.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "5.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 @dataclass
@@ -32,11 +32,11 @@ class RST2PyI:
       8. `write` the finished conversion to the `.pyi` file (the point of the exercise!).
       9. Repeat 2 to 8 for each module.
 
-    A simple example of using `RST2PyI` is `uarray.py` and a complicated example is `pyb.py`.
+    A simple example of using `RST2PyI` is `array.py` and a complicated example is `pyb.py`.
     """
 
-    output_dir: str
-    _name: Optional[str] = None
+    output_root_dir: str
+    _name: str = ''
     _input_base_url: Final[str] = R'https://raw.githubusercontent.com/micropython/micropython/master/docs/library/'
     pyi: PYI = PYI()
     rst: RST = RST()
@@ -80,7 +80,7 @@ class RST2PyI:
                 if test(line):
                     break
             else:
-                assert False, f'Expected {msg}, but reached end-of-file before finding it!'
+                assert False, f'Expected `{msg}`, but reached end-of-file before finding it!'
         else:
             line = next(self.rst)
             assert test(line), f'Expected {msg}, got `{line}`!'
@@ -118,7 +118,7 @@ class RST2PyI:
             old: str,
             new: Optional[str] = None,
             post_doc: str = '',
-            end: str = _definitions
+            end: str = _definitions,
     ) -> None:
         self._name = name
         url = self._input_base_url + name + '.rst'
@@ -146,7 +146,7 @@ Descriptions taken from
 __author__ = "{rst.__author__}"
 __copyright__ = "{rst.__copyright__}"
 __license__ = "{rst.__license__}"
-__version__ = "4.0.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "5.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 {post_doc}
@@ -449,13 +449,9 @@ __version__ = "4.0.0"  # Version set by https://github.com/hlovatt/tag2ver
         print(self.pyi)
 
     def write(self) -> None:
-        """
-        Write the module to the destination directory and reset `self` for next module.
-
-        :return: `None`
-        """
+        """Write the module to the output directory and reset `self` for next module."""
         assert not self.rst, f'Not all input lines processed! Remaining: {self.rst}'
-        with open(self.output_dir + self._name + '.pyi', 'w') as f:
+        with open(os.path.join(self.output_root_dir, self._name + '.pyi'), 'w') as f:
             f.write(str(self.pyi))
-        self._name = None
+        self._name = ''
         self.pyi.clear()

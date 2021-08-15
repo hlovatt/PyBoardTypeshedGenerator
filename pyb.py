@@ -7,10 +7,13 @@ import rst
 from class_ import Class
 from rst2pyi import RST2PyI
 
+# TODO Check class names not quoted, e.g. "CAN" or 'CAN', can do this from generated typesheds easily
+#      since has list of classes declared in each file.
+
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "4.0.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "5.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def pyb(shed: RST2PyI) -> None:
@@ -628,7 +631,7 @@ def __init__(
    self, 
    bus: int, 
    /, 
-   mode: int = MASTER, 
+   mode: int = CONTROLLER, 
    baudrate: int = 328125, 
    *,
    polarity: int = 1, 
@@ -643,7 +646,7 @@ def __init__(
    self, 
    bus: int, 
    /, 
-   mode: int = MASTER, 
+   mode: int = CONTROLLER, 
    *,
    prescaler: int = 256, 
    polarity: int = 1, 
@@ -667,7 +670,7 @@ def __init__(
         new=['''
 def init(
    self, 
-   mode: int = MASTER, 
+   mode: int = CONTROLLER, 
    baudrate: int = 328125, 
    *,
    polarity: int = 1, 
@@ -680,7 +683,7 @@ def init(
 ''', '''
 def init(
    self, 
-   mode: int = MASTER, 
+   mode: int = CONTROLLER, 
    *,
    prescaler: int = 256, 
    polarity: int = 1, 
@@ -715,8 +718,8 @@ def send_recv(
     )
     shed.vars(
         old=[
-            '.. data:: SPI.MASTER',
-            '.. data:: SPI.SLAVE',
+            '.. data:: SPI.CONTROLLER',
+            '.. data:: SPI.PERIPHERAL',
         ],
     )
     nxt = 'pyb.Switch.rst'

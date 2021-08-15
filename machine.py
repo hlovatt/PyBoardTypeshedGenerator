@@ -9,7 +9,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "4.0.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "5.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def machine(shed: RST2PyI) -> None:
@@ -434,7 +434,7 @@ def init(
         old=R'.. method:: SPI.write_readinto(write_buf, read_buf)',
         new='def write_readinto(self, write_buf: _AnyReadableBuf, read_buf: _AnyWritableBuf, /) -> Optional[int]',
     )
-    shed.vars(old='.. data:: SPI.MASTER')
+    shed.vars(old='.. data:: SPI.CONTROLLER')
     shed.vars(old='.. data:: SPI.MSB')
     nxt = 'machine.I2C.rst'
     shed.vars(old='.. data:: SPI.LSB', end=nxt)
