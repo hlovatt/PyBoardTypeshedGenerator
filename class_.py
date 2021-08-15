@@ -16,7 +16,7 @@ import rst
 __author__ = rst.__author__
 __copyright_ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "5.0.1"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "5.0.2"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 @dataclass
