@@ -27,7 +27,7 @@ from uasyncio import uasyncio
 __author__ = rst.__author__
 __copyright_ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "5.0.3"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "5.0.4"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 # TODO Add subdirectory destinations micropython, pyboard, and stdlib

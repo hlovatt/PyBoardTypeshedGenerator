@@ -8,10 +8,10 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "5.0.3"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "5.0.4"  # Version set by https://github.com/hlovatt/tag2ver
 
 
-# TODO Is making array inherit mutable array a good idea, there are many exceptions!
+# TODO Is making array inherit mutable array a good idea? There are many exceptions!
 #      Would duck typing be better! If yes need at add `__iter__` at least.
 
 def array(shed: RST2PyI) -> None:
