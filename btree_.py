@@ -9,7 +9,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "5.0.4"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "5.1.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def btree(shed: RST2PyI) -> None:
@@ -62,10 +62,10 @@ class _IOBase(Protocol):
     def tell(self) -> int: ...
 
 
-{repdefs.AnyWritableBuf}
+{repdefs.ANY_WRITABLE_BUF}
 
 
-{repdefs.AnyReadableBuf}
+{repdefs.ANY_READABLE_BUF}
 '''
     shed.module(
         name='btree',
@@ -73,11 +73,11 @@ class _IOBase(Protocol):
         post_doc=module_post_doc,
         end='Functions',
     )
-    shed.pyi.doc += shed.extra_notes(end='Functions')
+    shed.pyi.doc.extend(shed.extra_notes(end='Functions'))
     shed.def_(
         old=R'.. function:: open(stream, *, flags=0, pagesize=0, cachesize=0, minkeypage=0)',
         new='''
-def open(stream: _IOBase, /, *, flags: int = 0, pagesize: int = 0, cachesize: int = 0, minkeypage: int = 0) -> "_BTree"
+def open(stream: _IOBase, /, *, flags: int = 0, pagesize: int = 0, cachesize: int = 0, minkeypage: int = 0) -> _BTree
 ''',
         indent=0
     )

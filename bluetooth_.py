@@ -9,7 +9,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "5.0.4"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "5.1.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def bluetooth(shed: RST2PyI) -> None:
@@ -21,8 +21,8 @@ from typing import overload, Any, Union, Tuple, Callable, Optional, TypeVar
 
 from uarray import array
 
-{repdefs.AnyReadableBuf}
-{repdefs.AnyWritableBuf}
+{repdefs.ANY_READABLE_BUF}
+{repdefs.ANY_WRITABLE_BUF}
 ''',
         end='class BLE'
     )
@@ -163,7 +163,7 @@ def gatts_register_services(
     extra_docs = shed.extra_docs()
     shed.def_(
         old=R'.. method:: BLE.gattc_discover_services(conn_handle, uuid=None, /)',
-        new='def gattc_discover_services(self, conn_handle: memoryview, uuid: Optional["UUID"] = None, /) -> None',
+        new='def gattc_discover_services(self, conn_handle: memoryview, uuid: Optional[UUID] = None, /) -> None',
         extra_docs=extra_docs
     )
     shed.def_(
@@ -174,7 +174,7 @@ def gattc_discover_characteristics(
    conn_handle: memoryview, 
    start_handle: int, 
    end_handle: int, 
-   uuid: Optional["UUID"] = None, 
+   uuid: Optional[UUID] = None, 
    /
 ) -> None''',
         extra_docs=extra_docs,
@@ -269,4 +269,4 @@ def l2cap_recvinto(
         old=R'.. class:: UUID(value, /)',
         new='def __init__(self, value: Union[int, str], /)',
     )
-    shed.write()
+    shed.write(u_also=True)

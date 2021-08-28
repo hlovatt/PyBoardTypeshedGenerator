@@ -11,10 +11,10 @@ from class_ import Class
 __author__ = rst.__author__
 __copyright_ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "5.0.4"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "5.1.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
-@dataclass
+@dataclass(frozen=True)
 class PYI:
     doc: List[str] = field(default_factory=list)
     imports_vars_defs: List[str] = field(default_factory=list)

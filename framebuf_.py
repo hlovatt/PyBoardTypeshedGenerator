@@ -9,7 +9,7 @@ import repdefs
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "5.0.4"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "5.1.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def framebuf(shed: RST2PyI) -> None:
@@ -17,11 +17,11 @@ def framebuf(shed: RST2PyI) -> None:
         name='framebuf',
         old='Frame buffer manipulation',
         post_doc=f'''
-from typing import TypeVar, overload, Final
+from typing import TypeVar, overload, Final, Optional
 
 from uarray import array
 
-{repdefs.AnyWritableBuf}
+{repdefs.ANY_WRITABLE_BUF}
 ''',
         end='class FrameBuffer'
     )
@@ -78,11 +78,10 @@ from uarray import array
         new='def scroll(self, xstep: int, ystep: int, /) -> None',
     )
     shed.def_(
-        old=R'.. method:: FrameBuffer.blit(fbuf, x, y[, key])',
-        new=[
-            'def blit(self, fbuf: "FrameBuffer", x: int, y: int, /) -> None',
-            'def blit(self, fbuf: "FrameBuffer", x: int, y: int, key: int, /) -> None'
-        ],
+        old=R'.. method:: FrameBuffer.blit(fbuf, x, y, key=-1, palette=None)',
+        new='''
+def blit(self, fbuf: FrameBuffer, x: int, y: int, key: int = -1, pallet: Optional[FrameBuffer] = None, /) -> None
+''',
     )
     shed.vars(old='.. data:: framebuf.MONO_VLSB', class_var=None)
     shed.vars(old='.. data:: framebuf.MONO_HLSB', class_var=None)

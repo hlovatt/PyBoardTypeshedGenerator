@@ -8,9 +8,9 @@ import rst
 __author__ = rst.__author__
 __copyright_ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "5.0.4"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "5.1.0"  # Version set by https://github.com/hlovatt/tag2ver
 
-AbstractBlockDev = '''
+ABSTRACT_BLOCK_DEV = '''
 @runtime_checkable
 class _AbstractBlockDev(Protocol):
     """
@@ -30,14 +30,14 @@ class _AbstractBlockDev(Protocol):
     def ioctl(self, op: int, arg: int) -> Optional[int]: ...
 '''
 
-AnyWritableBuf = '''
+ANY_WRITABLE_BUF = '''
 _AnyWritableBuf = TypeVar('_AnyWritableBuf', bytearray, array, memoryview)
 """
 Type that allows bytearray, array, or memoryview, but only one of these and not a mixture in a single declaration.
 """
 '''
 
-AnyReadableBuf = '''
+ANY_READABLE_BUF = '''
 _AnyReadableBuf = TypeVar('_AnyReadableBuf', bytearray, array, memoryview, bytes)
 """
 Type that allows bytearray, array, memoryview, or bytes, 

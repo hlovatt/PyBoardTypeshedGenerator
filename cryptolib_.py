@@ -9,7 +9,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "5.0.4"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "5.1.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def cryptolib(shed: RST2PyI) -> None:
@@ -21,8 +21,8 @@ from typing import overload, TypeVar
 
 from uarray import array
 
-{repdefs.AnyReadableBuf}
-{repdefs.AnyWritableBuf}
+{repdefs.ANY_READABLE_BUF}
+{repdefs.ANY_WRITABLE_BUF}
 ''',
         end=R'Classes'
     )
@@ -54,4 +54,4 @@ from uarray import array
             'def decrypt(self, in_buf: _AnyReadableBuf, out_buf: _AnyWritableBuf, /) -> None'
         ],
     )
-    shed.write()
+    shed.write(u_also=True)

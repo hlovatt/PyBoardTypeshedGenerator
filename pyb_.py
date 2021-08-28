@@ -7,13 +7,10 @@ import rst
 from class_ import Class
 from rst2pyi import RST2PyI
 
-# TODO Check class names not quoted, e.g. "CAN" or 'CAN', can do this from generated typesheds easily
-#      since has list of classes declared in each file.
-
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "5.0.4"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "5.1.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def pyb(shed: RST2PyI) -> None:
@@ -240,7 +237,7 @@ def init(
         end='Flow Control'
     )
     nxt = 'pyb.USB_HID.rst'
-    shed.pyi.doc += shed.extra_notes(end=nxt)
+    shed.pyi.doc.extend(shed.extra_notes(end=nxt))
     return nxt
 
 
@@ -442,7 +439,7 @@ def __init__(
    freq: int, 
    mode: int = UP, 
    div: int = 1, 
-   callback: Optional[Callable[["Timer"], None]] = None, 
+   callback: Optional[Callable[[Timer], None]] = None, 
    deadtime: int = 0
 )
 ''', '''
@@ -455,7 +452,7 @@ def __init__(
    period: int, 
    mode: int = UP, 
    div: int = 1, 
-   callback: Optional[Callable[["Timer"], None]] = None, 
+   callback: Optional[Callable[[Timer], None]] = None, 
    deadtime: int = 0
 )
 '''],
@@ -469,7 +466,7 @@ def init(
    freq: int, 
    mode: int = UP, 
    div: int = 1, 
-   callback: Optional[Callable[["Timer"], None]] = None, 
+   callback: Optional[Callable[[Timer], None]] = None, 
    deadtime: int = 0
 ) -> None
 ''', '''
@@ -480,7 +477,7 @@ def init(
    period: int, 
    mode: int = UP, 
    div: int = 1, 
-   callback: Optional[Callable[["Timer"], None]] = None, 
+   callback: Optional[Callable[[Timer], None]] = None, 
    deadtime: int = 0
 ) -> None
 '''],
@@ -491,7 +488,7 @@ def init(
     )
     shed.def_(
         old=R'.. method:: Timer.callback(fun)',
-        new='def callback(self, fun: Optional[Callable[["Timer"], None]], /) -> None',
+        new='def callback(self, fun: Optional[Callable[[Timer], None]], /) -> None',
     )
     shed.def_(
         old=R'.. method:: Timer.channel(channel, mode, ...)',
@@ -508,7 +505,7 @@ def channel(
    /, 
    mode: int, 
    *, 
-   callback: Optional[Callable[["Timer"], None]] = None, 
+   callback: Optional[Callable[[Timer], None]] = None, 
    pin: Optional[Pin] = None,
    pulse_width: int,
 ) -> "TimerChannel"
@@ -519,7 +516,7 @@ def channel(
    /, 
    mode: int, 
    *, 
-   callback: Optional[Callable[["Timer"], None]] = None, 
+   callback: Optional[Callable[[Timer], None]] = None, 
    pin: Optional[Pin] = None,
    pulse_width_percent: Union[int, float],
 ) -> "TimerChannel"
@@ -530,7 +527,7 @@ def channel(
    /, 
    mode: int, 
    *, 
-   callback: Optional[Callable[["Timer"], None]] = None, 
+   callback: Optional[Callable[[Timer], None]] = None, 
    pin: Optional[Pin] = None,
    compare: int,
    polarity: int,
@@ -542,7 +539,7 @@ def channel(
    /, 
    mode: int, 
    *, 
-   callback: Optional[Callable[["Timer"], None]] = None, 
+   callback: Optional[Callable[[Timer], None]] = None, 
    pin: Optional[Pin] = None,
    polarity: int,
 ) -> "TimerChannel"
@@ -553,7 +550,7 @@ def channel(
    /, 
    mode: int, 
    *, 
-   callback: Optional[Callable[["Timer"], None]] = None, 
+   callback: Optional[Callable[[Timer], None]] = None, 
    pin: Optional[Pin] = None,
 ) -> "TimerChannel"
 '''],
@@ -803,7 +800,7 @@ def _rtc(this: str, shed: RST2PyI) -> str:
     )
     shed.def_(
         old='.. method:: RTC.wakeup(timeout, callback=None)',
-        new='def wakeup(self, timeout: Optional[Callable[["RTC"], None]] = None, /) -> None',
+        new='def wakeup(self, timeout: Optional[Callable[[RTC], None]] = None, /) -> None',
     )
     shed.def_(
         old='.. method:: RTC.info()',
@@ -876,117 +873,117 @@ def _pin(this: str, shed: RST2PyI) -> str:
         old=this,
         post_doc='''
    
-   AF1_TIM1: ClassVar["PinAF"] = ...
+   AF1_TIM1: ClassVar[PinAF] = ...
    """
    Alternate def_ 1, timer 1.
    """
    
-   AF1_TIM2: ClassVar["PinAF"] = ...
+   AF1_TIM2: ClassVar[PinAF] = ...
    """
    Alternate def_ 1, timer 2.
    """
 
-   AF2_TIM3: ClassVar["PinAF"] = ...
+   AF2_TIM3: ClassVar[PinAF] = ...
    """
    Alternate def_ 2, timer 3.
    """
 
-   AF2_TIM4: ClassVar["PinAF"] = ...
+   AF2_TIM4: ClassVar[PinAF] = ...
    """
    Alternate def_ 2, timer 4.
    """
 
-   AF2_TIM5: ClassVar["PinAF"] = ...
+   AF2_TIM5: ClassVar[PinAF] = ...
    """
    Alternate def_ 2, timer 5.
    """
 
-   AF3_TIM10: ClassVar["PinAF"] = ...
+   AF3_TIM10: ClassVar[PinAF] = ...
    """
    Alternate def_ 3, timer 10.
    """
 
-   AF3_TIM11: ClassVar["PinAF"] = ...
+   AF3_TIM11: ClassVar[PinAF] = ...
    """
    Alternate def_ 3, timer 11.
    """
 
-   AF3_TIM8: ClassVar["PinAF"] = ...
+   AF3_TIM8: ClassVar[PinAF] = ...
    """
    Alternate def_ 3, timer 8.
    """
 
-   AF3_TIM9: ClassVar["PinAF"] = ...
+   AF3_TIM9: ClassVar[PinAF] = ...
    """
    Alternate def_ 3, timer 9.
    """
 
-   AF4_I2C1: ClassVar["PinAF"] = ...
+   AF4_I2C1: ClassVar[PinAF] = ...
    """
    Alternate def_ 4, I2C 1.
    """
 
-   AF4_I2C2: ClassVar["PinAF"] = ...
+   AF4_I2C2: ClassVar[PinAF] = ...
    """
    Alternate def_ 4, I2C 2.
    """
 
-   AF5_SPI1: ClassVar["PinAF"] = ...
+   AF5_SPI1: ClassVar[PinAF] = ...
    """
    Alternate def_ 5, SPI 1.
    """
 
-   AF5_SPI2: ClassVar["PinAF"] = ...
+   AF5_SPI2: ClassVar[PinAF] = ...
    """
    Alternate def_ 5, SPI 2.
    """
 
-   AF7_USART1: ClassVar["PinAF"] = ...
+   AF7_USART1: ClassVar[PinAF] = ...
    """
    Alternate def_ 7, USART 1.
    """
 
-   AF7_USART2: ClassVar["PinAF"] = ...
+   AF7_USART2: ClassVar[PinAF] = ...
    """
    Alternate def_ 7, USART 2.
    """
 
-   AF7_USART3: ClassVar["PinAF"] = ...
+   AF7_USART3: ClassVar[PinAF] = ...
    """
    Alternate def_ 7, USART 3.
    """
 
-   AF8_UART4: ClassVar["PinAF"] = ...
+   AF8_UART4: ClassVar[PinAF] = ...
    """
    Alternate def_ 8, USART 4.
    """
 
-   AF8_USART6: ClassVar["PinAF"] = ...
+   AF8_USART6: ClassVar[PinAF] = ...
    """
    Alternate def_ 8, USART 6.
    """
 
-   AF9_CAN1: ClassVar["PinAF"] = ...
+   AF9_CAN1: ClassVar[PinAF] = ...
    """
    Alternate def_ 9, CAN 1.
    """
 
-   AF9_CAN2: ClassVar["PinAF"] = ...
+   AF9_CAN2: ClassVar[PinAF] = ...
    """
    Alternate def_ 9, CAN 2.
    """
 
-   AF9_TIM12: ClassVar["PinAF"] = ...
+   AF9_TIM12: ClassVar[PinAF] = ...
    """
    Alternate def_ 9, timer 12.
    """
 
-   AF9_TIM13: ClassVar["PinAF"] = ...
+   AF9_TIM13: ClassVar[PinAF] = ...
    """
    Alternate def_ 9, timer 13.
    """
 
-   AF9_TIM14: ClassVar["PinAF"] = ...
+   AF9_TIM14: ClassVar[PinAF] = ...
    """
    Alternate def_ 9, timer 14.
    """
@@ -1024,247 +1021,247 @@ def _pin(this: str, shed: RST2PyI) -> str:
       The board pins (board nomenclature, e.g. `X1`) that are bought out onto pads on a PyBoard.
       """
 
-      LED_BLUE: ClassVar["Pin"] = ...
+      LED_BLUE: ClassVar[Pin] = ...
       """
       The blue LED.
       """
       
-      LED_GREEN: ClassVar["Pin"] = ...
+      LED_GREEN: ClassVar[Pin] = ...
       """
       The green LED.
       """
       
-      LED_RED: ClassVar["Pin"] = ...
+      LED_RED: ClassVar[Pin] = ...
       """
       The red LED.
       """
       
-      LED_YELLOW: ClassVar["Pin"] = ...
+      LED_YELLOW: ClassVar[Pin] = ...
       """
       The yellow LED.
       """
       
-      MMA_AVDD: ClassVar["Pin"] = ...
+      MMA_AVDD: ClassVar[Pin] = ...
       """
       Accelerometer (MMA7660) analogue power (AVDD) pin.
       """
       
-      MMA_INT: ClassVar["Pin"] = ...
+      MMA_INT: ClassVar[Pin] = ...
       """
       Accelerometer (MMA7660) interrupt (\\INT) pin.
       """
       
-      SD: ClassVar["Pin"] = ...
+      SD: ClassVar[Pin] = ...
       """
       SD card present switch (0 for card inserted, 1 for no card) (same as SD_SW).
       """
 
-      SD_CK: ClassVar["Pin"] = ...
+      SD_CK: ClassVar[Pin] = ...
       """
       SD card clock.
       """
 
-      SD_CMD: ClassVar["Pin"] = ...
+      SD_CMD: ClassVar[Pin] = ...
       """
       SD card command.
       """
 
-      SD_D0: ClassVar["Pin"] = ...
+      SD_D0: ClassVar[Pin] = ...
       """
       SD card serial data 0.
       """
 
-      SD_D1: ClassVar["Pin"] = ...
+      SD_D1: ClassVar[Pin] = ...
       """
       SD card serial data 1.
       """
 
-      SD_D2: ClassVar["Pin"] = ...
+      SD_D2: ClassVar[Pin] = ...
       """
       SD card serial data 2.
       """
 
-      SD_D3: ClassVar["Pin"] = ...
+      SD_D3: ClassVar[Pin] = ...
       """
       SD card serial data 3.
       """
 
-      SD_SW: ClassVar["Pin"] = ...
+      SD_SW: ClassVar[Pin] = ...
       """
       SD card present switch (0 for card inserted, 1 for no card) (same as SD).
       """
 
-      SW: ClassVar["Pin"] = ...
+      SW: ClassVar[Pin] = ...
       """
       Usr switch (0 = pressed, 1 = not pressed).
       """
 
-      USB_DM: ClassVar["Pin"] = ...
+      USB_DM: ClassVar[Pin] = ...
       """
       USB data -.
       """
 
-      USB_DP: ClassVar["Pin"] = ...
+      USB_DP: ClassVar[Pin] = ...
       """
       USB data +.
       """
 
-      USB_ID: ClassVar["Pin"] = ...
+      USB_ID: ClassVar[Pin] = ...
       """
       USB OTG (on-the-go) ID.
       """
 
-      USB_VBUS: ClassVar["Pin"] = ...
+      USB_VBUS: ClassVar[Pin] = ...
       """
       USB VBUS (power) monitoring pin.
       """
 
-      X1: ClassVar["Pin"] = ...
+      X1: ClassVar[Pin] = ...
       """
       X1 pin.
       """
 
-      X10: ClassVar["Pin"] = ...
+      X10: ClassVar[Pin] = ...
       """
       X10 pin.
       """
 
-      X11: ClassVar["Pin"] = ...
+      X11: ClassVar[Pin] = ...
       """
       X11 pin.
       """
 
-      X12: ClassVar["Pin"] = ...
+      X12: ClassVar[Pin] = ...
       """
       X12 pin.
       """
 
-      X17: ClassVar["Pin"] = ...
+      X17: ClassVar[Pin] = ...
       """
       X17 pin.
       """
 
-      X18: ClassVar["Pin"] = ...
+      X18: ClassVar[Pin] = ...
       """
       X18 pin.
       """
 
-      X19: ClassVar["Pin"] = ...
+      X19: ClassVar[Pin] = ...
       """
       X19 pin.
       """
 
-      X2: ClassVar["Pin"] = ...
+      X2: ClassVar[Pin] = ...
       """
       X2 pin.
       """
 
-      X20: ClassVar["Pin"] = ...
+      X20: ClassVar[Pin] = ...
       """
       X20 pin.
       """
 
-      X21: ClassVar["Pin"] = ...
+      X21: ClassVar[Pin] = ...
       """
       X21 pin.
       """
              
-      X22: ClassVar["Pin"] = ...
+      X22: ClassVar[Pin] = ...
       """
       X22 pin.
       """
 
-      X3: ClassVar["Pin"] = ...
+      X3: ClassVar[Pin] = ...
       """
       X3 pin.
       """
 
-      X4: ClassVar["Pin"] = ...
+      X4: ClassVar[Pin] = ...
       """
       X4 pin.
       """
 
-      X5: ClassVar["Pin"] = ...
+      X5: ClassVar[Pin] = ...
       """
       X5 pin.
       """
 
-      X6: ClassVar["Pin"] = ...
+      X6: ClassVar[Pin] = ...
       """
       X6 pin.
       """
 
-      X7: ClassVar["Pin"] = ...
+      X7: ClassVar[Pin] = ...
       """
       X7 pin.
       """
 
-      X8: ClassVar["Pin"] = ...
+      X8: ClassVar[Pin] = ...
       """
       X8 pin.
       """
 
-      X9: ClassVar["Pin"] = ...
+      X9: ClassVar[Pin] = ...
       """
       X9 pin.
       """
 
-      Y1: ClassVar["Pin"] = ...
+      Y1: ClassVar[Pin] = ...
       """
       Y1 pin.
       """
 
-      Y10: ClassVar["Pin"] = ...
+      Y10: ClassVar[Pin] = ...
       """
       Y10 pin.
       """
 
-      Y11: ClassVar["Pin"] = ...
+      Y11: ClassVar[Pin] = ...
       """
       Y11 pin.
       """
 
-      Y12: ClassVar["Pin"] = ...
+      Y12: ClassVar[Pin] = ...
       """
       Y12 pin.
       """
 
-      Y2: ClassVar["Pin"] = ...
+      Y2: ClassVar[Pin] = ...
       """
       Y2 pin.
       """
 
-      Y3: ClassVar["Pin"] = ...
+      Y3: ClassVar[Pin] = ...
       """
       Y3 pin.
       """
 
-      Y4: ClassVar["Pin"] = ...
+      Y4: ClassVar[Pin] = ...
       """
       Y4 pin.
       """
 
-      Y5: ClassVar["Pin"] = ...
+      Y5: ClassVar[Pin] = ...
       """
       Y5 pin.
       """
 
-      Y6: ClassVar["Pin"] = ...
+      Y6: ClassVar[Pin] = ...
       """
       Y6 pin.
       """
 
-      Y7: ClassVar["Pin"] = ...
+      Y7: ClassVar[Pin] = ...
       """
       Y7 pin.
       """
 
-      Y8: ClassVar["Pin"] = ...
+      Y8: ClassVar[Pin] = ...
       """
       Y8 pin.
       """
 
-      Y9: ClassVar["Pin"] = ...
+      Y9: ClassVar[Pin] = ...
       """
       Y9 pin.
       """
@@ -1276,237 +1273,237 @@ def _pin(this: str, shed: RST2PyI) -> str:
       The CPU pins (CPU nomenclature, e.g. `A0`) that are bought out onto pads on a PyBoard.
       """
       
-      A0: ClassVar["Pin"] = ...
+      A0: ClassVar[Pin] = ...
       """
       A0 pin.
       """
       
-      A1: ClassVar["Pin"] = ...
+      A1: ClassVar[Pin] = ...
       """
       A1 pin.
       """
 
-      A10: ClassVar["Pin"] = ...
+      A10: ClassVar[Pin] = ...
       """
       A10 pin.
       """
 
-      A11: ClassVar["Pin"] = ...
+      A11: ClassVar[Pin] = ...
       """
       A11 pin.
       """
 
-      A12: ClassVar["Pin"] = ...
+      A12: ClassVar[Pin] = ...
       """
       A12 pin.
       """
 
-      A13: ClassVar["Pin"] = ...
+      A13: ClassVar[Pin] = ...
       """
       A13 pin.
       """
 
-      A14: ClassVar["Pin"] = ...
+      A14: ClassVar[Pin] = ...
       """
       A14 pin.
       """
 
-      A15: ClassVar["Pin"] = ...
+      A15: ClassVar[Pin] = ...
       """
       A15 pin.
       """
 
-      A2: ClassVar["Pin"] = ...
+      A2: ClassVar[Pin] = ...
       """
       A2 pin.
       """
 
-      A3: ClassVar["Pin"] = ...
+      A3: ClassVar[Pin] = ...
       """
       A3 pin.
       """
 
-      A4: ClassVar["Pin"] = ...
+      A4: ClassVar[Pin] = ...
       """
       A4 pin.
       """
 
-      A5: ClassVar["Pin"] = ...
+      A5: ClassVar[Pin] = ...
       """
       A5 pin.
       """
 
-      A6: ClassVar["Pin"] = ...
+      A6: ClassVar[Pin] = ...
       """
       A6 pin.
       """
 
-      A7: ClassVar["Pin"] = ...
+      A7: ClassVar[Pin] = ...
       """
       A7 pin.
       """
 
-      A8: ClassVar["Pin"] = ...
+      A8: ClassVar[Pin] = ...
       """
       A8 pin.
       """
 
-      A9: ClassVar["Pin"] = ...
+      A9: ClassVar[Pin] = ...
       """
       A9 pin.
       """
 
-      B0: ClassVar["Pin"] = ...
+      B0: ClassVar[Pin] = ...
       """
       B0 pin.
       """
 
-      B1: ClassVar["Pin"] = ...
+      B1: ClassVar[Pin] = ...
       """
       B1 pin.
       """
 
-      B10: ClassVar["Pin"] = ...
+      B10: ClassVar[Pin] = ...
       """
       B10 pin.
       """
 
-      B11: ClassVar["Pin"] = ...
+      B11: ClassVar[Pin] = ...
       """
       B11 pin.
       """
 
-      B12: ClassVar["Pin"] = ...
+      B12: ClassVar[Pin] = ...
       """
       B12 pin.
       """
 
-      B13: ClassVar["Pin"] = ...
+      B13: ClassVar[Pin] = ...
       """
       B13 pin.
       """
 
-      B14: ClassVar["Pin"] = ...
+      B14: ClassVar[Pin] = ...
       """
       B14 pin.
       """
 
-      B15: ClassVar["Pin"] = ...
+      B15: ClassVar[Pin] = ...
       """
       B15 pin.
       """
 
-      B2: ClassVar["Pin"] = ...
+      B2: ClassVar[Pin] = ...
       """
       B2 pin.
       """
 
-      B3: ClassVar["Pin"] = ...
+      B3: ClassVar[Pin] = ...
       """
       B3 pin.
       """
 
-      B4: ClassVar["Pin"] = ...
+      B4: ClassVar[Pin] = ...
       """
       B4 pin.
       """
 
-      B5: ClassVar["Pin"] = ...
+      B5: ClassVar[Pin] = ...
       """
       B5 pin.
       """
 
-      B6: ClassVar["Pin"] = ...
+      B6: ClassVar[Pin] = ...
       """
       B6 pin.
       """
 
-      B7: ClassVar["Pin"] = ...
+      B7: ClassVar[Pin] = ...
       """
       B7 pin.
       """
 
-      B8: ClassVar["Pin"] = ...
+      B8: ClassVar[Pin] = ...
       """
       B8 pin.
       """
 
-      B9: ClassVar["Pin"] = ...
+      B9: ClassVar[Pin] = ...
       """
       B9 pin.
       """
 
-      C0: ClassVar["Pin"] = ...
+      C0: ClassVar[Pin] = ...
       """
       C0 pin.
       """
 
-      C1: ClassVar["Pin"] = ...
+      C1: ClassVar[Pin] = ...
       """
       C1 pin.
       """
 
-      C10: ClassVar["Pin"] = ...
+      C10: ClassVar[Pin] = ...
       """
       C10 pin.
       """
 
-      C11: ClassVar["Pin"] = ...
+      C11: ClassVar[Pin] = ...
       """
       C11 pin.
       """
 
-      C12: ClassVar["Pin"] = ...
+      C12: ClassVar[Pin] = ...
       """
       C12 pin.
       """
 
-      C13: ClassVar["Pin"] = ...
+      C13: ClassVar[Pin] = ...
       """
       C13 pin.
       """
 
-      C2: ClassVar["Pin"] = ...
+      C2: ClassVar[Pin] = ...
       """
       C2 pin.
       """
 
-      C3: ClassVar["Pin"] = ...
+      C3: ClassVar[Pin] = ...
       """
       C3 pin.
       """
 
-      C4: ClassVar["Pin"] = ...
+      C4: ClassVar[Pin] = ...
       """
       C4 pin.
       """
 
-      C5: ClassVar["Pin"] = ...
+      C5: ClassVar[Pin] = ...
       """
       C5 pin.
       """
 
-      C6: ClassVar["Pin"] = ...
+      C6: ClassVar[Pin] = ...
       """
       C6 pin.
       """
 
-      C7: ClassVar["Pin"] = ...
+      C7: ClassVar[Pin] = ...
       """
       C7 pin.
       """
 
-      C8: ClassVar["Pin"] = ...
+      C8: ClassVar[Pin] = ...
       """
       C8 pin.
       """
 
-      C9: ClassVar["Pin"] = ...
+      C9: ClassVar[Pin] = ...
       """
       C9 pin.
       """
 
-      D2: ClassVar["Pin"] = ...
+      D2: ClassVar[Pin] = ...
       """
       D2 pin.
       """
@@ -1516,7 +1513,7 @@ def _pin(this: str, shed: RST2PyI) -> str:
         new='''
 def __init__(
    self, 
-   id: Union["Pin", str], 
+   id: Union[Pin, str], 
    /, 
    mode: int = IN, 
    pull: int = PULL_NONE, 
@@ -1540,20 +1537,20 @@ def debug(state: bool, /) -> None
         old='.. classmethod:: Pin.dict([dict])',
         new=['''
 @staticmethod
-def dict() -> Dict[str, "Pin"]
+def dict() -> Dict[str, Pin]
 ''', '''
 @staticmethod
-def dict(dict: Dict[str, "Pin"], /) -> None
+def dict(dict: Dict[str, Pin], /) -> None
 '''],
     )
     shed.def_(
         old='.. classmethod:: Pin.mapper([fun])',
         new=['''
 @staticmethod
-def mapper() -> Callable[[str], "Pin"]
+def mapper() -> Callable[[str], Pin]
 ''', '''
 @staticmethod
-def mapper(fun: Callable[[str], "Pin"], /) -> None
+def mapper(fun: Callable[[str], Pin], /) -> None
 '''],
     )
     shed.def_(
@@ -1586,7 +1583,7 @@ def init(
     )
     shed.def_(
         old='.. method:: Pin.af_list()',
-        new='def af_list(self) -> List["PinAF"]',
+        new='def af_list(self) -> List[PinAF]',
     )
     shed.def_(
         old='.. method:: Pin.gpio()',
@@ -1800,7 +1797,7 @@ def __init__(self, *, start: int = -1, len: int = -1)
         end='Hardware Note'
     )
     nxt = 'pyb.I2C.rst'
-    shed.pyi.doc += shed.extra_notes(end=nxt)
+    shed.pyi.doc.extend(shed.extra_notes(end=nxt))
     return nxt
 
 
@@ -1808,7 +1805,7 @@ def _ext_int(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(old=this, )
     shed.def_(
         old='.. class:: pyb.ExtInt(pin, mode, pull, callback)',
-        new='def __init__(self, pin: Union[int, str, "Pin"], mode: int, pull: int, callback: Callable[[int], None])',
+        new='def __init__(self, pin: Union[int, str, Pin], mode: int, pull: int, callback: Callable[[int], None])',
     )
     shed.def_(
         old='.. classmethod:: ExtInt.regs()',
@@ -1859,7 +1856,7 @@ def _dac(this: str, shed: RST2PyI) -> str:
     )
     shed.def_(
         old=r'.. class:: pyb.DAC(port, bits=8, *, buffering=None)',
-        new='def __init__(self, port: Union[int, "Pin"], /, bits: int = 8, *, buffering: Optional[bool] = None)',
+        new='def __init__(self, port: Union[int, Pin], /, bits: int = 8, *, buffering: Optional[bool] = None)',
     )
     shed.def_(
         old=r'.. method:: DAC.init(bits=8, *, buffering=None)',
@@ -1884,7 +1881,7 @@ def _dac(this: str, shed: RST2PyI) -> str:
     nxt = 'pyb.ExtInt.rst'
     shed.def_(
         old=r'.. method:: DAC.write_timed(data, freq, *, mode=DAC.NORMAL)',
-        new='def write_timed(self, data: _AnyWritableBuf, freq: Union[int, "Timer"], /, *, mode: int = NORMAL) -> None',
+        new='def write_timed(self, data: _AnyWritableBuf, freq: Union[int, Timer], /, *, mode: int = NORMAL) -> None',
         end=nxt,
     )
     return nxt
@@ -1999,7 +1996,7 @@ def send(self, data: Union[int, _AnyWritableBuf], id: int, /, *, timeout: int = 
     )
     shed.def_(
         old='.. method:: CAN.rxcallback(fifo, fun)',
-        new='def rxcallback(self, fifo: int, fun: Callable[["CAN"], None], /) -> None',
+        new='def rxcallback(self, fifo: int, fun: Callable[[CAN], None], /) -> None',
     )
     shed.vars(
         old=[
@@ -2093,7 +2090,7 @@ def _adc(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(old=this)
     shed.def_(
         old='.. class:: pyb.ADC(pin)',
-        new='def __init__(self, pin: Union[int, "Pin"], /)',
+        new='def __init__(self, pin: Union[int, Pin], /)',
     )
     shed.def_(
         old='.. method:: ADC.read()',
@@ -2101,7 +2098,7 @@ def _adc(this: str, shed: RST2PyI) -> str:
     )
     shed.def_(
         old='.. method:: ADC.read_timed(buf, timer)',
-        new='def read_timed(self, buf: _AnyWritableBuf, timer: Union["Timer", int], /) -> None',
+        new='def read_timed(self, buf: _AnyWritableBuf, timer: Union[Timer, int], /) -> None',
     )
     extra = 'The ADCAll Object'
     shed.def_(
@@ -2109,9 +2106,9 @@ def _adc(this: str, shed: RST2PyI) -> str:
         new='''
 @staticmethod
 def read_timed_multi(
-   adcs: Tuple['ADC', ...], 
+   adcs: Tuple[ADC, ...], 
    bufs: Tuple[_AnyWritableBuf, ...], 
-   timer: "Timer", 
+   timer: Timer, 
    /
 ) -> bool
 ''',
@@ -2150,7 +2147,7 @@ def _accel(shed: RST2PyI) -> str:
         end='Hardware Note'
     )
     nxt = 'pyb.ADC.rst'
-    shed.pyi.doc += shed.extra_notes(end=nxt)
+    shed.pyi.doc.extend(shed.extra_notes(end=nxt))
     return nxt
 
 
@@ -2198,7 +2195,7 @@ class _OldAbstractBlockDev(_OldAbstractReadOnlyBlockDev, Protocol):
     def sync(self) -> None: ...
 
 
-{repdefs.AbstractBlockDev}
+{repdefs.ABSTRACT_BLOCK_DEV}
 
 
 hid_mouse: Tuple[int, int, int, int, bytes] = ...
@@ -2213,10 +2210,10 @@ Keyboard human interface device (hid), see `hid` argument of `usb_mode`.
 """
 
 
-{repdefs.AnyWritableBuf}
+{repdefs.ANY_WRITABLE_BUF}
 
 
-{repdefs.AnyReadableBuf}
+{repdefs.ANY_READABLE_BUF}
 
 @overload
 def country() -> str:
@@ -2226,6 +2223,7 @@ def country() -> str:
 def country(alpha_2_code: str) -> None:
     """Set the ISO 3166-1, Alpha-2, country code, eg US, GB, DE, AU."""
 ''',
+        end=R'..'
     )
     shed.def_(
         old='.. function:: delay(ms)',
@@ -2360,8 +2358,8 @@ def mount(
     shed.def_(
         old='.. function:: repl_uart(uart)',
         new=[
-            'def repl_uart() -> Optional["UART"]',
-            'def repl_uart(uart: "UART", /) -> None'
+            'def repl_uart() -> Optional[UART]',
+            'def repl_uart(uart: UART, /) -> None'
         ],
         indent=0
     )

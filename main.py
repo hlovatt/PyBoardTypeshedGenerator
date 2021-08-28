@@ -7,30 +7,31 @@ Convert MicroPython `.rst` documentation files into `.pyi` typeshed stub interfa
 from sys import argv
 
 import rst
-from btree import btree
+from array_ import array
+from binascii_ import binascii
+from bluetooth_ import bluetooth
+from btree_ import btree
 from cmath_ import cmath
-from framebuf import framebuf
+from collections_ import collections
+from cryptolib_ import cryptolib
+from errno_ import errno
+from framebuf_ import framebuf
 from gc_ import gc
-from lcd160cr import lcd160cr
-from machine import machine
+from lcd160cr_ import lcd160cr
+from machine_ import machine
 from math_ import math
-from micropython import micropython
-from network import network
-from pyb import pyb
+from micropython_ import micropython
+from network_ import network
+from pyb_ import pyb
 from rst2pyi import RST2PyI
-from array import array
-from bluetooth import bluetooth
-from cryptolib import cryptolib
-from uctypes import uctypes
-from uasyncio import uasyncio
+from uasyncio_ import uasyncio
+from uctypes_ import uctypes
 
 __author__ = rst.__author__
 __copyright_ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "5.0.4"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "5.1.0"  # Version set by https://github.com/hlovatt/tag2ver
 
-
-# TODO Add subdirectory destinations micropython, pyboard, and stdlib
 
 def main() -> None:
     usage = '''
@@ -42,6 +43,9 @@ Usage (from `PyBoardTypeshedGenerator`'s directory) one of:
     assert len(argv) > 1, 'No destination root directory given.' + usage
     assert len(argv) == 2, 'Extra argument(s) given.' + usage
     shed = RST2PyI(output_root_dir=argv[1])
+    errno(shed)
+    collections(shed)
+    binascii(shed)
     uasyncio(shed)
     math(shed)
     gc(shed)

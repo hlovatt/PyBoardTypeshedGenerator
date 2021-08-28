@@ -1,0 +1,82 @@
+"""
+Generate `pyi` from corresponding `rst` docs.
+"""
+
+import rst
+from rst2pyi import RST2PyI
+
+__author__ = rst.__author__
+__copyright__ = rst.__copyright__
+__license__ = rst.__license__
+__version__ = "5.1.0"  # Version set by https://github.com/hlovatt/tag2ver
+
+
+def collections(shed: RST2PyI) -> None:
+    shed.module(
+        name='collections',
+        old='collection and container types',
+        post_doc=f'''
+from typing import overload, Tuple, Any, Type, Iterable, TypeVar, Generic, Mapping, Dict
+
+_KT = TypeVar("_KT")
+_VT = TypeVar("_VT")
+''',
+        end=R'Classes'
+    )
+
+    shed.class_(
+        name=R'deque',
+        end=R'Classes',
+    )
+    shed.def_(
+        old=R'.. function:: deque(iterable, maxlen[, flags])',
+        new='def __init__(self, iterable: Tuple[Any], maxlen: int, flags: int = 0, /)',
+        end=R'As well as supporting `bool` and `len`, deque objects have the following',
+    )
+    shed.pyi.classes[-1].defs.append('''
+   def __bool__(self) -> bool:
+      """
+      Returns true if the `deque` isn't empty.
+      
+      **Note:** The method isn't listed by ``dir(deque)`` and can't be called directly, 
+      however ``bool(deque)`` and automatic conversion work!
+      """
+   
+   def __len__(self) -> int:
+      """
+      Returns the number of items in the `deque`.
+      
+      **Note:** The method isn't listed by ``dir(deque)`` and can't be called directly, 
+      however ``len(deque)`` works!
+      """
+''')
+    shed.consume_name_line(name=R'methods:', and_preceding_lines=True)
+    shed.def_(
+        old=R'.. method:: deque.append(x)',
+        new='def append(self, x: Any, /) -> None',
+    )
+    shed.def_(
+        old=R'.. method:: deque.popleft()',
+        new='def popleft(self) -> Any',
+    )
+
+    shed.def_(
+        old=R'.. function:: namedtuple(name, fields)',
+        new='def namedtuple(name: str, fields: str | Iterable[str]) -> Type[Tuple[Any, ...]]',
+        indent=0,
+    )
+
+    shed.class_(
+        name=R'OrderedDict(Dict[_KT, _VT], Generic[_KT, _VT])',
+        end=R'..',
+    )
+    shed.def_(
+        old=R'.. function:: OrderedDict(...)',
+        new=[
+            'def __init__(self)',
+            'def __init__(self, **kwargs: _VT)',
+            'def __init__(self, map: Mapping[_KT, _VT], **kwargs: _VT)',
+        ],
+    )
+
+    shed.write(u_also=True)

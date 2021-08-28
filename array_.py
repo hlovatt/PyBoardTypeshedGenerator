@@ -8,11 +8,13 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "5.0.4"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "5.1.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
-# TODO Is making array inherit mutable array a good idea? There are many exceptions!
-#      Would duck typing be better! If yes need at add `__iter__` at least.
+# TODO Is making array inherit mutable array a good idea?
+#  There are many exceptions!
+#  Would duck typing be better! If yes need at add `__iter__` at least.
+#  If Micropython builtin.pyi was added could build up from there.
 
 def array(shed: RST2PyI) -> None:
     shed.module(
@@ -107,7 +109,7 @@ _T = TypeVar("_T", int, float, Text)
       """
    
    @overload
-   def __getitem__(self, sl: slice) -> "array"[_T]:
+   def __getitem__(self, sl: slice) -> array[_T]:
       """
         Slice read of ``self``; called as ``a[sl]``, where ``a`` is an ``array``.
         Returns an ``array`` of values for the given slice. 
@@ -127,7 +129,7 @@ _T = TypeVar("_T", int, float, Text)
       """
       
    @overload
-   def __setitem__(self, sl: slice, values: "array"[_T]) -> None:
+   def __setitem__(self, sl: slice, values: array[_T]) -> None:
       """
         Indexed write into ``self``; called as ``a[sl] = values``, where ``a`` is an ``array``,
         ``sl`` is an ``slice``, and ``values`` is the same type as ``a``.
@@ -143,7 +145,7 @@ _T = TypeVar("_T", int, float, Text)
         method is not present in ``__dict__``, however ``len(a)`` does work.
       """
       
-   def __add__(self, other: "array"[_T]) -> "array"[_T]:
+   def __add__(self, other: array[_T]) -> array[_T]:
       """
         Return a new ``array`` that is the concatenation of ``self`` with ``other``;
         called as ``a + other`` (where ``a`` and ``other`` are both ``array``s).
@@ -151,7 +153,7 @@ _T = TypeVar("_T", int, float, Text)
         is not present in ``__dict__``, however ``a + other`` does work.
       """
       
-   def __iadd__(self, other: "array"[_T]) -> None:
+   def __iadd__(self, other: array[_T]) -> None:
       """
         Concatenates ``self`` with ``other`` in-place;
         called as ``a += other``, where ``a`` and ``other`` are both ``array``s.
@@ -171,4 +173,4 @@ _T = TypeVar("_T", int, float, Text)
         is not present in ``__dict__``, however ``str(a)`` and ``repr(a)`` both work.
       """
 '''.rstrip())
-    shed.write()
+    shed.write(u_also=True)

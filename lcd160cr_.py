@@ -9,7 +9,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "5.0.4"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "5.1.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def lcd160cr(shed: RST2PyI) -> None:
@@ -23,13 +23,14 @@ from pyb import Pin, I2C, SPI
 from uarray import array
 
 
-{repdefs.AnyWritableBuf}
+{repdefs.ANY_WRITABLE_BUF}
 
 
-{repdefs.AnyReadableBuf}
-'''
+{repdefs.ANY_READABLE_BUF}
+''',
+        end=R'..',
     )
-    shed.pyi.doc += shed.extra_notes(end='class LCD160CR',)
+    shed.pyi.doc.extend(shed.extra_notes(end='class LCD160CR',))
     shed.consume_header_line(and_preceding_lines=True)
     shed.consume_blank_line()
     shed.class_(name='LCD160CR', end='Constructors')

@@ -9,7 +9,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "5.0.4"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "5.1.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def uctypes(shed: RST2PyI) -> None:
@@ -21,7 +21,7 @@ from typing import Tuple, Union, TypeVar, Final
 
 from uarray import array
 
-{repdefs.AnyReadableBuf}
+{repdefs.ANY_READABLE_BUF}
 ''',
         end=R'Module contents'
     )
@@ -31,7 +31,7 @@ from uarray import array
         name='struct',
         end=rst_name,
     )
-    shed.pyi.imports_vars_defs += [
+    shed.pyi.imports_vars_defs.extend([
         '_scalar_property = int',
         '_recursive_property = Tuple[int, "_property"]',
         '_array_property = Tuple[int, int]',
@@ -49,7 +49,7 @@ from uarray import array
          '_bitfield_property'
          ']'),
         '_descriptor = Tuple[str, _property]',
-    ]
+    ])
     shed.def_(
         old=rst_name,
         new='def __init__(self, addr: int, descriptor: _descriptor, layout_type: int = NATIVE, /)',
@@ -60,7 +60,7 @@ from uarray import array
     shed.def_(
         pre_str='# noinspection PyShadowingNames',
         old=r'.. function:: sizeof(struct, layout_type=NATIVE, /)',
-        new='def sizeof(struct: Union["struct", _descriptor], layout_type: int = NATIVE, /) -> int',
+        new='def sizeof(struct: Union[struct, _descriptor], layout_type: int = NATIVE, /) -> int',
         indent=0,
     )
     shed.def_(

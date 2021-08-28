@@ -9,7 +9,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "5.0.4"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "5.1.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def machine(shed: RST2PyI) -> None:
@@ -123,7 +123,7 @@ def __init__(
    *, 
    mode: int = PERIODIC, 
    period: int = -1, 
-   callback: Optional[Callable[["Timer"], None]] = None, 
+   callback: Optional[Callable[[Timer], None]] = None, 
 )
 '''],
     )
@@ -135,7 +135,7 @@ def init(
    *, 
    mode: int = PERIODIC, 
    period: int = -1, 
-   callback: Optional[Callable[["Timer"], None]] = None, 
+   callback: Optional[Callable[[Timer], None]] = None, 
 ) -> None
 ''',
     )
@@ -224,7 +224,7 @@ def irq(
    /, 
    *, 
    trigger: int, 
-   handler: Optional[Callable[["RTC"], None]] = None, 
+   handler: Optional[Callable[[RTC], None]] = None, 
    wake: int = IDLE
 ) -> None
 ''',
@@ -582,7 +582,7 @@ def irq(
    self, 
    trigger: int, 
    priority: int = 1, 
-   handler: Optional[Callable[["UART"], None]] = None, 
+   handler: Optional[Callable[[UART], None]] = None, 
    wake: int = IDLE, 
    /
 ) -> Any
@@ -728,13 +728,13 @@ def init(
 def irq(
    self,
    /,
-   handler: Optional[Callable[["Pin"], None]] = None, 
+   handler: Optional[Callable[[Pin], None]] = None, 
    trigger: int = (IRQ_FALLING | IRQ_RISING), 
    *, 
    priority: int = 1, 
    wake: Optional[int] = None, 
    hard: bool = False,
-) -> Optional[Callable[["Pin"], None]]
+) -> Optional[Callable[[Pin], None]]
 ''',
         end='The following methods are not part of the core Pin API and only implemented on certain ports.'
     )
@@ -814,13 +814,13 @@ from typing import Sequence, runtime_checkable, Protocol, ClassVar, Any, Final
 from uarray import array
 
 
-{repdefs.AbstractBlockDev}
+{repdefs.ABSTRACT_BLOCK_DEV}
 
 
-{repdefs.AnyWritableBuf}
+{repdefs.ANY_WRITABLE_BUF}
 
 
-{repdefs.AnyReadableBuf}
+{repdefs.ANY_READABLE_BUF}
 '''
     shed.module(
         name='machine',
@@ -828,7 +828,7 @@ from uarray import array
         post_doc=module_post_doc,
         end='The ``machine`` module contains specific functions related to the hardware'
     )
-    shed.pyi.doc += shed.extra_notes(end='Reset related functions')
+    shed.pyi.doc.extend(shed.extra_notes(end='Reset related functions'))
     shed.def_(
         old='.. function:: reset()',
         new='def reset() -> NoReturn',

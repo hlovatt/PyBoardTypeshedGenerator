@@ -8,7 +8,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "5.0.4"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "5.1.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def uasyncio(shed: RST2PyI) -> None:
@@ -25,7 +25,7 @@ from uarray import array
 _T = TypeVar("_T")
 _C = Union[Coroutine[Any, None, _T], Awaitable[_T]]  # `Coroutine` `_T` is covariant and `Awaitable` `_T` is invariant.
 
-{repdefs.AnyReadableBuf}
+{repdefs.ANY_READABLE_BUF}
 ''',
         end='Core functions',
     )
@@ -164,7 +164,7 @@ def start_server(
    port: Union[str, int, None],
    backlog: int = 5, 
    /,
-) -> Awaitable["Server"]
+) -> Awaitable[Server]
 ''',
         indent=0,
     )
@@ -219,12 +219,12 @@ def start_server(
     )
     shed.def_(
         old='.. function:: get_event_loop()',
-        new='def get_event_loop() -> "Loop"',
+        new='def get_event_loop() -> Loop',
         indent=0,
     )
     shed.def_(
         old='.. function:: new_event_loop()',
-        new='def new_event_loop() -> "Loop"',
+        new='def new_event_loop() -> Loop',
         indent=0,
     )
     loop = '.. class:: Loop()'
@@ -255,11 +255,11 @@ def start_server(
     )
     shed.def_(
         old='.. method:: Loop.set_exception_handler(handler)',
-        new='def set_exception_handler(self, handler: Optional[Callable[["Loop", Dict[str, Any]], None]], /) -> None',
+        new='def set_exception_handler(self, handler: Optional[Callable[[Loop, Dict[str, Any]], None]], /) -> None',
     )
     shed.def_(
         old='.. method:: Loop.get_exception_handler()',
-        new='def get_exception_handler(self) -> Optional[Callable[["Loop", Dict[str, Any]], None]]',
+        new='def get_exception_handler(self) -> Optional[Callable[[Loop, Dict[str, Any]], None]]',
     )
     shed.def_(
         old='.. method:: Loop.default_exception_handler(context)',

@@ -13,7 +13,7 @@ from rst import RST
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "5.0.4"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "5.1.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 @dataclass
@@ -32,7 +32,7 @@ class RST2PyI:
       8. `write` the finished conversion to the `.pyi` file (the point of the exercise!).
       9. Repeat 2 to 8 for each module.
 
-    A simple example of using `RST2PyI` is `array.py` and a complicated example is `pyb.py`.
+    A simple example of using `RST2PyI` is `array_.py` and a complicated example is `pyb_.py`.
     """
 
     output_root_dir: str
@@ -48,8 +48,29 @@ class RST2PyI:
     _note: ClassVar[str] = '.. note::'
     _admonition: ClassVar[str] = '.. admonition::'
     _data_dec_str: ClassVar[str] = '.. data:: '
+    _data_dec_parts: ClassVar[List[str]] = _data_dec_str.split()
 
-    def is_last(self, line: str, end: Optional[str]) -> bool:
+    @staticmethod
+    def _filter_out_data_dec_and_etc(names: Union[str, List[str]]) -> List[str]:
+        names_temp0: List[str] = names if isinstance(names, list) else names.replace(',', ' ').split()
+        names_temp1 = map(str.strip, names_temp0)
+
+        def remove_data_dec(name: str) -> str:
+            return name if not name.startswith(RST2PyI._data_dec_str) else name[len(RST2PyI._data_dec_str):]
+
+        names_temp2 = map(remove_data_dec, names_temp1)
+        names_temp3 = filter(lambda name: name not in RST2PyI._data_dec_parts and name != 'etc.', names_temp2)
+
+        def remove_class_name(name: str) -> str:
+            dot_index = name.rfind('.')
+            if dot_index < 0:
+                return name
+            return name[dot_index + 1:]
+
+        names_temp4 = map(remove_class_name, names_temp3)
+        return list(names_temp4)
+
+    def is_end(self, line: str, end: Optional[str]) -> bool:
         """
         Many of the parsing functions have an end argument, this function is used for end testing.
         If `line` is `end` then the line is pushed-back and `True` returned, else no push-back and `False`.
@@ -86,7 +107,7 @@ class RST2PyI:
             assert test(line), f'Expected {msg}, got `{line}`!'
 
     def consume(self, *, end: str) -> None:
-        self.consume_line(lambda l: self.is_last(l, end), msg=end, and_preceding_lines=True)
+        self.consume_line(lambda l: self.is_end(l, end), msg=end, and_preceding_lines=True)
 
     def consume_title_line(self, *, and_preceding_lines: bool = False) -> None:
         self.consume_line(
@@ -118,7 +139,7 @@ class RST2PyI:
             old: str,
             new: Optional[str] = None,
             post_doc: str = '',
-            end: str = _definitions,
+            end: str,
     ) -> None:
         self._name = name
         url = self._input_base_url + name + '.rst'
@@ -128,9 +149,11 @@ class RST2PyI:
             new = old
         doc = []
         for doc_line in self.rst:
-            if self.is_last(doc_line, end):
+            if self.is_end(doc_line, end):
                 break
             doc.append(doc_line)
+        else:
+            assert False, f'`end` line, `{end}`, not found!'
         new_line = '\n'  # Needed because you can't have a `\` inside a `{}` block in an f-string.
         self.pyi.doc.append(f'''
 {new}
@@ -146,7 +169,7 @@ Descriptions taken from
 __author__ = "{rst.__author__}"
 __copyright__ = "{rst.__copyright__}"
 __license__ = "{rst.__license__}"
-__version__ = "5.0.4"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "5.1.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 {post_doc}
@@ -180,7 +203,7 @@ __version__ = "5.0.4"  # Version set by https://github.com/hlovatt/tag2ver
         self.consume_blank_line()
         doc = []
         for doc_line in self.rst:
-            if self.is_last(doc_line, end):
+            if self.is_end(doc_line, end):
                 break
             if doc_line and set(doc_line).issubset(self._header_underline):
                 assert doc[-1].strip(), f'Expected a non-blank line, got blank!'  # Remove header.
@@ -200,7 +223,7 @@ __version__ = "5.0.4"  # Version set by https://github.com/hlovatt/tag2ver
         new_class.doc = doc
         new_class.imports_vars.append(post_doc)
 
-    def class_(self, *, pre_str: str = '', name: str, extra_docs: List[str] = (), end: str) -> None:
+    def class_(self, *, pre_str: str = '', name: str, extra_docs: List[str] = (), end: Optional[str]) -> None:
         new_class = Class(pre_str=pre_str)
         self.pyi.classes.append(new_class)
         new_class.class_def = f'class {name}:'
@@ -220,7 +243,7 @@ __version__ = "5.0.4"  # Version set by https://github.com/hlovatt/tag2ver
     ) -> None:
         method_def = indent != 0
         for line in self.rst:
-            if self.is_last(line, end):
+            if self.is_end(line, end):
                 break
             if not line.strip():  # Ignore blank lines.
                 continue
@@ -243,7 +266,7 @@ __version__ = "5.0.4"  # Version set by https://github.com/hlovatt/tag2ver
                 assert new_defs, 'No method signatures found!'
             doc = []
             for doc_line in self.rst:
-                if self.is_last(doc_line, end):
+                if self.is_end(doc_line, end):
                     break
                 doc.append(doc_line)
             else:
@@ -273,7 +296,7 @@ __version__ = "5.0.4"  # Version set by https://github.com/hlovatt/tag2ver
         )
         doc = []
         for doc_line in self.rst:
-            if self.is_last(doc_line, end):
+            if self.is_end(doc_line, end):
                 break
             if doc_line and set(doc_line).issubset(self._header_underline):
                 assert doc[-1], f'Expected heading, got blank line!'
@@ -281,7 +304,7 @@ __version__ = "5.0.4"  # Version set by https://github.com/hlovatt/tag2ver
                 assert not doc[-1].strip(), f'Expected blank line, got `{doc[-1]}`!'
                 del doc[-1]  # Remove blank line before heading text.
                 for para_line in self.rst:  # Consume heading paragraph text (if any).
-                    if self.is_last(para_line, self._definitions):
+                    if self.is_end(para_line, self._definitions):
                         break
                 else:
                     assert False, 'Reached end of file whilst stepping over heading paragraph text!'
@@ -351,7 +374,7 @@ __version__ = "5.0.4"  # Version set by https://github.com/hlovatt/tag2ver
         extras = [first_line]
         indent_str = indent * ' '
         for extra_line in self.rst:
-            if self.is_last(extra_line, end):
+            if self.is_end(extra_line, end):
                 break
             extras.append(indent_str + extra_line)
         else:
@@ -377,8 +400,11 @@ __version__ = "5.0.4"  # Version set by https://github.com/hlovatt/tag2ver
     ) -> None:
         """
         Add var definition(s) to current typeshed.
-        A single definition is added if `old` is `str`;
-        multiple, with the same description, if `old` is a list of `str`.
+
+        A single definition is added if `old` is `str` containing a single identifier;
+        multiple, with the same description, if `old` is a `List` of `str` or `old` is a space or comma separated list.
+        The variables in `old` may optionally be prefixed with '`.. data:: `'.
+
         Class-vars (`class_var=True`) and instance-vars (`class_var=False`)
         are added to the top of the current class`,
         i.e. inside the class definition after the class doc-comment and import statements.
@@ -395,31 +421,31 @@ __version__ = "5.0.4"  # Version set by https://github.com/hlovatt/tag2ver
         :param end: the end of field parsing string prefix (defaults to `self._definitions`) and
         `None` means parse to end of file.
         """
-        old_list: List[str] = old if isinstance(old, list) else [old]
+        old_names = RST2PyI._filter_out_data_dec_and_etc(old)
         type_hint = f'ClassVar[{type_}]' if class_var else f'Final[{type_}]' if final_ else type_
         indent_str = ' ' * (0 if class_var is None else 3)
         for line in self.rst:
-            if not line.strip().startswith(RST2PyI._data_dec_str):  # Ignore lines up to declaration
+            if not line.strip().startswith(RST2PyI._data_dec_str):  # Ignore lines up to declaration.
                 continue
             self.rst.push_line(line)  # Push the line back; it is the start of the declaration.
             names: List[str] = []
-            old_iter = iter(old_list)
+            old_name_iter = iter(old_names)
             for name_line in self.rst:
-                stripped_name = name_line.strip()
-                if not stripped_name:
+                stripped_name_line = name_line.strip()
+                if not stripped_name_line:
                     break  # There should always be a blank line following declaration(s).
-                stripped_old = next(old_iter).strip()
-                assert stripped_name == stripped_old, f'`{stripped_old}` not found, found `{stripped_name}`!'
-                full_name = stripped_name[len(RST2PyI._data_dec_str):] \
-                    if stripped_name.startswith(RST2PyI._data_dec_str) else stripped_name
-                dot_index = full_name.find('.')
-                name = full_name[dot_index + 1:] if dot_index >= 0 else full_name
-                names.append(name)
+                line_names = RST2PyI._filter_out_data_dec_and_etc(stripped_name_line)
+                for name in line_names:
+                    old_name = next(old_name_iter, None)
+                    assert old_name is not None, f'Ran out of old names before `{stripped_name_line}` exhausted!'
+                    assert name == old_name, \
+                        f'`{old_name}` not found, found in `{stripped_name_line}` or not in same order!'
+                    names.append(name)
             else:
                 assert False, f'No description of `{old}` found!'
             documentation: List[str] = []
             for doc_line in self.rst:
-                if self.is_last(doc_line, end):
+                if self.is_end(doc_line, end):
                     break
                 documentation.append(doc_line)
             else:
@@ -448,10 +474,17 @@ __version__ = "5.0.4"  # Version set by https://github.com/hlovatt/tag2ver
     def preview(self) -> None:
         print(self.pyi)
 
-    def write(self) -> None:
-        """Write the module to the output directory and reset `self` for next module."""
+    def write(self, *, u_also: bool = False) -> None:
+        """
+        Write the module to the output directory as `<self.name>.pyi` and reset `self` for next module.
+        If `u_also` is true, writes an additional identical file to `u<self.name>.pyi`.
+        """
         assert not self.rst, f'Not all input lines processed! Remaining: {self.rst}'
+        str_pyi = str(self.pyi)
         with open(os.path.join(self.output_root_dir, self._name + '.pyi'), 'w') as f:
-            f.write(str(self.pyi))
+            f.write(str_pyi)
+        if u_also:
+            with open(os.path.join(self.output_root_dir, 'u' + self._name + '.pyi'), 'w') as f:
+                f.write(str_pyi)
         self._name = ''
         self.pyi.clear()
