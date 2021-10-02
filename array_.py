@@ -8,7 +8,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "5.1.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 # TODO Is making array inherit mutable array a good idea?
@@ -21,9 +21,9 @@ def array(shed: RST2PyI) -> None:
         name='array',
         old='efficient arrays of numeric data',
         post_doc='''
-from typing import overload, Sequence, Any, MutableSequence, Generic, Text, TypeVar
+from typing import overload, Sequence, Any, MutableSequence, Generic, Text, TypeVar, Final
 
-_T = TypeVar("_T", int, float, Text)
+_T: Final = TypeVar("_T", int, float, Text)
 ''',
         end=R'|see_cpython_module| :mod:`python:array`.'
     )
@@ -63,10 +63,7 @@ _T = TypeVar("_T", int, float, Text)
     )
     shed.def_(
         old=R'.. class:: array(typecode, [iterable])',
-        new=[
-            'def __init__(self, typecode: str, /)',
-            'def __init__(self, typecode: str, iterable: Sequence[Any], /)'
-        ],
+        new='def __init__(self, typecode: str, iterable: Sequence[Any] = ..., /)',
     )
     shed.def_(
         old=R'    .. method:: append(val)',

@@ -1,11 +1,11 @@
 from dataclasses import dataclass, field
-from typing import Iterator, List, Union
+from typing import Iterator, List, Final, Union
 from urllib.request import urlopen, Request
 
 __author__ = "Howard C Lovatt"
 __copyright__ = "Howard C Lovatt, 2020 onwards."
 __license__ = "MIT https://opensource.org/licenses/MIT (as used by MicroPython)."
-__version__ = "5.1.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 @dataclass(frozen=True)
@@ -17,9 +17,10 @@ class RST(Iterator[str]):
     `push_line` is typically used to provide 'push back' when parsing.
     `__len__` is provided and is typically use to test if empty, via implicit bool conversion.
     `peek` is useful for debugging parsers.
+    `pop_line` is useful for fixing up `rst` files to make them easier to parse.
     """
     
-    _lines: List[str] = field(default_factory=list)
+    _lines: Final[List[str]] = field(default_factory=list)
 
     def __iter__(self) -> 'RST':
         return self
@@ -47,3 +48,6 @@ class RST(Iterator[str]):
         if not self._lines:
             return 'No more lines!'
         return self._lines[-1]
+
+    def pop_line(self) -> str:
+        return self._lines.pop()

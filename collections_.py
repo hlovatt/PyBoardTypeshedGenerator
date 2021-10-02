@@ -8,7 +8,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "5.1.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def collections(shed: RST2PyI) -> None:
@@ -16,10 +16,10 @@ def collections(shed: RST2PyI) -> None:
         name='collections',
         old='collection and container types',
         post_doc=f'''
-from typing import overload, Tuple, Any, Type, Iterable, TypeVar, Generic, Mapping, Dict
+from typing import overload, Tuple, Any, Type, Iterable, TypeVar, Generic, Mapping, Dict, Final
 
-_KT = TypeVar("_KT")
-_VT = TypeVar("_VT")
+_KT: Final = TypeVar("_KT")
+_VT: Final = TypeVar("_VT")
 ''',
         end=R'Classes'
     )

@@ -9,63 +9,20 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "5.1.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def btree(shed: RST2PyI) -> None:
     module_post_doc = f'''
-from abc import abstractmethod
+from types import TracebackType
 from typing import Protocol, Iterable, AnyStr, runtime_checkable, Optional, TypeVar, Tuple, Final
+from typing import Type, Any, List
 
 from uarray import array
 
-
-@runtime_checkable
-class _IOBase(Protocol):
-    """
-    A `Protocol` (structurally typed) for an IOStream.
-    """
-
-    __slots__ = ()
-
-    @abstractmethod
-    def __enter__(self) -> "_IOBase": ...
-    
-    @abstractmethod
-    def __exit__(self) -> None: ...
-    
-    @abstractmethod
-    def __next__(self) -> AnyStr: ...
-    
-    @abstractmethod
-    def close(self) -> None: ...
-    
-    @abstractmethod
-    def read(self, size: Optional[int] = -1) -> Optional[bytes]: ...
-    
-    @abstractmethod
-    def readinto(self, b: _AnyWritableBuf) -> int: ...
-    
-    @abstractmethod
-    def readline(self, size: int = -1) -> AnyStr: ...
-    
-    @abstractmethod
-    def write(self, b: _AnyReadableBuf) -> int: ...
-    
-    @abstractmethod
-    def flush(self) -> None: ...
-    
-    @abstractmethod
-    def seek(self, offset: int, whence: int = 0) -> int: ...
-    
-    @abstractmethod
-    def tell(self) -> int: ...
-
-
 {repdefs.ANY_WRITABLE_BUF}
-
-
 {repdefs.ANY_READABLE_BUF}
+{repdefs.IO_BASE}
 '''
     shed.module(
         name='btree',
@@ -77,7 +34,15 @@ class _IOBase(Protocol):
     shed.def_(
         old=R'.. function:: open(stream, *, flags=0, pagesize=0, cachesize=0, minkeypage=0)',
         new='''
-def open(stream: _IOBase, /, *, flags: int = 0, pagesize: int = 0, cachesize: int = 0, minkeypage: int = 0) -> _BTree
+def open(
+   stream: _IOBase[bytes, Any], 
+   /, 
+   *, 
+   flags: int = 0, 
+   pagesize: int = 0, 
+   cachesize: int = 0, 
+   minkeypage: int = 0
+) -> _BTree
 ''',
         indent=0
     )

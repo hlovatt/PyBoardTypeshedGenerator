@@ -3,7 +3,7 @@ Routines to converts `.rst` documentation files into `.pyi` typeshed stub interf
 """
 import os
 from dataclasses import dataclass
-from typing import List, Set, Dict, Callable, Optional, Union, ClassVar, Final
+from typing import List, Set, Dict, Callable, Optional, ClassVar, Final, Union
 
 import rst
 from class_ import Class
@@ -13,7 +13,7 @@ from rst import RST
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "5.1.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 @dataclass
@@ -169,7 +169,7 @@ Descriptions taken from
 __author__ = "{rst.__author__}"
 __copyright__ = "{rst.__copyright__}"
 __license__ = "{rst.__license__}"
-__version__ = "5.1.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 {post_doc}
@@ -237,44 +237,41 @@ __version__ = "5.1.0"  # Version set by https://github.com/hlovatt/tag2ver
             pre_str: str = '',
             cmd: str,
             old2new: Dict[str, Union[str, List[str]]],
-            end: Optional[str] = None,
+            end: Optional[str] = _definitions,
             indent: int = 3,
             extra_doc_indent: int = 0,
     ) -> None:
+        assert cmd.strip(), 'Command string prefix cannot be empty or just whitespace!'
+        assert self.rst, 'No lines remaining in `rst`!'
         method_def = indent != 0
+        line = ''  # Keep type checker happy, line is always overwritten!
         for line in self.rst:
-            if self.is_end(line, end):
+            if line.strip():  # Break on non blank line so that leading blank lines are ignored.
                 break
-            if not line.strip():  # Ignore blank lines.
-                continue
-            if not line.startswith(cmd):
-                self.rst.push_line(line)
+        assert line.startswith(cmd), f'Command, `{cmd}`, not found, found `{line}`!'
+        self.rst.push_line(line)  # Push back the current line so that it is re-read into `def_line`.
+        new_defs = []
+        for def_line in self.rst:
+            if not def_line.strip():  # End of defs is a blank line.
                 break
-            new_defs = []
-            self.rst.push_line(line)  # Push back the current line so that it is re-read into `def_line`.
-            for def_line in self.rst:
-                if not def_line:
-                    break  # End of _name list.
-                new = old2new[def_line[len(cmd):]]
-                if new:  # A blank translation or an empty list means the method signature(s) is(are) not required.
-                    if isinstance(new, list):
-                        for overload in new:
-                            new_defs.append('@overload\n' + overload)
-                    else:
-                        new_defs.append(new)
-            else:
-                assert new_defs, 'No method signatures found!'
-            doc = []
-            for doc_line in self.rst:
-                if self.is_end(doc_line, end):
-                    break
-                doc.append(doc_line)
-            else:
-                assert doc, 'No description found!'
-            for new in new_defs:
-                self._add_def_or_defs(method_def, doc, indent, extra_doc_indent, new, pre_str)
+            new = old2new[def_line[len(cmd):]]
+            if new:  # A blank translation or an empty list means the method signature(s) is(are) not required.
+                if isinstance(new, list):
+                    for overload in new:
+                        new_defs.append('@overload\n' + overload)
+                else:
+                    new_defs.append(new)
+        assert new_defs, 'No method signatures found!'
+        doc = []
+        for doc_line in self.rst:
+            if self.is_end(doc_line, end):
+                break
+            doc.append(doc_line)
         else:
-            assert False, 'No defs found!'
+            assert doc, 'No description found!'
+        for new in new_defs:
+            self._add_def_or_defs(method_def, doc, indent, extra_doc_indent, new, pre_str)
+        assert new_defs, 'No defs found!'
 
     def def_(
             self,

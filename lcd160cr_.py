@@ -9,7 +9,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "5.1.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def lcd160cr(shed: RST2PyI) -> None:
@@ -17,15 +17,12 @@ def lcd160cr(shed: RST2PyI) -> None:
         name='lcd160cr',
         old='control of LCD160CR display',
         post_doc=f'''
-from typing import overload, Any, Union, Tuple, TypeVar, Optional, Final
+from typing import overload, Any, Tuple, TypeVar, Optional, Final
 
 from pyb import Pin, I2C, SPI
 from uarray import array
 
-
 {repdefs.ANY_WRITABLE_BUF}
-
-
 {repdefs.ANY_READABLE_BUF}
 ''',
         end=R'..',
@@ -85,7 +82,7 @@ def clip_line(data: Any, w: int, h: int, /) -> int
     )
     shed.def_(
         old='.. method:: LCD160CR.set_startup_deco(value)',
-        new='def set_startup_deco(self, value: Union[bool, str], /) -> None',
+        new='def set_startup_deco(self, value: bool | str, /) -> None',
     )
     shed.def_(
         old='.. method:: LCD160CR.save_to_flash()',

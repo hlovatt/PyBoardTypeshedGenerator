@@ -8,7 +8,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "5.1.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def cmath(shed: RST2PyI) -> None:
@@ -16,9 +16,9 @@ def cmath(shed: RST2PyI) -> None:
         name='cmath',
         old='mathematical functions for complex numbers',
         post_doc='''
-from typing import SupportsComplex, SupportsFloat, Tuple, Union, Final
+from typing import SupportsComplex, SupportsFloat, Tuple, Final
 
-_C = Union[SupportsFloat, SupportsComplex]
+_C: Final = SupportsFloat | SupportsComplex
 ''',
         end='Functions',
     )

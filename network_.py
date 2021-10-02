@@ -8,7 +8,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "5.1.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def network(shed: RST2PyI) -> None:
@@ -154,7 +154,7 @@ def connect(
         old=R".. method:: WLANWiPy.ifconfig(if_id=0, config=['dhcp' or configtuple])",
         new=[
             'def ifconfig(self, if_id: int = 0, /) -> Tuple[str, str, str, str]',
-            'def ifconfig(self, if_id: int = 0, /, *, config: Union[str, Tuple[str, str, str, str]]) -> None',
+            'def ifconfig(self, if_id: int = 0, /, *, config: str | Tuple[str, str, str, str]) -> None',
         ],
     )
     shed.def_(
@@ -306,18 +306,18 @@ def _network(shed: RST2PyI) -> None:
         old='network configuration',
         post_doc='''
 from abc import abstractmethod
-from typing import Protocol, List, Tuple, Callable, overload, Any, Optional, ClassVar, Union
+from typing import Protocol, List, Tuple, Callable, overload, Any, Optional, ClassVar, Final
 
 import pyb
 
 
-MODE_11B: int = ...
+MODE_11B: Final[int] = ...
 """IEEE 802.11b"""
 
-MODE_11G: int = ...
+MODE_11G: Final[int] = ...
 """IEEE 802.11g"""
 
-MODE_11N: int = ...
+MODE_11N: Final[int] = ...
 """IEEE 802.11n"""
 ''',
         end=R'Common network adapter interface',

@@ -8,7 +8,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "5.1.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def uasyncio(shed: RST2PyI) -> None:
@@ -17,13 +17,14 @@ def uasyncio(shed: RST2PyI) -> None:
         old='asynchronous I/O scheduler for writing concurrent code',
         post_doc=f'''
 from abc import ABC
-from typing import Awaitable, TypeVar, Optional, List, Tuple, Union, Callable
-from typing import Coroutine, Any, Dict, Iterable, Generic
+from typing import Awaitable, TypeVar, Optional, List, Tuple, Callable
+from typing import Coroutine, Any, Dict, Iterable, Generic, Final
 
 from uarray import array
 
-_T = TypeVar("_T")
-_C = Union[Coroutine[Any, None, _T], Awaitable[_T]]  # `Coroutine` `_T` is covariant and `Awaitable` `_T` is invariant.
+_T: Final = TypeVar("_T")
+# `Coroutine` `_T` is covariant and `Awaitable` `_T` is invariant.
+_C: Final = Coroutine[Any, None, _T] | Awaitable[_T]
 
 {repdefs.ANY_READABLE_BUF}
 ''',
@@ -149,7 +150,7 @@ StreamWriter = 'Stream'
         new='''
 def open_connection(
    host: Optional[str], 
-   port: Union[str, int, None],
+   port: str | int | None,
    /,
 ) -> Awaitable[Tuple[StreamReader, StreamWriter]]
 ''',
@@ -160,8 +161,8 @@ def open_connection(
         new='''
 def start_server(
    callback: Callable[[StreamReader, StreamWriter], None], 
-   host: Optional[str], 
-   port: Union[str, int, None],
+   host: str | None, 
+   port: str | int | None,
    backlog: int = 5, 
    /,
 ) -> Awaitable[Server]

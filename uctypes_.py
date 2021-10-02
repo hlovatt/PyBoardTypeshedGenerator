@@ -9,7 +9,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "5.1.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def uctypes(shed: RST2PyI) -> None:
@@ -17,7 +17,7 @@ def uctypes(shed: RST2PyI) -> None:
         name='uctypes',
         old='access binary data in a structured way',
         post_doc=f'''
-from typing import Tuple, Union, TypeVar, Final
+from typing import Tuple, TypeVar, Final
 
 from uarray import array
 
@@ -32,23 +32,22 @@ from uarray import array
         end=rst_name,
     )
     shed.pyi.imports_vars_defs.extend([
-        '_scalar_property = int',
-        '_recursive_property = Tuple[int, "_property"]',
-        '_array_property = Tuple[int, int]',
-        '_array_of_aggregate_property = Tuple[int, int, "_property"]',
-        '_pointer_to_a_primitive_property = Tuple[int, int]',
-        '_pointer_to_an_aggregate_property = Tuple[int, "_property"]',
-        '_bitfield_property = int',
-        ('_property = Union['
-         '_scalar_property, '
-         '_recursive_property, '
-         '_array_property, '
-         '_array_of_aggregate_property, '
-         '_pointer_to_a_primitive_property, '
-         '_pointer_to_an_aggregate_property, '
-         '_bitfield_property'
-         ']'),
-        '_descriptor = Tuple[str, _property]',
+        '_ScalarProperty: Final = int',
+        '_RecursiveProperty: Final = Tuple[int, "_property"]',
+        '_ArrayProperty: Final = Tuple[int, int]',
+        '_ArrayOfAggregateProperty: Final = Tuple[int, int, "_property"]',
+        '_PointerToAPrimitiveProperty: Final = Tuple[int, int]',
+        '_PointerToAaAggregateProperty: Final = Tuple[int, "_property"]',
+        '_BitfieldProperty: Final = int',
+        ('_property: Final = _ScalarProperty'
+         ' | _RecursiveProperty'
+         ' | _ArrayProperty'
+         ' | _ArrayOfAggregateProperty'
+         ' | _PointerToAPrimitiveProperty'
+         ' | _PointerToAaAggregateProperty'
+         ' | _BitfieldProperty'
+         ),
+        '_descriptor: Final = Tuple[str, _property]',
     ])
     shed.def_(
         old=rst_name,
@@ -60,7 +59,7 @@ from uarray import array
     shed.def_(
         pre_str='# noinspection PyShadowingNames',
         old=r'.. function:: sizeof(struct, layout_type=NATIVE, /)',
-        new='def sizeof(struct: Union[struct, _descriptor], layout_type: int = NATIVE, /) -> int',
+        new='def sizeof(struct: struct | _descriptor, layout_type: int = NATIVE, /) -> int',
         indent=0,
     )
     shed.def_(

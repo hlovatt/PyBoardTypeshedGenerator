@@ -8,7 +8,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "5.1.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def micropython(shed: RST2PyI) -> None:
@@ -16,9 +16,9 @@ def micropython(shed: RST2PyI) -> None:
         name='micropython',
         old='access and control MicroPython internals',
         post_doc=f'''
-from typing import TypeVar, overload, Callable, Any
+from typing import TypeVar, overload, Callable, Any, Final
 
-_T = TypeVar('_T')
+_T: Final = TypeVar('_T')
 ''',
         end='Functions'
     )

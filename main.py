@@ -17,11 +17,16 @@ from cryptolib_ import cryptolib
 from errno_ import errno
 from framebuf_ import framebuf
 from gc_ import gc
+from hashlib_ import hashlib
+from heapq_ import heapq
+from io_ import io
+from json_ import json
 from lcd160cr_ import lcd160cr
 from machine_ import machine
 from math_ import math
 from micropython_ import micropython
 from network_ import network
+from os_ import os
 from pyb_ import pyb
 from rst2pyi import RST2PyI
 from uasyncio_ import uasyncio
@@ -30,19 +35,25 @@ from uctypes_ import uctypes
 __author__ = rst.__author__
 __copyright_ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "5.1.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def main() -> None:
     usage = '''
 
 Usage (from `PyBoardTypeshedGenerator`'s directory) one of:
+  0. `python3 -m main <destination root directory>`.
   1. `python3 main.py <destination root directory>`.
   2. `./main.py <destination root directory>` (if `main.py` is executable).
 '''
     assert len(argv) > 1, 'No destination root directory given.' + usage
     assert len(argv) == 2, 'Extra argument(s) given.' + usage
     shed = RST2PyI(output_root_dir=argv[1])
+    os(shed)
+    json(shed)
+    io(shed)
+    heapq(shed)
+    hashlib(shed)
     errno(shed)
     collections(shed)
     binascii(shed)

@@ -10,7 +10,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "5.1.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def pyb(shed: RST2PyI) -> None:
@@ -101,7 +101,7 @@ def _usb_vcp(this: str, shed: RST2PyI) -> None:
     )
     shed.def_(
         old=R'.. method:: USB_VCP.send(data, *, timeout=5000)',
-        new='def send(self, buf: Union[_AnyWritableBuf, bytes, int], /, *, timeout: int = 5000) -> int',
+        new='def send(self, buf: _AnyWritableBuf | bytes | int, /, *, timeout: int = 5000) -> int',
     )
     shed.vars(
         old=[
@@ -147,16 +147,16 @@ def _uart(this: str, shed: RST2PyI) -> str:
         new=['''
 def __init__(
    self, 
-   bus: Union[int, str],
+   bus: int | str,
    /
 )''', '''
 def __init__(
    self, 
-   bus: Union[int, str],
+   bus: int | str,
    baudrate: int,
    /,
    bits: int = 8,
-   parity: Optional[int] = None, 
+   parity: int | None = None, 
    stop: int = 1, 
    *, 
    timeout: int = 0, 
@@ -303,7 +303,7 @@ def pulse_width(self, value: int, /) -> None
 def pulse_width_percent(self) -> float
 ''', '''
 @abstractmethod
-def pulse_width_percent(self, value: Union[int, float], /) -> None
+def pulse_width_percent(self, value: int | float, /) -> None
 '''],
         end=end,
     )
@@ -518,7 +518,7 @@ def channel(
    *, 
    callback: Optional[Callable[[Timer], None]] = None, 
    pin: Optional[Pin] = None,
-   pulse_width_percent: Union[int, float],
+   pulse_width_percent: int | float,
 ) -> "TimerChannel"
 ''', '''
 def channel(
@@ -694,19 +694,19 @@ def init(
     )
     shed.def_(
         old=r'.. method:: SPI.recv(recv, *, timeout=5000)',
-        new='def recv(self, recv: Union[int, _AnyWritableBuf], /, *, timeout: int = 5000) -> _AnyWritableBuf',
+        new='def recv(self, recv: int | _AnyWritableBuf, /, *, timeout: int = 5000) -> _AnyWritableBuf',
     )
     shed.def_(
         old=r'.. method:: SPI.send(send, *, timeout=5000)',
-        new='def send(self, send: Union[int, _AnyWritableBuf, bytes], /, *, timeout: int = 5000) -> None',
+        new='def send(self, send: int | _AnyWritableBuf | bytes, /, *, timeout: int = 5000) -> None',
     )
     shed.def_(
         old=r'.. method:: SPI.send_recv(send, recv=None, *, timeout=5000)',
         new='''
 def send_recv(
    self, 
-   send: Union[int, bytearray, array, bytes], 
-   recv: Optional[_AnyWritableBuf] = None, 
+   send: int | bytearray | array | bytes, 
+   recv: _AnyWritableBuf | None = None, 
    /, 
    *, 
    timeout: int = 5000
@@ -1513,13 +1513,13 @@ def _pin(this: str, shed: RST2PyI) -> str:
         new='''
 def __init__(
    self, 
-   id: Union[Pin, str], 
+   id: Pin | str, 
    /, 
    mode: int = IN, 
    pull: int = PULL_NONE, 
    *,
    value: Any = None,
-   alt: Union[str, int] = -1,
+   alt: str | int = -1,
 )
 ''',
     )
@@ -1562,7 +1562,7 @@ def init(
    pull: int = PULL_NONE, 
    *, 
    value: Any = None, 
-   alt: Union[str, int] = -1,
+   alt: str | int = -1,
 ) -> None
 ''',
     )
@@ -1681,7 +1681,7 @@ def _lcd(this: str, shed: RST2PyI) -> str:
     )
     shed.def_(
         old='.. method:: LCD.light(value)',
-        new='def light(self, value: Union[bool, int], /) -> None',
+        new='def light(self, value: bool | int, /) -> None',
     )
     shed.def_(
         old='.. method:: LCD.pixel(x, y, colour)',
@@ -1711,7 +1711,7 @@ def _i2c(this: str, shed: RST2PyI) -> str:
         new='''
 def __init__(
    self, 
-   bus: Union[int, str], 
+   bus: int | str, 
    mode: str, 
    /, 
    *, 
@@ -1731,7 +1731,7 @@ def __init__(
         new='''
 def init(
    self, 
-   bus: Union[int, str], 
+   bus: int | str, 
    mode: str, 
    /, 
    *, 
@@ -1751,7 +1751,7 @@ def init(
         new='''
 def mem_read(
    self, 
-   data: Union[int, _AnyWritableBuf], 
+   data: int | _AnyWritableBuf, 
    addr: int, 
    memaddr: int,
    /, 
@@ -1765,7 +1765,7 @@ def mem_read(
 
 
 def _flash(this: str, shed: RST2PyI) -> str:
-    shed.class_from_file(old=this, )
+    shed.class_from_file(old=this, super_class='AbstractBlockDev')
     shed.def_(
         old='.. class:: pyb.Flash()',
         new='''
@@ -1805,7 +1805,7 @@ def _ext_int(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(old=this, )
     shed.def_(
         old='.. class:: pyb.ExtInt(pin, mode, pull, callback)',
-        new='def __init__(self, pin: Union[int, str, Pin], mode: int, pull: int, callback: Callable[[int], None])',
+        new='def __init__(self, pin: int | str | Pin, mode: int, pull: int, callback: Callable[[int], None])',
     )
     shed.def_(
         old='.. classmethod:: ExtInt.regs()',
@@ -1856,7 +1856,7 @@ def _dac(this: str, shed: RST2PyI) -> str:
     )
     shed.def_(
         old=r'.. class:: pyb.DAC(port, bits=8, *, buffering=None)',
-        new='def __init__(self, port: Union[int, Pin], /, bits: int = 8, *, buffering: Optional[bool] = None)',
+        new='def __init__(self, port: int | Pin, /, bits: int = 8, *, buffering: Optional[bool] = None)',
     )
     shed.def_(
         old=r'.. method:: DAC.init(bits=8, *, buffering=None)',
@@ -1881,7 +1881,7 @@ def _dac(this: str, shed: RST2PyI) -> str:
     nxt = 'pyb.ExtInt.rst'
     shed.def_(
         old=r'.. method:: DAC.write_timed(data, freq, *, mode=DAC.NORMAL)',
-        new='def write_timed(self, data: _AnyWritableBuf, freq: Union[int, Timer], /, *, mode: int = NORMAL) -> None',
+        new='def write_timed(self, data: _AnyWritableBuf, freq: int | Timer, /, *, mode: int = NORMAL) -> None',
         end=nxt,
     )
     return nxt
@@ -1894,7 +1894,7 @@ def _can(this: str, shed: RST2PyI) -> str:
         new='''
 def __init__(
    self, 
-   bus: Union[int, str], 
+   bus: int | str, 
    mode: int,
    /,
    extframe: bool = False, 
@@ -1985,13 +1985,13 @@ def setfilter(
         new=[
             'def recv(self, fifo: int, /, *, timeout: int = 5000) -> Tuple[int, bool, int, memoryview]',
             'def recv(self, fifo: int, list: None, /, *, timeout: int = 5000) -> Tuple[int, bool, int, memoryview]',
-            'def recv(self, fifo: int, list: List[Union[int, bool, memoryview]], /, *, timeout: int = 5000) -> None'
+            'def recv(self, fifo: int, list: List[int | bool | memoryview], /, *, timeout: int = 5000) -> None'
         ],
     )
     shed.def_(
         old=r'.. method:: CAN.send(data, id, *, timeout=0, rtr=False)',
         new='''
-def send(self, data: Union[int, _AnyWritableBuf], id: int, /, *, timeout: int = 0, rtr: bool = False) -> None
+def send(self, data: int | _AnyWritableBuf, id: int, /, *, timeout: int = 0, rtr: bool = False) -> None
 ''',
     )
     shed.def_(
@@ -2090,7 +2090,7 @@ def _adc(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(old=this)
     shed.def_(
         old='.. class:: pyb.ADC(pin)',
-        new='def __init__(self, pin: Union[int, Pin], /)',
+        new='def __init__(self, pin: int | Pin, /)',
     )
     shed.def_(
         old='.. method:: ADC.read()',
@@ -2098,7 +2098,7 @@ def _adc(this: str, shed: RST2PyI) -> str:
     )
     shed.def_(
         old='.. method:: ADC.read_timed(buf, timer)',
-        new='def read_timed(self, buf: _AnyWritableBuf, timer: Union[Timer, int], /) -> None',
+        new='def read_timed(self, buf: _AnyWritableBuf, timer: Timer | int, /) -> None',
     )
     extra = 'The ADCAll Object'
     shed.def_(
@@ -2158,10 +2158,10 @@ def _pyb(shed: RST2PyI) -> None:
         post_doc=f'''
 from abc import ABC, abstractmethod
 from typing import NoReturn, overload, Tuple, Sequence, runtime_checkable, Protocol
-from typing import Optional, Union, TypeVar, List, Callable, Dict, Any, ClassVar
+from typing import Optional, TypeVar, List, Callable, Dict, Any, ClassVar, Final
 
 from uarray import array
-
+from uos import AbstractBlockDev
 
 @runtime_checkable
 class _OldAbstractReadOnlyBlockDev(Protocol):
@@ -2173,7 +2173,7 @@ class _OldAbstractReadOnlyBlockDev(Protocol):
     __slots__ = ()
 
     @abstractmethod
-    def readblocks(self, blocknum: int, buf: bytes, /) -> None: ...
+    def readblocks(self, blocknum: int, buf: bytearray, /) -> None: ...
 
     @abstractmethod
     def count(self) -> int: ...
@@ -2189,30 +2189,25 @@ class _OldAbstractBlockDev(_OldAbstractReadOnlyBlockDev, Protocol):
     __slots__ = ()
 
     @abstractmethod
-    def writeblocks(self, blocknum: int, buf: bytes, /) -> None: ...
+    def writeblocks(self, blocknum: int, buf: bytes | bytearray, /) -> None: ...
 
     @abstractmethod
     def sync(self) -> None: ...
 
 
-{repdefs.ABSTRACT_BLOCK_DEV}
-
-
-hid_mouse: Tuple[int, int, int, int, bytes] = ...
+hid_mouse: Final[Tuple[int, int, int, int, bytes]] = ...
 """
 Mouse human interface device (hid), see `hid` argument of `usb_mode`.
 """
 
 
-hid_keyboard: Tuple[int, int, int, int, bytes] = ...
+hid_keyboard: Final[Tuple[int, int, int, int, bytes]] = ...
 """
 Keyboard human interface device (hid), see `hid` argument of `usb_mode`.
 """
 
 
 {repdefs.ANY_WRITABLE_BUF}
-
-
 {repdefs.ANY_READABLE_BUF}
 
 @overload
@@ -2394,7 +2389,7 @@ def usb_mode(
    port: int = -1, 
    vid: int = 0xf055, 
    pid: int = -1, 
-   msc: Sequence[_AbstractBlockDev] = (), 
+   msc: Sequence[AbstractBlockDev] = (), 
    hid: Tuple[int, int, int, int, bytes] = hid_mouse, 
    high_speed: bool = False
 ) -> None

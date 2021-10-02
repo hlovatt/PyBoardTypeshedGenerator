@@ -9,7 +9,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "5.1.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def bluetooth(shed: RST2PyI) -> None:
@@ -17,7 +17,7 @@ def bluetooth(shed: RST2PyI) -> None:
         name='bluetooth',
         old='Low-level Bluetooth radio functionality',
         post_doc=f'''
-from typing import overload, Any, Union, Tuple, Callable, Optional, TypeVar
+from typing import overload, Any, Tuple, Callable, Optional, TypeVar, Final
 
 from uarray import array
 
@@ -119,17 +119,17 @@ def gap_connect(
     )
     extra_docs = shed.extra_docs()
     shed.pyi.classes[-1].defs += [
-        '   _flag = int',
-        '   _descriptor = Tuple["UUID", _flag]',
-        '   _characteristic = Union[Tuple["UUID", _flag], Tuple["UUID", _flag, Tuple[_descriptor, ...]]]',
-        '   _service = Tuple["UUID", Tuple[_characteristic, ...]]',
+        '   _Flag: Final = int',
+        '   _Descriptor: Final = Tuple["UUID", _Flag]',
+        '   _Characteristic: Final = Tuple["UUID", _Flag] | Tuple["UUID", _Flag, Tuple[_Descriptor, ...]]',
+        '   _Service: Final = Tuple["UUID", Tuple[_Characteristic, ...]]',
     ]
     shed.def_(
         old=R'.. method:: BLE.gatts_register_services(services_definition, /)',
         new='''
 def gatts_register_services(
    self, 
-   services_definition: Tuple[_service, ...], 
+   services_definition: Tuple[_Service, ...], 
    /
 ) -> Tuple[Tuple[memoryview, ...], ...]''',
         extra_docs=extra_docs,
@@ -267,6 +267,6 @@ def l2cap_recvinto(
     )
     shed.def_(
         old=R'.. class:: UUID(value, /)',
-        new='def __init__(self, value: Union[int, str], /)',
+        new='def __init__(self, value: int | str, /)',
     )
     shed.write(u_also=True)

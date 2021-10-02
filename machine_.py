@@ -1,6 +1,7 @@
 """
 Generate `pyi` from corresponding `rst` docs.
 """
+from typing import Final
 
 import repdefs
 import rst
@@ -9,7 +10,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "5.1.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def machine(shed: RST2PyI) -> None:
@@ -30,8 +31,9 @@ def machine(shed: RST2PyI) -> None:
 
 
 def _sd_card(this: str, shed: RST2PyI) -> None:
-    con = '.. class:: SDCard(slot=1, width=1, cd=None, wp=None, sck=None, miso=None, mosi=None, cs=None, freq=20000000)'
-    shed.class_from_file(pre_str='# noinspection PyShadowingNames', old=this, super_class='_AbstractBlockDev', end=con)
+    con: Final = \
+        '.. class:: SDCard(slot=1, width=1, cd=None, wp=None, sck=None, miso=None, mosi=None, cs=None, freq=20000000)'
+    shed.class_from_file(pre_str='# noinspection PyShadowingNames', old=this, super_class='AbstractBlockDev', end=con)
     shed.def_(
         old=con,
         new='''
@@ -39,13 +41,13 @@ def __init__(
    self, 
    slot: int = 1, 
    width: int = 1, 
-   cd: Optional[Union[int, str, Pin]] = None, 
-   wp: Optional[Union[int, str, Pin]] = None, 
-   sck: Optional[Union[int, str, Pin]] = None, 
-   miso: Optional[Union[int, str, Pin]] = None, 
-   mosi: Optional[Union[int, str, Pin]] = None, 
-   cs: Optional[Union[int, str, Pin]] = None, 
-   freq: int = 20000000
+   cd: int | str | Pin | None = None, 
+   wp: int | str | Pin | None = None, 
+   sck: int | str | Pin | None = None, 
+   miso: int | str | Pin | None = None, 
+   mosi: int | str | Pin | None = None, 
+   cs: int | str | Pin | None = None, 
+   freq: int = 20000000,
 )
 ''',
         end='Implementation-specific details',
@@ -68,7 +70,7 @@ def _sd(this: str, shed: RST2PyI) -> str:
 def __init__(
    self, 
    id: int = 0, 
-   pins: Union[Tuple[str, str, str], Tuple[Pin, Pin, Pin]] = ("GP10", "GP11", "GP15")
+   pins: Tuple[str, str, str] | Tuple[Pin, Pin, Pin] = ("GP10", "GP11", "GP15")
 )
 ''')
     shed.def_(
@@ -77,7 +79,7 @@ def __init__(
 def init(
    self, 
    id: int = 0, 
-   pins: Union[Tuple[str, str, str], Tuple[Pin, Pin, Pin]] = ("GP10", "GP11", "GP15")
+   pins: Tuple[str, str, str] | Tuple[Pin, Pin, Pin] = ("GP10", "GP11", "GP15")
 ) -> None
 ''',
     )
@@ -449,7 +451,7 @@ def _uart(this: str, shed: RST2PyI) -> str:
             '''
 def __init__(
    self,
-   id: Union[int, str],
+   id: int | str,
    baudrate: int = 9600, 
    bits: int = 8, 
    parity: Optional[int] = None, 
@@ -468,7 +470,7 @@ def __init__(
             '''
 def __init__(
    self,
-   id: Union[int, str],
+   id: int | str,
    baudrate: int = 9600, 
    bits: int = 8, 
    parity: Optional[int] = None, 
@@ -481,7 +483,7 @@ def __init__(
             '''
 def __init__(
    self,
-   id: Union[int, str],
+   id: int | str,
    baudrate: int = 9600, 
    bits: int = 8, 
    parity: Optional[int] = None, 
@@ -601,7 +603,7 @@ def _adc(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(old=this)
     shed.def_(
         old='.. class:: ADC(id)',
-        new='def __init__(self, pin: Union[int, Pin], /)',
+        new='def __init__(self, pin: int | Pin, /)',
     )
     nxt = 'machine.UART.rst'
     shed.def_(
@@ -627,7 +629,7 @@ def __init__(self, pin_obj: Pin, invert: bool = False, /)
 @overload
 def __init__(
    self, 
-   id: Union[Pin, str], 
+   id: Pin | str, 
    /, 
    mode: int = -1, 
    pull: int = -1, 
@@ -807,19 +809,13 @@ def irq(
 
 def _machine(shed: RST2PyI) -> None:
     module_post_doc = f'''
-from abc import abstractmethod
-from typing import overload, Union, Tuple, TypeVar, Optional, NoReturn, List, Callable
-from typing import Sequence, runtime_checkable, Protocol, ClassVar, Any, Final
+from typing import overload, Tuple, TypeVar, Optional, NoReturn, List, Callable
+from typing import Sequence, ClassVar, Any, Final
 
 from uarray import array
-
-
-{repdefs.ABSTRACT_BLOCK_DEV}
-
+from uos import AbstractBlockDev
 
 {repdefs.ANY_WRITABLE_BUF}
-
-
 {repdefs.ANY_READABLE_BUF}
 '''
     shed.module(

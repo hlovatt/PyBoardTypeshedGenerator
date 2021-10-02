@@ -9,7 +9,7 @@ import repdefs
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "5.1.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def framebuf(shed: RST2PyI) -> None:
@@ -29,10 +29,7 @@ from uarray import array
     shed.class_(name='FrameBuffer', end='Constructors')
     shed.def_(
         old=R'.. class:: FrameBuffer(buffer, width, height, format, stride=width, /)',
-        new=[
-            'def __init__(self, buffer: _AnyWritableBuf, width: int, height: int, format: int, /)',
-            'def __init__(self, buffer: _AnyWritableBuf, width: int, height: int, format: int, stride: int, /)',
-        ],
+        new='def __init__(self, buffer: _AnyWritableBuf, width: int, height: int, format: int, stride: int = ..., /)',
     )
     shed.def_(
         old=R'.. method:: FrameBuffer.fill(c)',
