@@ -10,7 +10,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "6.2.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.2.1"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def os(shed: RST2PyI) -> None:
@@ -21,7 +21,7 @@ def os(shed: RST2PyI) -> None:
 from abc import abstractmethod
 from types import TracebackType
 from typing import Tuple, AnyStr, Final, TypeVar, runtime_checkable, Protocol
-from typing import Optional, Type, List, overload, Literal
+from typing import Type, overload, Literal
 
 from uarray import array
 
@@ -67,24 +67,24 @@ _FdOrAnyPath: Final = int | _AnyPath
     shed.def_(
         old=R'.. function:: ilistdir([dir])',
         new=[
-            'def ilistdir() -> List[Tuple[str, int, int] | Tuple[str, int, int, int]]',
-            'def ilistdir(dir: int, /) -> List[Tuple[str, int, int] | Tuple[str, int, int, int]]',
-            'def ilistdir(dir: str, /) -> List[Tuple[str, int, int] | Tuple[str, int, int, int]]',
-            'def ilistdir(dir: bytes, /) -> List[Tuple[bytes, int, int] | Tuple[bytes, int, int, int]]',
-            'def ilistdir(dir: _PathLike[str], /) -> List[Tuple[str, int, int] | Tuple[str, int, int, int]]',
-            'def ilistdir(dir: _PathLike[bytes], /) -> List[Tuple[bytes, int, int] | Tuple[bytes, int, int, int]]',
+            'def ilistdir() -> list[Tuple[str, int, int] | Tuple[str, int, int, int]]',
+            'def ilistdir(dir: int, /) -> list[Tuple[str, int, int] | Tuple[str, int, int, int]]',
+            'def ilistdir(dir: str, /) -> list[Tuple[str, int, int] | Tuple[str, int, int, int]]',
+            'def ilistdir(dir: bytes, /) -> list[Tuple[bytes, int, int] | Tuple[bytes, int, int, int]]',
+            'def ilistdir(dir: _PathLike[str], /) -> list[Tuple[str, int, int] | Tuple[str, int, int, int]]',
+            'def ilistdir(dir: _PathLike[bytes], /) -> list[Tuple[bytes, int, int] | Tuple[bytes, int, int, int]]',
         ],
         indent=0,
     )
     shed.def_(
         old=R'.. function:: listdir([dir])',
         new=[
-            'def listdir() -> List[str]',
-            'def listdir(dir: int, /) -> List[str]',
-            'def listdir(dir: str, /) -> List[str]',
-            'def listdir(dir: bytes, /) -> List[bytes]',
-            'def listdir(dir: _PathLike[str], /) -> List[str]',
-            'def listdir(dir: _PathLike[bytes], /) -> List[bytes]',
+            'def listdir() -> list[str]',
+            'def listdir(dir: int, /) -> list[str]',
+            'def listdir(dir: str, /) -> list[str]',
+            'def listdir(dir: bytes, /) -> list[bytes]',
+            'def listdir(dir: _PathLike[str], /) -> list[str]',
+            'def listdir(dir: _PathLike[bytes], /) -> list[bytes]',
         ],
         indent=0,
     )

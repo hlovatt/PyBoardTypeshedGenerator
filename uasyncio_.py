@@ -8,7 +8,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "6.2.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.2.1"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def uasyncio(shed: RST2PyI) -> None:
@@ -17,7 +17,7 @@ def uasyncio(shed: RST2PyI) -> None:
         old='asynchronous I/O scheduler for writing concurrent code',
         post_doc=f'''
 from abc import ABC
-from typing import Awaitable, TypeVar, Optional, List, Tuple, Callable
+from typing import Awaitable, TypeVar, Tuple, Callable
 from typing import Coroutine, Any, Dict, Iterable, Generic, Final
 
 from uarray import array
@@ -37,7 +37,7 @@ _C: Final = Coroutine[Any, None, _T] | Awaitable[_T]
     )
     shed.def_(
         old='.. function:: current_task()',
-        new='def current_task() -> Optional[Task[Any]]',
+        new='def current_task() -> Task[Any] | None',
         indent=0,
     )
     shed.def_(
@@ -68,7 +68,7 @@ _C: Final = Coroutine[Any, None, _T] | Awaitable[_T]
     )
     shed.def_(
         old='.. function:: gather(*awaitables, return_exceptions=False)',
-        new='def gather(*awaitable: Awaitable[Any], return_exceptions: bool = False) -> Awaitable[List[Any]]',
+        new='def gather(*awaitable: Awaitable[Any], return_exceptions: bool = False) -> Awaitable[list[Any]]',
         indent=0,
         end='class Task',
     )
@@ -149,7 +149,7 @@ StreamWriter = 'Stream'
         old='.. function:: open_connection(host, port)',
         new='''
 def open_connection(
-   host: Optional[str], 
+   host: str | None, 
    port: str | int | None,
    /,
 ) -> Awaitable[Tuple[StreamReader, StreamWriter]]
@@ -256,11 +256,11 @@ def start_server(
     )
     shed.def_(
         old='.. method:: Loop.set_exception_handler(handler)',
-        new='def set_exception_handler(self, handler: Optional[Callable[[Loop, Dict[str, Any]], None]], /) -> None',
+        new='def set_exception_handler(self, handler: Callable[[Loop, Dict[str, Any]], None] | None, /) -> None',
     )
     shed.def_(
         old='.. method:: Loop.get_exception_handler()',
-        new='def get_exception_handler(self) -> Optional[Callable[[Loop, Dict[str, Any]], None]]',
+        new='def get_exception_handler(self) -> Callable[[Loop, Dict[str, Any]], None] | None',
     )
     shed.def_(
         old='.. method:: Loop.default_exception_handler(context)',

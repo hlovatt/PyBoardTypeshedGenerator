@@ -11,7 +11,7 @@ from class_ import Class, strip_leading_and_trailing_blank_lines
 __author__ = rst.__author__
 __copyright_ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "6.2.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.2.1"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 @dataclass(frozen=True)

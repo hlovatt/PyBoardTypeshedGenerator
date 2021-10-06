@@ -10,7 +10,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "6.2.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.2.1"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def pyb(shed: RST2PyI) -> None:
@@ -69,24 +69,24 @@ def _usb_vcp(this: str, shed: RST2PyI) -> None:
     shed.def_(
         old=R'.. method:: USB_VCP.read([nbytes])',
         new=[
-            'def read(self) -> Optional[bytes]',
-            'def read(self, nbytes, /) -> Optional[bytes]'
+            'def read(self) -> bytes | None',
+            'def read(self, nbytes, /) -> bytes | None'
         ],
     )
     shed.def_(
         old=R'.. method:: USB_VCP.readinto(buf, [maxlen])',
         new=[
-            'def readinto(self, buf: _AnyWritableBuf, /) -> Optional[int]',
-            'def readinto(self, buf: _AnyWritableBuf, maxlen: int, /) -> Optional[int]'
+            'def readinto(self, buf: _AnyWritableBuf, /) -> int | None',
+            'def readinto(self, buf: _AnyWritableBuf, maxlen: int, /) -> int | None'
         ],
     )
     shed.def_(
         old=R'.. method:: USB_VCP.readline()',
-        new='def readline(self) -> Optional[bytes]',
+        new='def readline(self) -> bytes | None',
     )
     shed.def_(
         old=R'.. method:: USB_VCP.readlines()',
-        new='def readlines(self) -> Optional[List[bytes]]',
+        new='def readlines(self) -> list[bytes] | None',
     )
     shed.def_(
         old=R'.. method:: USB_VCP.write(buf)',
@@ -95,8 +95,8 @@ def _usb_vcp(this: str, shed: RST2PyI) -> None:
     shed.def_(
         old=R'.. method:: USB_VCP.recv(data, *, timeout=5000)',
         new=[
-            'def recv(self, data: int, /, *, timeout: int = 5000) -> Optional[bytes]',
-            'def recv(self, data: _AnyWritableBuf, /, *, timeout: int = 5000) -> Optional[int]'
+            'def recv(self, data: int, /, *, timeout: int = 5000) -> bytes | None',
+            'def recv(self, data: _AnyWritableBuf, /, *, timeout: int = 5000) -> int | None'
         ],
     )
     shed.def_(
@@ -177,7 +177,7 @@ def init(
    baudrate: int,
    /,
    bits: int = 8,
-   parity: Optional[int] = None, 
+   parity: int | None = None, 
    stop: int = 1, 
    *, 
    timeout: int = 0, 
@@ -198,8 +198,8 @@ def init(
     shed.def_(
         old=R'.. method:: UART.read([nbytes])',
         new=[
-            'def read(self) -> Optional[bytes]',
-            'def read(self, nbytes: int, /) -> Optional[bytes]'
+            'def read(self) -> bytes | None',
+            'def read(self, nbytes: int, /) -> bytes | None'
         ],
     )
     shed.def_(
@@ -209,17 +209,17 @@ def init(
     shed.def_(
         old=R'.. method:: UART.readinto(buf[, nbytes])',
         new=[
-            'def readinto(self, buf: _AnyWritableBuf, /) -> Optional[int]',
-            'def readinto(self, buf: _AnyWritableBuf, nbytes: int, /) -> Optional[int]'
+            'def readinto(self, buf: _AnyWritableBuf, /) -> int | None',
+            'def readinto(self, buf: _AnyWritableBuf, nbytes: int, /) -> int | None'
         ],
     )
     shed.def_(
         old=R'.. method:: UART.readline()',
-        new='def readline(self) -> Optional[str]',
+        new='def readline(self) -> str | None',
     )
     shed.def_(
         old=R'.. method:: UART.write(buf)',
-        new='def write(self, buf: _AnyWritableBuf, /) -> Optional[int]',
+        new='def write(self, buf: _AnyWritableBuf, /) -> int | None',
     )
     shed.def_(
         old=R'.. method:: UART.writechar(char)',
@@ -263,7 +263,7 @@ def _timer_channel(*, old: str, end: str, shed: RST2PyI) -> None:
         old='.. method:: timerchannel.callback(fun)',
         new='''
 @abstractmethod
-def callback(self, fun: Optional[Callable[[Timer], None]], /) -> None
+def callback(self, fun: Callable[[Timer], None] | None, /) -> None
 ''',
     )
     shed.def_(
@@ -439,7 +439,7 @@ def __init__(
    freq: int, 
    mode: int = UP, 
    div: int = 1, 
-   callback: Optional[Callable[[Timer], None]] = None, 
+   callback: Callable[[Timer], None] | None = None, 
    deadtime: int = 0
 )
 ''', '''
@@ -452,7 +452,7 @@ def __init__(
    period: int, 
    mode: int = UP, 
    div: int = 1, 
-   callback: Optional[Callable[[Timer], None]] = None, 
+   callback: Callable[[Timer], None] | None = None, 
    deadtime: int = 0
 )
 '''],
@@ -466,7 +466,7 @@ def init(
    freq: int, 
    mode: int = UP, 
    div: int = 1, 
-   callback: Optional[Callable[[Timer], None]] = None, 
+   callback: Callable[[Timer], None] | None = None, 
    deadtime: int = 0
 ) -> None
 ''', '''
@@ -477,7 +477,7 @@ def init(
    period: int, 
    mode: int = UP, 
    div: int = 1, 
-   callback: Optional[Callable[[Timer], None]] = None, 
+   callback: Callable[[Timer], None] | None = None, 
    deadtime: int = 0
 ) -> None
 '''],
@@ -488,7 +488,7 @@ def init(
     )
     shed.def_(
         old=R'.. method:: Timer.callback(fun)',
-        new='def callback(self, fun: Optional[Callable[[Timer], None]], /) -> None',
+        new='def callback(self, fun: Callable[[Timer], None] | None, /) -> None',
     )
     shed.def_(
         old=R'.. method:: Timer.channel(channel, mode, ...)',
@@ -497,7 +497,7 @@ def channel(
    self, 
    channel: int, 
    /
-) -> Optional["TimerChannel"]
+) -> "TimerChannel" | None
 ''', '''
 def channel(
    self, 
@@ -505,8 +505,8 @@ def channel(
    /, 
    mode: int, 
    *, 
-   callback: Optional[Callable[[Timer], None]] = None, 
-   pin: Optional[Pin] = None,
+   callback: Callable[[Timer], None] | None = None, 
+   pin: Pin | None = None,
    pulse_width: int,
 ) -> "TimerChannel"
 ''', '''
@@ -516,8 +516,8 @@ def channel(
    /, 
    mode: int, 
    *, 
-   callback: Optional[Callable[[Timer], None]] = None, 
-   pin: Optional[Pin] = None,
+   callback: Callable[[Timer], None] | None = None, 
+   pin: Pin | None = None,
    pulse_width_percent: int | float,
 ) -> "TimerChannel"
 ''', '''
@@ -527,8 +527,8 @@ def channel(
    /, 
    mode: int, 
    *, 
-   callback: Optional[Callable[[Timer], None]] = None, 
-   pin: Optional[Pin] = None,
+   callback: Callable[[Timer], None] | None = None, 
+   pin: Pin | None = None,
    compare: int,
    polarity: int,
 ) -> "TimerChannel"
@@ -539,8 +539,8 @@ def channel(
    /, 
    mode: int, 
    *, 
-   callback: Optional[Callable[[Timer], None]] = None, 
-   pin: Optional[Pin] = None,
+   callback: Callable[[Timer], None] | None = None, 
+   pin: Pin | None = None,
    polarity: int,
 ) -> "TimerChannel"
 ''', '''
@@ -550,8 +550,8 @@ def channel(
    /, 
    mode: int, 
    *, 
-   callback: Optional[Callable[[Timer], None]] = None, 
-   pin: Optional[Pin] = None,
+   callback: Callable[[Timer], None] | None = None, 
+   pin: Pin | None = None,
 ) -> "TimerChannel"
 '''],
     )
@@ -611,7 +611,7 @@ def _switch(this: str, shed: RST2PyI) -> str:
     nxt = 'pyb.Timer.rst'
     shed.def_(
         old=R'.. method:: Switch.callback(fun)',
-        new='def callback(self, fun: Optional[Callable[[], None]]) -> None',
+        new='def callback(self, fun: Callable[[], None] | None) -> None',
         end=nxt
     )
     return nxt
@@ -636,7 +636,7 @@ def __init__(
    bits: int = 8, 
    firstbit: int = MSB, 
    ti: bool = False, 
-   crc: Optional[int] = None
+   crc: int | None = None
 )
 ''', '''
 def __init__(
@@ -651,7 +651,7 @@ def __init__(
    bits: int = 8, 
    firstbit: int = MSB, 
    ti: bool = False, 
-   crc: Optional[int] = None
+   crc: int | None = None
 )
 '''],
     )
@@ -675,7 +675,7 @@ def init(
    bits: int = 8, 
    firstbit: int = MSB, 
    ti: bool = False, 
-   crc: Optional[int] = None
+   crc: int | None = None
 )
 ''', '''
 def init(
@@ -688,7 +688,7 @@ def init(
    bits: int = 8, 
    firstbit: int = MSB, 
    ti: bool = False, 
-   crc: Optional[int] = None
+   crc: int | None = None
 )
 '''],
     )
@@ -800,7 +800,7 @@ def _rtc(this: str, shed: RST2PyI) -> str:
     )
     shed.def_(
         old='.. method:: RTC.wakeup(timeout, callback=None)',
-        new='def wakeup(self, timeout: Optional[Callable[[RTC], None]] = None, /) -> None',
+        new='def wakeup(self, timeout: Callable[[RTC], None] | None = None, /) -> None',
     )
     shed.def_(
         old='.. method:: RTC.info()',
@@ -1583,7 +1583,7 @@ def init(
     )
     shed.def_(
         old='.. method:: Pin.af_list()',
-        new='def af_list(self) -> List[PinAF]',
+        new='def af_list(self) -> list[PinAF]',
     )
     shed.def_(
         old='.. method:: Pin.gpio()',
@@ -1599,7 +1599,7 @@ def init(
     )
     shed.def_(
         old='.. method:: Pin.names()',
-        new='def names(self) -> List[str]',
+        new='def names(self) -> list[str]',
     )
     shed.def_(
         old='.. method:: Pin.pin()',
@@ -1792,7 +1792,7 @@ def __init__(self, *, start: int = -1, len: int = -1)
             'writeblocks(block_num, buf, offset)':
                 '',
             'ioctl(cmd, arg)':
-                'def ioctl(self, op: int, arg: int) -> Optional[int]',
+                'def ioctl(self, op: int, arg: int) -> int | None',
         },
         end='Hardware Note'
     )
@@ -1856,11 +1856,11 @@ def _dac(this: str, shed: RST2PyI) -> str:
     )
     shed.def_(
         old=r'.. class:: pyb.DAC(port, bits=8, *, buffering=None)',
-        new='def __init__(self, port: int | Pin, /, bits: int = 8, *, buffering: Optional[bool] = None)',
+        new='def __init__(self, port: int | Pin, /, bits: int = 8, *, buffering: bool | None = None)',
     )
     shed.def_(
         old=r'.. method:: DAC.init(bits=8, *, buffering=None)',
-        new='def init(self, bits: int = 8, *, buffering: Optional[bool] = None) -> None',
+        new='def init(self, bits: int = 8, *, buffering: bool | None = None) -> None',
     )
     shed.def_(
         old='.. method:: DAC.deinit()',
@@ -1951,8 +1951,8 @@ def init(
     shed.def_(
         old='.. method:: CAN.info([list])',
         new=[
-            'def info(self) -> List[int]',
-            'def info(self, list: List[int], /) -> List[int]'
+            'def info(self) -> list[int]',
+            'def info(self, list: list[int], /) -> list[int]'
         ],
     )
     shed.def_(
@@ -1985,7 +1985,7 @@ def setfilter(
         new=[
             'def recv(self, fifo: int, /, *, timeout: int = 5000) -> Tuple[int, bool, int, memoryview]',
             'def recv(self, fifo: int, list: None, /, *, timeout: int = 5000) -> Tuple[int, bool, int, memoryview]',
-            'def recv(self, fifo: int, list: List[int | bool | memoryview], /, *, timeout: int = 5000) -> None'
+            'def recv(self, fifo: int, list: list[int | bool | memoryview], /, *, timeout: int = 5000) -> None'
         ],
     )
     shed.def_(
@@ -2158,7 +2158,7 @@ def _pyb(shed: RST2PyI) -> None:
         post_doc=f'''
 from abc import ABC, abstractmethod
 from typing import NoReturn, overload, Tuple, Sequence, runtime_checkable, Protocol
-from typing import Optional, TypeVar, List, Callable, Dict, Any, ClassVar, Final
+from typing import TypeVar, Callable, Dict, Any, ClassVar, Final
 
 from uarray import array
 from uos import AbstractBlockDev
@@ -2353,7 +2353,7 @@ def mount(
     shed.def_(
         old='.. function:: repl_uart(uart)',
         new=[
-            'def repl_uart() -> Optional[UART]',
+            'def repl_uart() -> UART | None',
             'def repl_uart(uart: UART, /) -> None'
         ],
         indent=0

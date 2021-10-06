@@ -9,7 +9,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "6.2.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.2.1"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def lcd160cr(shed: RST2PyI) -> None:
@@ -17,7 +17,7 @@ def lcd160cr(shed: RST2PyI) -> None:
         name='lcd160cr',
         old='control of LCD160CR display',
         post_doc=f'''
-from typing import overload, Any, Tuple, TypeVar, Optional, Final
+from typing import overload, Any, Tuple, TypeVar, Final
 
 from pyb import Pin, I2C, SPI
 from uarray import array
@@ -108,8 +108,8 @@ def screen_dump(
    buf: _AnyWritableBuf, 
    x: int = 0, 
    y: int = 0, 
-   w: Optional[int] = None, 
-   h: Optional[int] = None, 
+   w: int | None = None, 
+   h: int | None = None, 
    /
 ) -> None
 ''',
@@ -190,7 +190,7 @@ def screen_dump(
     )
     shed.def_(
         old='.. method:: LCD160CR.touch_config(calib=False, save=False, irq=None)',
-        new='def touch_config(self, calib: bool = False, save: bool = False, irq: Optional[bool] = None, /) -> None',
+        new='def touch_config(self, calib: bool = False, save: bool = False, irq: bool | None = None, /) -> None',
     )
     shed.def_(
         old='.. method:: LCD160CR.is_touched()',

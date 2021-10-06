@@ -9,7 +9,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "6.2.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.2.1"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def io(shed: RST2PyI) -> None:
@@ -17,8 +17,8 @@ def io(shed: RST2PyI) -> None:
         name='io',
         old='input/output streams',
         post_doc=f'''
-from typing import TypeVar, Final, Protocol, runtime_checkable, Literal, List
-from typing import AnyStr, Optional, overload, Type
+from typing import TypeVar, Final, Protocol, runtime_checkable, Literal
+from typing import AnyStr, overload, Type
 from types import TracebackType
 from uarray import array
 

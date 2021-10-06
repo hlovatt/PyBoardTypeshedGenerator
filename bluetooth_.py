@@ -9,7 +9,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "6.2.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.2.1"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def bluetooth(shed: RST2PyI) -> None:
@@ -17,7 +17,7 @@ def bluetooth(shed: RST2PyI) -> None:
         name='bluetooth',
         old='Low-level Bluetooth radio functionality',
         post_doc=f'''
-from typing import overload, Any, Tuple, Callable, Optional, TypeVar, Final
+from typing import overload, Any, Tuple, Callable, TypeVar, Final
 
 from uarray import array
 
@@ -69,10 +69,10 @@ def config(self, **kwargs) -> None
 def gap_advertise(
    self, 
    interval_us: int, 
-   adv_data: Optional[_AnyReadableBuf] = None, 
+   adv_data: _AnyReadableBuf | None = None, 
    /, 
    *,
-   resp_data: Optional[_AnyReadableBuf] = None, 
+   resp_data: _AnyReadableBuf | None = None, 
    connectable: bool = True
 ) -> None
 ''',
@@ -163,7 +163,7 @@ def gatts_register_services(
     extra_docs = shed.extra_docs()
     shed.def_(
         old=R'.. method:: BLE.gattc_discover_services(conn_handle, uuid=None, /)',
-        new='def gattc_discover_services(self, conn_handle: memoryview, uuid: Optional[UUID] = None, /) -> None',
+        new='def gattc_discover_services(self, conn_handle: memoryview, uuid: UUID | None = None, /) -> None',
         extra_docs=extra_docs
     )
     shed.def_(
@@ -174,7 +174,7 @@ def gattc_discover_characteristics(
    conn_handle: memoryview, 
    start_handle: int, 
    end_handle: int, 
-   uuid: Optional[UUID] = None, 
+   uuid: UUID | None = None, 
    /
 ) -> None''',
         extra_docs=extra_docs,
@@ -243,7 +243,7 @@ def l2cap_recvinto(
    self, 
    conn_handle: memoryview, 
    cid: memoryview, 
-   buf: Optional[_AnyWritableBuf], 
+   buf: _AnyWritableBuf | None, 
    /
 ) -> int''',
         extra_docs=extra_docs,

@@ -10,7 +10,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "6.2.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.2.1"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def machine(shed: RST2PyI) -> None:
@@ -57,7 +57,7 @@ def __init__(
    
    def writeblocks(self, blocknum: int, buf: bytes, offset: int = 0, /) -> None: ...
    
-   def ioctl(self, op: int, arg: int) -> Optional[int]: ...
+   def ioctl(self, op: int, arg: int) -> int | None: ...
 ''')
     shed.pyi.classes[-1].doc += shed.extra_docs()
 
@@ -125,7 +125,7 @@ def __init__(
    *, 
    mode: int = PERIODIC, 
    period: int = -1, 
-   callback: Optional[Callable[[Timer], None]] = None, 
+   callback: Callable[[Timer], None] | None = None, 
 )
 '''],
     )
@@ -137,7 +137,7 @@ def init(
    *, 
    mode: int = PERIODIC, 
    period: int = -1, 
-   callback: Optional[Callable[[Timer], None]] = None, 
+   callback: Callable[[Timer], None] | None = None, 
 ) -> None
 ''',
     )
@@ -226,7 +226,7 @@ def irq(
    /, 
    *, 
    trigger: int, 
-   handler: Optional[Callable[[RTC], None]] = None, 
+   handler: Callable[[RTC], None] | None = None, 
    wake: int = IDLE
 ) -> None
 ''',
@@ -263,7 +263,7 @@ def _i2c(this: str, shed: RST2PyI) -> str:
     primitive_docs_start = 'Primitive I2C operations'
     shed.def_(
         old=R'.. method:: I2C.scan()',
-        new='def scan(self) -> List[int]',
+        new='def scan(self) -> list[int]',
         end=primitive_docs_start
     )
     primitive_docs = shed.extra_docs()
@@ -366,9 +366,9 @@ def __init__(
    phase: int = 0, 
    bits: int = 8, 
    firstbit: int = MSB, 
-   sck: Optional[Pin] = None, 
-   mosi: Optional[Pin] = None, 
-   miso: Optional[Pin] = None, 
+   sck: Pin | None = None, 
+   mosi: Pin | None = None, 
+   miso: Pin | None = None, 
 )
 ''', '''
 def __init__(
@@ -381,7 +381,7 @@ def __init__(
    phase: int = 0, 
    bits: int = 8, 
    firstbit: int = MSB, 
-   pins: Optional[Tuple[Pin, Pin, Pin]] = None, 
+   pins: Tuple[Pin, Pin, Pin] | None = None, 
 )
 '''],
     )
@@ -399,9 +399,9 @@ def init(
    phase: int = 0, 
    bits: int = 8, 
    firstbit: int = MSB, 
-   sck: Optional[Pin] = None, 
-   mosi: Optional[Pin] = None, 
-   miso: Optional[Pin] = None, 
+   sck: Pin | None = None, 
+   mosi: Pin | None = None, 
+   miso: Pin | None = None, 
 ) -> None
 ''', '''
 def init(
@@ -412,7 +412,7 @@ def init(
    phase: int = 0, 
    bits: int = 8, 
    firstbit: int = MSB, 
-   pins: Optional[Tuple[Pin, Pin, Pin]] = None, 
+   pins: Tuple[Pin, Pin, Pin] | None = None, 
 ) -> None
 '''],
     )
@@ -426,15 +426,15 @@ def init(
     )
     shed.def_(
         old=R'.. method:: SPI.readinto(buf, write=0x00)',
-        new='def readinto(self, buf: _AnyWritableBuf, write: int = 0x00, /) -> Optional[int]',
+        new='def readinto(self, buf: _AnyWritableBuf, write: int = 0x00, /) -> int | None',
     )
     shed.def_(
         old=R'.. method:: SPI.write(buf)',
-        new='def write(self, buf: _AnyReadableBuf, /) -> Optional[int]',
+        new='def write(self, buf: _AnyReadableBuf, /) -> int | None',
     )
     shed.def_(
         old=R'.. method:: SPI.write_readinto(write_buf, read_buf)',
-        new='def write_readinto(self, write_buf: _AnyReadableBuf, read_buf: _AnyWritableBuf, /) -> Optional[int]',
+        new='def write_readinto(self, write_buf: _AnyReadableBuf, read_buf: _AnyWritableBuf, /) -> int | None',
     )
     shed.vars(old='.. data:: SPI.CONTROLLER')
     shed.vars(old='.. data:: SPI.MSB')
@@ -454,17 +454,17 @@ def __init__(
    id: int | str,
    baudrate: int = 9600, 
    bits: int = 8, 
-   parity: Optional[int] = None, 
+   parity: int | None = None, 
    stop: int = 1, 
    /, 
    *, 
-   tx: Optional[Pin] = None,
-   rx: Optional[Pin] = None,
-   txbuf: Optional[int] = None,
-   rxbuf: Optional[int] = None,
-   timeout: Optional[int] = None,
-   timeout_char: Optional[int] = None,
-   invert: Optional[int] = None,
+   tx: Pin | None = None,
+   rx: Pin | None = None,
+   txbuf: int | None = None,
+   rxbuf: int | None = None,
+   timeout: int | None = None,
+   timeout_char: int | None = None,
+   invert: int | None = None,
 )
 ''',
             '''
@@ -473,11 +473,11 @@ def __init__(
    id: int | str,
    baudrate: int = 9600, 
    bits: int = 8, 
-   parity: Optional[int] = None, 
+   parity: int | None = None, 
    stop: int = 1, 
    /, 
    *, 
-   pins: Optional[Tuple[Pin, Pin]] = None,
+   pins: Tuple[Pin, Pin] | None = None,
 )
 ''',
             '''
@@ -486,11 +486,11 @@ def __init__(
    id: int | str,
    baudrate: int = 9600, 
    bits: int = 8, 
-   parity: Optional[int] = None, 
+   parity: int | None = None, 
    stop: int = 1, 
    /, 
    *, 
-   pins: Optional[Tuple[Pin, Pin, Pin, Pin]] = None,
+   pins: Tuple[Pin, Pin, Pin, Pin] | None = None,
 )
 ''',
         ],
@@ -504,17 +504,17 @@ def init(
    self,
    baudrate: int = 9600, 
    bits: int = 8, 
-   parity: Optional[int] = None, 
+   parity: int | None = None, 
    stop: int = 1, 
    /, 
    *, 
-   tx: Optional[Pin] = None,
-   rx: Optional[Pin] = None,
-   txbuf: Optional[int] = None,
-   rxbuf: Optional[int] = None,
-   timeout: Optional[int] = None,
-   timeout_char: Optional[int] = None,
-   invert: Optional[int] = None,
+   tx: Pin | None = None,
+   rx: Pin | None = None,
+   txbuf: int | None = None,
+   rxbuf: int | None = None,
+   timeout: int | None = None,
+   timeout_char: int | None = None,
+   invert: int | None = None,
 ) -> None
 ''',
             '''
@@ -522,11 +522,11 @@ def init(
    self,
    baudrate: int = 9600, 
    bits: int = 8, 
-   parity: Optional[int] = None, 
+   parity: int | None = None, 
    stop: int = 1, 
    /, 
    *, 
-   pins: Optional[Tuple[Pin, Pin]] = None,
+   pins: Tuple[Pin, Pin] | None = None,
 ) -> None
 ''',
             '''
@@ -534,11 +534,11 @@ def init(
    self,
    baudrate: int = 9600, 
    bits: int = 8, 
-   parity: Optional[int] = None, 
+   parity: int | None = None, 
    stop: int = 1, 
    /, 
    *, 
-   pins: Optional[Tuple[Pin, Pin, Pin, Pin]] = None,
+   pins: Tuple[Pin, Pin, Pin, Pin] | None = None,
 ) -> None
 ''',
         ],
@@ -554,24 +554,24 @@ def init(
     shed.def_(
         old='.. method:: UART.read([nbytes])',
         new=[
-            'def read(self) -> Optional[bytes]',
-            'def read(self, nbytes: int, /) -> Optional[bytes]',
+            'def read(self) -> bytes | None',
+            'def read(self, nbytes: int, /) -> bytes | None',
         ]
     )
     shed.def_(
         old='.. method:: UART.readinto(buf[, nbytes])',
         new=[
-            'def readinto(self, buf: _AnyWritableBuf, /) -> Optional[int]',
-            'def readinto(self, buf: _AnyWritableBuf, nbytes: int, /) -> Optional[int]',
+            'def readinto(self, buf: _AnyWritableBuf, /) -> int | None',
+            'def readinto(self, buf: _AnyWritableBuf, nbytes: int, /) -> int | None',
         ]
     )
     shed.def_(
         old='.. method:: UART.readline()',
-        new='def readline(self) -> Optional[bytes]',
+        new='def readline(self) -> bytes | None',
     )
     shed.def_(
         old='.. method:: UART.write(buf)',
-        new='def write(self, buf: _AnyReadableBuf, /) -> Optional[int]',
+        new='def write(self, buf: _AnyReadableBuf, /) -> int | None',
     )
     shed.def_(
         old='.. method:: UART.sendbreak()',
@@ -584,7 +584,7 @@ def irq(
    self, 
    trigger: int, 
    priority: int = 1, 
-   handler: Optional[Callable[[UART], None]] = None, 
+   handler: Callable[[UART], None] | None = None, 
    wake: int = IDLE, 
    /
 ) -> Any
@@ -635,8 +635,8 @@ def __init__(
    pull: int = -1, 
    *, 
    value: Any = None,
-   drive: Optional[int] = None,
-   alt: Optional[int] = None,
+   drive: int | None = None,
+   alt: int | None = None,
    invert: bool = False,
 )
 ''',
@@ -679,8 +679,8 @@ def __init__(
    pull: int = -1, 
    *,
    value: Any = None,
-   drive: Optional[int] = None,
-   alt: Optional[int] = None
+   drive: int | None = None,
+   alt: int | None = None
 )
 ''',
         end='Methods',
@@ -694,8 +694,8 @@ def init(
    pull: int = -1, 
    *,
    value: Any = None,
-   drive: Optional[int] = None,
-   alt: Optional[int] = None
+   drive: int | None = None,
+   alt: int | None = None
 ) -> None
 ''',
     )
@@ -730,13 +730,13 @@ def init(
 def irq(
    self,
    /,
-   handler: Optional[Callable[[Pin], None]] = None, 
+   handler: Callable[[Pin], None] | None = None, 
    trigger: int = (IRQ_FALLING | IRQ_RISING), 
    *, 
    priority: int = 1, 
-   wake: Optional[int] = None, 
+   wake: int | None = None, 
    hard: bool = False,
-) -> Optional[Callable[[Pin], None]]
+) -> Callable[[Pin], None] | None
 ''',
         end='The following methods are not part of the core Pin API and only implemented on certain ports.'
     )
@@ -809,7 +809,7 @@ def irq(
 
 def _machine(shed: RST2PyI) -> None:
     module_post_doc = f'''
-from typing import overload, Tuple, TypeVar, Optional, NoReturn, List, Callable
+from typing import overload, Tuple, TypeVar, NoReturn, Callable
 from typing import Sequence, ClassVar, Any, Final
 
 from uarray import array

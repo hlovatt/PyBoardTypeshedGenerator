@@ -8,7 +8,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "6.2.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.2.1"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def network(shed: RST2PyI) -> None:
@@ -69,11 +69,11 @@ def _cc3k(this: str, shed: RST2PyI) -> str:
 def connect(
    self, 
    ssid: str, 
-   key: Optional[str] = None, 
+   key: str | None = None, 
    /, 
    *, 
    security: int = WPA2,
-   bssid: Optional[bytes] = None,
+   bssid: bytes | None = None,
 ) -> None
 ''',
     )
@@ -132,15 +132,15 @@ def connect(
    ssid: str, 
    /, 
    *, 
-   auth: Optional[Tuple[str, str]] = None, 
-   bssid: Optional[bytes] = None,
-   timeout: Optional[int] = None,
+   auth: Tuple[str, str] | None = None, 
+   bssid: bytes | None = None,
+   timeout: int | None = None,
 ) -> None
 ''',
     )
     shed.def_(
         old=R'.. method:: WLANWiPy.scan()',
-        new='def scan(self) -> Tuple[str, bytes, int, Optional[int], int]',
+        new='def scan(self) -> Tuple[str, bytes, int, int | None, int]',
     )
     shed.def_(
         old=R'.. method:: WLANWiPy.disconnect()',
@@ -246,11 +246,11 @@ def _wlan(shed: RST2PyI) -> str:
         new='''
 def connect(
    self, 
-   ssid: Optional[str] = None, 
-   password: Optional[str] = None, 
+   ssid: str | None = None, 
+   password: str | None = None, 
    /, 
    *, 
-   bssid: Optional[bytes] = None
+   bssid: bytes | None = None
 ) -> None
 ''',
     )
@@ -306,7 +306,7 @@ def _network(shed: RST2PyI) -> None:
         old='network configuration',
         post_doc='''
 from abc import abstractmethod
-from typing import Protocol, List, Tuple, Callable, overload, Any, Optional, ClassVar, Final
+from typing import Protocol, Tuple, Callable, overload, Any, ClassVar, Final
 
 import pyb
 
@@ -347,10 +347,10 @@ def active(self, is_active: bool, /) -> None
         old=R'.. method:: AbstractNIC.connect([service_id, key=None, *, ...])',
         new=['''
 @abstractmethod
-def connect(self, key: Optional[str] = None, /, **kwargs: Any) -> None
+def connect(self, key: str | None = None, /, **kwargs: Any) -> None
 ''', '''
 @abstractmethod
-def connect(self, service_id: Any, key: Optional[str] = None, /, **kwargs: Any) -> None
+def connect(self, service_id: Any, key: str | None = None, /, **kwargs: Any) -> None
 ''',
              ]
     )
@@ -372,7 +372,7 @@ def isconnected(self) -> bool
         old=R'.. method:: AbstractNIC.scan(*, ...)',
         new='''
 @abstractmethod
-def scan(self, **kwargs: Any) -> List[Tuple[str, ...]]
+def scan(self, **kwargs: Any) -> list[Tuple[str, ...]]
 '''
     )
     shed.def_(

@@ -8,7 +8,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "6.2.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.2.1"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def json(shed: RST2PyI) -> None:
@@ -18,7 +18,7 @@ def json(shed: RST2PyI) -> None:
         post_doc=f'''
 from types import TracebackType
 from typing import Any, Tuple, AnyStr, Final, TypeVar, runtime_checkable, Protocol
-from typing import Optional, Type, List
+from typing import Type
 
 from uarray import array
 

@@ -9,7 +9,7 @@ import repdefs
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "6.2.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.2.1"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def framebuf(shed: RST2PyI) -> None:
@@ -17,7 +17,7 @@ def framebuf(shed: RST2PyI) -> None:
         name='framebuf',
         old='Frame buffer manipulation',
         post_doc=f'''
-from typing import TypeVar, overload, Final, Optional
+from typing import TypeVar, overload, Final
 
 from uarray import array
 
@@ -77,7 +77,7 @@ from uarray import array
     shed.def_(
         old=R'.. method:: FrameBuffer.blit(fbuf, x, y, key=-1, palette=None)',
         new='''
-def blit(self, fbuf: FrameBuffer, x: int, y: int, key: int = -1, pallet: Optional[FrameBuffer] = None, /) -> None
+def blit(self, fbuf: FrameBuffer, x: int, y: int, key: int = -1, pallet: FrameBuffer | None = None, /) -> None
 ''',
     )
     shed.vars(old='.. data:: framebuf.MONO_VLSB', class_var=None)

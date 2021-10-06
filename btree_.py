@@ -9,14 +9,14 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "6.2.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.2.1"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def btree(shed: RST2PyI) -> None:
     module_post_doc = f'''
 from types import TracebackType
-from typing import Protocol, Iterable, AnyStr, runtime_checkable, Optional, TypeVar, Tuple, Final
-from typing import Type, Any, List
+from typing import Protocol, Iterable, AnyStr, runtime_checkable, TypeVar, Tuple, Final
+from typing import Type, Any
 
 from uarray import array
 
@@ -63,7 +63,7 @@ def open(
             '__getitem__(key)':
                 'def __getitem__(self, key: bytes, /) -> bytes',
             'get(key, default=None, /)':
-                'def get(self, key: bytes, default: Optional[bytes] = None, /) -> Optional[bytes]',
+                'def get(self, key: bytes, default: bytes | None = None, /) -> bytes | None',
             '__setitem__(key, val)':
                 'def __setitem__(self, key: bytes, val: bytes, /) -> None',
             '__delitem__(key)':
@@ -84,8 +84,8 @@ def open(
                 '''
 def keys(
    self, 
-   start_key: Optional[bytes] = None, 
-   end_key: Optional[bytes] = None, 
+   start_key: bytes | None = None, 
+   end_key: bytes | None = None, 
    flags: int = 0, 
    /
 ) -> Iterable[bytes]
@@ -94,8 +94,8 @@ def keys(
                 '''
 def values(
    self, 
-   start_key: Optional[bytes] = None, 
-   end_key: Optional[bytes] = None, 
+   start_key: bytes | None = None, 
+   end_key: bytes | None = None, 
    flags: int = 0, 
    /
 ) -> Iterable[bytes]
@@ -104,8 +104,8 @@ def values(
                 '''
 def items(
    self, 
-   start_key: Optional[bytes] = None, 
-   end_key: Optional[bytes] = None, 
+   start_key: bytes | None = None, 
+   end_key: bytes | None = None, 
    flags: int = 0, 
    /
 ) -> Iterable[Tuple[bytes, bytes]]
