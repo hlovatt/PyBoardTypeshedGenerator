@@ -9,7 +9,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "6.1.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.2.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def re(shed: RST2PyI) -> None:
@@ -98,7 +98,7 @@ def sub(
         name=R'Match(Generic[AnyStr])',
         extra_docs=[
 '''   The name, `Match`, used for typing is not the same as the runtime name, `match` (note lowercase `m`).
-   The reason is that the runtime uses `match` as both a class name and as a method name and
+   The reason for this difference is that the runtime uses `match` as both a class name and as a method name and
    this is not possible within code written entirely in Python and therefore not possible within typing code.'''
         ],
         end=cmd,

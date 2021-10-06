@@ -9,7 +9,7 @@ from typing import Final
 __author__ = rst.__author__
 __copyright_ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "6.1.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.2.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 ANY_READABLE_BUF: Final = '''
 _AnyReadableBuf: Final = TypeVar('_AnyReadableBuf', bytearray, array, memoryview, bytes)
@@ -28,10 +28,10 @@ Type that allows bytearray, array, or memoryview, but only one of these and not 
 
 IO_BASE: Final = '''
 _AnyStr: Final = TypeVar('_AnyStr', str, bytes)  # `str` for text IO and `bytes` for binary IO.
-_Self: Final = TypeVar('_Self')  # The type that extends `_IOBase`.
+_Self: Final = TypeVar('_Self')  # The type that extends `IOBase`.
 
 @runtime_checkable
-class _IOBase(Protocol[_AnyStr, _Self]):
+class IOBase(Protocol[_AnyStr, _Self]):
     """A `Protocol` (structurally typed) for an IOStream."""
 
     __slots__ = ()

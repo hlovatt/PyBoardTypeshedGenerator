@@ -8,7 +8,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "6.1.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.2.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def json(shed: RST2PyI) -> None:
@@ -30,7 +30,7 @@ from uarray import array
     )
     shed.def_(
         old=R'.. function:: dump(obj, stream, separators=None)',
-        new='def dump(obj: Any, stream: _IOBase[str, Any], separators: Tuple[str, str] | None = None, /) -> None',
+        new='def dump(obj: Any, stream: IOBase[str, Any], separators: Tuple[str, str] | None = None, /) -> None',
         indent=0,
     )
     shed.def_(
@@ -40,7 +40,7 @@ from uarray import array
     )
     shed.def_(
         old=R'.. function:: load(stream)',
-        new='def load(stream: _IOBase[str, Any]) -> Any',
+        new='def load(stream: IOBase[str, Any]) -> Any',
         indent=0,
     )
     shed.def_(

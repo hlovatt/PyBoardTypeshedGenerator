@@ -9,7 +9,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "6.1.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.2.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def io(shed: RST2PyI) -> None:
@@ -119,19 +119,19 @@ _OpenFile = _StrOrBytesPath | int
     )
     shed.consume_header_line(and_preceding_lines=True)
 
-    shed.class_(name='FileIO(_IOBase[bytes, "FileIO"])', end='..')
+    shed.class_(name='FileIO(IOBase[bytes, "FileIO"])', end='..')
     shed.def_(
         old=R'.. class:: FileIO(...)',
         new='def __init__(self, name: _OpenFile, mode: str = ..., /, **kwargs)',
     )
 
-    shed.class_(name='TextIOWrapper(_IOBase[str, "TextIOWrapper"])', end='..')
+    shed.class_(name='TextIOWrapper(IOBase[str, "TextIOWrapper"])', end='..')
     shed.def_(
         old=R'.. class:: TextIOWrapper(...)',
         new='def __init__(self, name: _OpenFile, mode: str = ..., /, **kwargs)',
     )
 
-    shed.class_(name='StringIO(_IOBase[str, "StringIO"])', end='..')
+    shed.class_(name='StringIO(IOBase[str, "StringIO"])', end='..')
     # Add a harmless dummy-end line in to enable parsing of consecutive class definitions (which `def_` can't do!).
     last_line = shed.rst.pop_line()
     dummy_end = 'DUMMY END'
@@ -142,8 +142,8 @@ _OpenFile = _StrOrBytesPath | int
     shed.def_(
         old=R'.. class:: StringIO([string])',
         new=[
-            'def _init__(self, string: str = "", /)',
-            'def _init__(self, alloc_size: int, /)',
+            'def __init__(self, string: str = "", /)',
+            'def __init__(self, alloc_size: int, /)',
         ],
         extra_docs=['''
    In-memory file-like object for input/output.
@@ -170,12 +170,12 @@ _OpenFile = _StrOrBytesPath | int
 ''')
     shed.consume_synopsis_line(name=dummy_end)
 
-    shed.class_(name='BytesIO(_IOBase[bytes, "BytesIO"])', end='..')
+    shed.class_(name='BytesIO(IOBase[bytes, "BytesIO"])', end='..')
     shed.def_(
         old=R'.. class:: BytesIO([string])',
         new=[
-            'def _init__(self, string: bytes = "", /)',
-            'def _init__(self, alloc_size: int, /)',
+            'def __init__(self, string: bytes = "", /)',
+            'def __init__(self, alloc_size: int, /)',
         ],
         extra_docs=['''
    `alloc_size` constructor creates an empty `BytesIO` object, 

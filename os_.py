@@ -10,7 +10,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "6.1.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.2.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def os(shed: RST2PyI) -> None:
@@ -126,7 +126,7 @@ _FdOrAnyPath: Final = int | _AnyPath
     )
     shed.def_(
         old=R'.. function:: dupterm(stream_object, index=0, /)',
-        new='def dupterm(stream_object: _IOBase | None, index: int = 0, /) -> _IOBase | None',
+        new='def dupterm(stream_object: IOBase | None, index: int = 0, /) -> IOBase | None',
         end='Filesystem mounting',
         indent=0,
     )
@@ -135,7 +135,7 @@ _FdOrAnyPath: Final = int | _AnyPath
     extra_mount_docs: Final = shed.extra_docs(end=mount_def)
     shed.def_(
         old=mount_def,
-        new='def mount(fsobj: "AbstractBlockDev", mount_point: str, /, *, readonly: bool = False) -> _IOBase | None',
+        new='def mount(fsobj: "AbstractBlockDev", mount_point: str, /, *, readonly: bool = False) -> IOBase | None',
         extra_docs=extra_mount_docs,
         indent=0,
     )

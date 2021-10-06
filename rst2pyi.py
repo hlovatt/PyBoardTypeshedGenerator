@@ -13,7 +13,7 @@ from rst import RST
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "6.1.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.2.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 @dataclass
@@ -43,6 +43,7 @@ class RST2PyI:
 
     _title_underline: ClassVar[Set[str]] = set('=')
     _header_underline: ClassVar[Set[str]] = set('-')
+    _header2_underline: ClassVar[Set[str]] = set('~')
     _synopsis: ClassVar[str] = '   :synopsis: '
     _definitions: ClassVar[str] = '.. '
     _note: ClassVar[str] = '.. note::'
@@ -137,6 +138,20 @@ class RST2PyI:
                 msg=msg,
             )
 
+    def consume_header2_line(self, *, and_preceding_lines: bool = False) -> None:
+        msg = 'a header2-underline line'
+        if and_preceding_lines:
+            self.consume_line(
+                lambda s: s and set(s).issubset(self._header2_underline),
+                msg=msg,
+                and_preceding_lines=True
+            )
+        else:
+            self.consume_line(
+                lambda s: set(s).issubset(self._header2_underline),
+                msg=msg,
+            )
+
     def consume_blank_line(self, *, and_preceding_lines: bool = False) -> None:
         self.consume_line(lambda s: not s.strip(), msg='a blank line', and_preceding_lines=and_preceding_lines)
 
@@ -180,7 +195,7 @@ Descriptions taken from
 __author__ = "{rst.__author__}"
 __copyright__ = "{rst.__copyright__}"
 __license__ = "{rst.__license__}"
-__version__ = "6.1.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.2.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 {post_doc.strip()}
 '''.strip()
