@@ -6,12 +6,12 @@ from dataclasses import dataclass, field
 from typing import List
 
 import rst
-from class_ import Class
+from class_ import Class, strip_leading_and_trailing_blank_lines
 
 __author__ = rst.__author__
 __copyright_ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "6.0.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.1.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 @dataclass(frozen=True)
@@ -24,13 +24,13 @@ class PYI:
         new_line = '\n'  # Can't have `\` inside `{}` in an f-string!
         return f'''
 """
-{new_line.join(self.doc)}
+{new_line.join(strip_leading_and_trailing_blank_lines(self.doc))}
 """
 
-{new_line.join(self.imports_vars_defs)}
+{new_line.join(strip_leading_and_trailing_blank_lines(self.imports_vars_defs))}
 
 {new_line.join((str(class_) for class_ in self.classes))}
-'''.lstrip(new_line)
+'''.strip(new_line) + '\n'
 
     def clear(self):
         self.doc.clear()

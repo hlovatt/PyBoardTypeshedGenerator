@@ -28,6 +28,7 @@ from micropython_ import micropython
 from network_ import network
 from os_ import os
 from pyb_ import pyb
+from re_ import re
 from rst2pyi import RST2PyI
 from uasyncio_ import uasyncio
 from uctypes_ import uctypes
@@ -35,7 +36,7 @@ from uctypes_ import uctypes
 __author__ = rst.__author__
 __copyright_ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "6.0.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.1.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def main() -> None:
@@ -49,6 +50,7 @@ Usage (from `PyBoardTypeshedGenerator`'s directory) one of:
     assert len(argv) > 1, 'No destination root directory given.' + usage
     assert len(argv) == 2, 'Extra argument(s) given.' + usage
     shed = RST2PyI(output_root_dir=argv[1])
+    re(shed)
     os(shed)
     json(shed)
     io(shed)

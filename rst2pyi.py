@@ -13,7 +13,7 @@ from rst import RST
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "6.0.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.1.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 @dataclass
@@ -110,18 +110,32 @@ class RST2PyI:
         self.consume_line(lambda l: self.is_end(l, end), msg=end, and_preceding_lines=True)
 
     def consume_title_line(self, *, and_preceding_lines: bool = False) -> None:
-        self.consume_line(
-            lambda s: set(s).issubset(self._title_underline),
-            msg='a title-underline line',
-            and_preceding_lines=and_preceding_lines
-        )
+        msg = 'a title-underline line'
+        if and_preceding_lines:
+            self.consume_line(
+                lambda s: s and set(s).issubset(self._title_underline),
+                msg=msg,
+                and_preceding_lines=and_preceding_lines
+            )
+        else:
+            self.consume_line(
+                lambda s: set(s).issubset(self._title_underline),
+                msg=msg,
+            )
 
     def consume_header_line(self, *, and_preceding_lines: bool = False) -> None:
-        self.consume_line(
-            lambda s: set(s).issubset(self._header_underline),
-            msg='a header-underline line',
-            and_preceding_lines=and_preceding_lines
-        )
+        msg = 'a header-underline line'
+        if and_preceding_lines:
+            self.consume_line(
+                lambda s: s and set(s).issubset(self._header_underline),
+                msg=msg,
+                and_preceding_lines=True
+            )
+        else:
+            self.consume_line(
+                lambda s: set(s).issubset(self._header_underline),
+                msg=msg,
+            )
 
     def consume_blank_line(self, *, and_preceding_lines: bool = False) -> None:
         self.consume_line(lambda s: not s.strip(), msg='a blank line', and_preceding_lines=and_preceding_lines)
@@ -154,27 +168,24 @@ class RST2PyI:
             doc.append(doc_line)
         else:
             assert False, f'`end` line, `{end}`, not found!'
-        new_line = '\n'  # Needed because you can't have a `\` inside a `{}` block in an f-string.
         self.pyi.doc.append(f'''
 {new}
 
 Descriptions taken from 
 `{url}`, etc.
-
-{new_line.join(doc).strip()}
-'''
+'''.strip()
                             )
+        self.pyi.doc.extend(doc)
         self.pyi.imports_vars_defs.append(f'''
-
 __author__ = "{rst.__author__}"
 __copyright__ = "{rst.__copyright__}"
 __license__ = "{rst.__license__}"
-__version__ = "6.0.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.1.0"  # Version set by https://github.com/hlovatt/tag2ver
 
-
-{post_doc}
-'''
+{post_doc.strip()}
+'''.strip()
                                           )
+        self.pyi.imports_vars_defs.append('\n')
 
     def class_from_file(
             self,
@@ -244,12 +255,11 @@ __version__ = "6.0.0"  # Version set by https://github.com/hlovatt/tag2ver
         assert cmd.strip(), 'Command string prefix cannot be empty or just whitespace!'
         assert self.rst, 'No lines remaining in `rst`!'
         method_def = indent != 0
-        line = ''  # Keep type checker happy, line is always overwritten!
         for line in self.rst:
             if line.strip():  # Break on non blank line so that leading blank lines are ignored.
+                assert line.startswith(cmd), f'Command, `{cmd}`, not found, found `{line}`!'
+                self.rst.push_line(line)  # Push back the current line so that it is re-read into `def_line`.
                 break
-        assert line.startswith(cmd), f'Command, `{cmd}`, not found, found `{line}`!'
-        self.rst.push_line(line)  # Push back the current line so that it is re-read into `def_line`.
         new_defs = []
         for def_line in self.rst:
             if not def_line.strip():  # End of defs is a blank line.

@@ -16,7 +16,21 @@ import rst
 __author__ = rst.__author__
 __copyright_ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "6.0.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.1.0"  # Version set by https://github.com/hlovatt/tag2ver
+
+
+def strip_leading_and_trailing_blank_lines(lines: List[str]) -> List[str]:
+    start = 0
+    for line in lines:
+        if line.strip():
+            break
+        start += 1
+    end = len(lines)
+    for line in reversed(lines):
+        if line.strip():
+            break
+        end -= 1
+    return lines[start: end]
 
 
 @dataclass
@@ -33,12 +47,12 @@ class Class:
             self.pre_str += '\n'  # Terminate with a return non-empty, non-terminated pre strings.
         new_line = '\n'  # Can't have `\` inside `{}` in an f-string!
         return f'''
-{self.pre_str}{self.class_def}
+{(self.pre_str + self.class_def).strip()}
    """
-{new_line.join(self.doc)}
+{new_line.join(strip_leading_and_trailing_blank_lines(self.doc))}
    """
 
-{new_line.join(self.imports_vars)}
+{new_line.join(strip_leading_and_trailing_blank_lines(self.imports_vars))}
 
-{new_line.join(self.defs)}
+{new_line.join(strip_leading_and_trailing_blank_lines(self.defs))}
 '''.lstrip(new_line)

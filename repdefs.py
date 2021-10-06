@@ -9,7 +9,7 @@ from typing import Final
 __author__ = rst.__author__
 __copyright_ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "6.0.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "6.1.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 ANY_READABLE_BUF: Final = '''
 _AnyReadableBuf: Final = TypeVar('_AnyReadableBuf', bytearray, array, memoryview, bytes)
