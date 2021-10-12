@@ -11,7 +11,7 @@ from class_ import Class, strip_leading_and_trailing_blank_lines
 __author__ = rst.__author__
 __copyright_ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "6.2.1"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "7.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 @dataclass(frozen=True)
@@ -21,8 +21,9 @@ class PYI:
     classes: List[Class] = field(default_factory=list)
 
     def __str__(self) -> str:
-        new_line = '\n'  # Can't have `\` inside `{}` in an f-string!
-        return f'''
+        new_line = "\n"  # Can't have `\` inside `{}` in an f-string!
+        return (
+            f'''
 """
 {new_line.join(strip_leading_and_trailing_blank_lines(self.doc))}
 """
@@ -30,7 +31,11 @@ class PYI:
 {new_line.join(strip_leading_and_trailing_blank_lines(self.imports_vars_defs))}
 
 {new_line.join((str(class_) for class_ in self.classes))}
-'''.strip(new_line) + '\n'
+'''.strip(
+                new_line
+            )
+            + "\n"
+        )
 
     def clear(self):
         self.doc.clear()

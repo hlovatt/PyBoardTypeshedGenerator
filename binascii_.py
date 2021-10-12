@@ -8,33 +8,29 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "6.2.1"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "7.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def binascii(shed: RST2PyI) -> None:
-    shed.module(
-        name='binascii',
-        old='binary/ASCII conversions',
-        end=R'Functions'
-    )
+    shed.module(name="binascii", old="binary/ASCII conversions", end=r"Functions")
     shed.def_(
-        old=R'.. function:: hexlify(data, [sep])',
-        new='def hexlify(data: bytes, sep: str | bytes = ..., /) -> bytes',
+        old=r".. function:: hexlify(data, [sep])",
+        new="def hexlify(data: bytes, sep: str | bytes = ..., /) -> bytes",
         indent=0,
     )
     shed.def_(
-        old=R'.. function:: unhexlify(data)',
-        new='def unhexlify(data: str | bytes, /) -> bytes',
+        old=r".. function:: unhexlify(data)",
+        new="def unhexlify(data: str | bytes, /) -> bytes",
         indent=0,
     )
     shed.def_(
-        old=R'.. function:: a2b_base64(data)',
-        new='def a2b_base64(data: str | bytes, /) -> bytes',
+        old=r".. function:: a2b_base64(data)",
+        new="def a2b_base64(data: str | bytes, /) -> bytes",
         indent=0,
     )
     shed.def_(
-        old=R'.. function:: b2a_base64(data)',
-        new='def b2a_base64(data: bytes, /) -> bytes',
+        old=r".. function:: b2a_base64(data)",
+        new="def b2a_base64(data: bytes, /) -> bytes",
         indent=0,
     )
     shed.write(u_also=True)

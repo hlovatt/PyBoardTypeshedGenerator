@@ -3,14 +3,13 @@ Generate `pyi` from corresponding `rst` docs.
 """
 from typing import Final
 
-import repdefs
 import rst
 from rst2pyi import RST2PyI
 
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "6.2.1"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "7.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def machine(shed: RST2PyI) -> None:
@@ -31,12 +30,18 @@ def machine(shed: RST2PyI) -> None:
 
 
 def _sd_card(this: str, shed: RST2PyI) -> None:
-    con: Final = \
-        '.. class:: SDCard(slot=1, width=1, cd=None, wp=None, sck=None, miso=None, mosi=None, cs=None, freq=20000000)'
-    shed.class_from_file(pre_str='# noinspection PyShadowingNames', old=this, super_class='AbstractBlockDev', end=con)
+    con: Final = """
+.. class:: SDCard(slot=1, width=1, cd=None, wp=None, sck=None, miso=None, mosi=None, cs=None, freq=20000000)
+""".strip()
+    shed.class_from_file(
+        pre_str="# noinspection PyShadowingNames",
+        old=this,
+        super_class="AbstractBlockDev",
+        end=con,
+    )
     shed.def_(
         old=con,
-        new='''
+        new="""
 def __init__(
    self, 
    slot: int = 1, 
@@ -49,45 +54,46 @@ def __init__(
    cs: int | str | Pin | None = None, 
    freq: int = 20000000,
 )
-''',
-        end='Implementation-specific details',
+""",
+        end="Implementation-specific details",
     )
-    shed.pyi.classes[-1].defs.append('''
+    shed.pyi.classes[-1].defs.append(
+        """
    def readblocks(self, blocknum: int, buf: bytes, offset: int = 0, /) -> None: ... 
    
    def writeblocks(self, blocknum: int, buf: bytes, offset: int = 0, /) -> None: ...
    
    def ioctl(self, op: int, arg: int) -> int | None: ...
-''')
+"""
+    )
     shed.pyi.classes[-1].doc += shed.extra_docs()
 
 
 def _sd(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(old=this,)
     shed.def_(
-        old=R'.. class:: SD(id,... )',
-        new='''
+        old=r".. class:: SD(id,... )",
+        new="""
 def __init__(
    self, 
    id: int = 0, 
-   pins: Tuple[str, str, str] | Tuple[Pin, Pin, Pin] = ("GP10", "GP11", "GP15")
+   pins: tuple[str, str, str] | tuple[Pin, Pin, Pin] = ("GP10", "GP11", "GP15")
 )
-''')
+""",
+    )
     shed.def_(
-        old=R".. method:: SD.init(id=0, pins=('GP10', 'GP11', 'GP15'))",
-        new='''
+        old=r".. method:: SD.init(id=0, pins=('GP10', 'GP11', 'GP15'))",
+        new="""
 def init(
    self, 
    id: int = 0, 
-   pins: Tuple[str, str, str] | Tuple[Pin, Pin, Pin] = ("GP10", "GP11", "GP15")
+   pins: tuple[str, str, str] | tuple[Pin, Pin, Pin] = ("GP10", "GP11", "GP15")
 ) -> None
-''',
+""",
     )
-    nxt = 'machine.SDCard.rst'
+    nxt = "machine.SDCard.rst"
     shed.def_(
-        old=R'.. method:: SD.deinit()',
-        new='def deinit(self) -> None',
-        end=nxt,
+        old=r".. method:: SD.deinit()", new="def deinit(self) -> None", end=nxt,
     )
     return nxt
 
@@ -95,14 +101,12 @@ def init(
 def _wdt(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(old=this,)
     shed.def_(
-        old='.. class:: WDT(id=0, timeout=5000)',
-        new='def __init__(self, *, id: int = 0, timeout: int = 5000)',
+        old=".. class:: WDT(id=0, timeout=5000)",
+        new="def __init__(self, *, id: int = 0, timeout: int = 5000)",
     )
-    nxt = 'machine.SD.rst'
+    nxt = "machine.SD.rst"
     shed.def_(
-        old='.. method:: wdt.feed()',
-        new='def feed(self) -> None',
-        end=nxt,
+        old=".. method:: wdt.feed()", new="def feed(self) -> None", end=nxt,
     )
     return nxt
 
@@ -110,14 +114,16 @@ def _wdt(this: str, shed: RST2PyI) -> str:
 def _timer(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(old=this,)
     shed.def_(
-        old=R'.. class:: Timer(id, ...)',
-        new=['''
+        old=r".. class:: Timer(id, ...)",
+        new=[
+            """
 def __init__(
    self, 
    id: int, 
    /
 )
-''', '''
+""",
+            """
 def __init__(
    self, 
    id: int, 
@@ -127,11 +133,12 @@ def __init__(
    period: int = -1, 
    callback: Callable[[Timer], None] | None = None, 
 )
-'''],
+""",
+        ],
     )
     shed.def_(
-        old=R'.. method:: Timer.init(*, mode=Timer.PERIODIC, period=-1, callback=None)',
-        new='''
+        old=r".. method:: Timer.init(*, mode=Timer.PERIODIC, period=-1, callback=None)",
+        new="""
 def init(
    self, 
    *, 
@@ -139,88 +146,83 @@ def init(
    period: int = -1, 
    callback: Callable[[Timer], None] | None = None, 
 ) -> None
-''',
+""",
     )
     shed.def_(
-        old=R'.. method:: Timer.deinit()',
-        new='def deinit(self) -> None',
+        old=r".. method:: Timer.deinit()", new="def deinit(self) -> None",
     )
-    nxt = 'machine.WDT.rst'
-    shed.vars(
-        old=[
-            '.. data:: Timer.ONE_SHOT',
-            'Timer.PERIODIC',
-        ],
-        end=nxt
-    )
+    nxt = "machine.WDT.rst"
+    shed.vars(old=[".. data:: Timer.ONE_SHOT", "Timer.PERIODIC"], end=nxt)
     return nxt
 
 
 def _rtc(this: str, shed: RST2PyI) -> str:
-    disclaimer = ['The documentation for RTC is in a poor state; better to experiment and use `dir`!']
-    shed.class_from_file(old=this, extra_docs=disclaimer, end='Constructors')
+    disclaimer = [
+        "The documentation for RTC is in a poor state; better to experiment and use `dir`!"
+    ]
+    shed.class_from_file(old=this, extra_docs=disclaimer, end="Constructors")
     shed.def_(
-        old='.. class:: RTC(id=0, ...)',
+        old=".. class:: RTC(id=0, ...)",
         new=[
-            'def __init__(self, id: int = 0, /, *, datetime: Tuple[int, int, int])',
-            'def __init__(self, id: int = 0, /, *, datetime: Tuple[int, int, int, int])',
-            'def __init__(self, id: int = 0, /, *, datetime: Tuple[int, int, int, int, int])',
-            'def __init__(self, id: int = 0, /, *, datetime: Tuple[int, int, int, int, int, int])',
-            'def __init__(self, id: int = 0, /, *, datetime: Tuple[int, int, int, int, int, int, int])',
-            'def __init__(self, id: int = 0, /, *, datetime: Tuple[int, int, int, int, int, int, int, int])',
+            "def __init__(self, id: int = 0, /, *, datetime: tuple[int, int, int])",
+            "def __init__(self, id: int = 0, /, *, datetime: tuple[int, int, int, int])",
+            "def __init__(self, id: int = 0, /, *, datetime: tuple[int, int, int, int, int])",
+            "def __init__(self, id: int = 0, /, *, datetime: tuple[int, int, int, int, int, int])",
+            "def __init__(self, id: int = 0, /, *, datetime: tuple[int, int, int, int, int, int, int])",
+            "def __init__(self, id: int = 0, /, *, datetime: tuple[int, int, int, int, int, int, int, int])",
         ],
         extra_docs=disclaimer,
-        end='Methods',
+        end="Methods",
     )
     shed.def_(
-        old='.. method:: RTC.init(datetime)',
+        old=".. method:: RTC.init(datetime)",
         new=[
-            'def init(self) -> None',
-            'def init(self, datetime: Tuple[int, int, int], /) -> None',
-            'def init(self, datetime: Tuple[int, int, int, int], /) -> None',
-            'def init(self, datetime: Tuple[int, int, int, int, int], /) -> None',
-            'def init(self, datetime: Tuple[int, int, int, int, int, int], /) -> None',
-            'def init(self, datetime: Tuple[int, int, int, int, int, int, int], /) -> None',
-            'def init(self, datetime: Tuple[int, int, int, int, int, int, int, int], /) -> None',
-        ],
-        extra_docs=disclaimer,
-    )
-    shed.def_(
-        old='.. method:: RTC.now()',
-        new='def now(self) -> Tuple[int, int, int, int, int, int, int, int]',
-        extra_docs=disclaimer,
-    )
-    shed.def_(
-        old='.. method:: RTC.deinit()',
-        new='def deinit(self) -> None',
-        extra_docs=disclaimer,
-    )
-    shed.def_(
-        old='.. method:: RTC.alarm(id, time, *, repeat=False)',
-        new=[
-            'def alarm(self, id: int, time: int, /, *, repeat: bool = False) -> None',
-            'def alarm(self, id: int, time: Tuple[int, int, int], /) -> None',
-            'def alarm(self, id: int, time: Tuple[int, int, int, int], /) -> None',
-            'def alarm(self, id: int, time: Tuple[int, int, int, int, int], /) -> None',
-            'def alarm(self, id: int, time: Tuple[int, int, int, int, int, int], /) -> None',
-            'def alarm(self, id: int, time: Tuple[int, int, int, int, int, int, int], /) -> None',
-            'def alarm(self, id: int, time: Tuple[int, int, int, int, int, int, int, int], /) -> None',
+            "def init(self) -> None",
+            "def init(self, datetime: tuple[int, int, int], /) -> None",
+            "def init(self, datetime: tuple[int, int, int, int], /) -> None",
+            "def init(self, datetime: tuple[int, int, int, int, int], /) -> None",
+            "def init(self, datetime: tuple[int, int, int, int, int, int], /) -> None",
+            "def init(self, datetime: tuple[int, int, int, int, int, int, int], /) -> None",
+            "def init(self, datetime: tuple[int, int, int, int, int, int, int, int], /) -> None",
         ],
         extra_docs=disclaimer,
     )
     shed.def_(
-        old='.. method:: RTC.alarm_left(alarm_id=0)',
-        new='def alarm_left(self, alarm_id: int = 0, /) -> int',
+        old=".. method:: RTC.now()",
+        new="def now(self) -> tuple[int, int, int, int, int, int, int, int]",
         extra_docs=disclaimer,
     )
     shed.def_(
-        old='.. method:: RTC.cancel(alarm_id=0)',
-        new='def cancel(self, alarm_id: int = 0, /) -> None',
+        old=".. method:: RTC.deinit()",
+        new="def deinit(self) -> None",
         extra_docs=disclaimer,
     )
     shed.def_(
-        old='.. method:: RTC.irq(*, trigger, handler=None, wake=machine.IDLE)',
-        new='''
+        old=".. method:: RTC.alarm(id, time, *, repeat=False)",
+        new=[
+            "def alarm(self, id: int, time: int, /, *, repeat: bool = False) -> None",
+            "def alarm(self, id: int, time: tuple[int, int, int], /) -> None",
+            "def alarm(self, id: int, time: tuple[int, int, int, int], /) -> None",
+            "def alarm(self, id: int, time: tuple[int, int, int, int, int], /) -> None",
+            "def alarm(self, id: int, time: tuple[int, int, int, int, int, int], /) -> None",
+            "def alarm(self, id: int, time: tuple[int, int, int, int, int, int, int], /) -> None",
+            "def alarm(self, id: int, time: tuple[int, int, int, int, int, int, int, int], /) -> None",
+        ],
+        extra_docs=disclaimer,
+    )
+    shed.def_(
+        old=".. method:: RTC.alarm_left(alarm_id=0)",
+        new="def alarm_left(self, alarm_id: int = 0, /) -> int",
+        extra_docs=disclaimer,
+    )
+    shed.def_(
+        old=".. method:: RTC.cancel(alarm_id=0)",
+        new="def cancel(self, alarm_id: int = 0, /) -> None",
+        extra_docs=disclaimer,
+    )
+    shed.def_(
+        old=".. method:: RTC.irq(*, trigger, handler=None, wake=machine.IDLE)",
+        new="""
 def irq(
    self, 
    /, 
@@ -229,122 +231,121 @@ def irq(
    handler: Callable[[RTC], None] | None = None, 
    wake: int = IDLE
 ) -> None
-''',
+""",
     )
-    nxt = 'machine.Timer.rst'
+    nxt = "machine.Timer.rst"
     shed.vars(
-        old='.. data:: RTC.ALARM0',
-        extra_docs=disclaimer,
-        end=nxt,
+        old=".. data:: RTC.ALARM0", extra_docs=disclaimer, end=nxt,
     )
     return nxt
 
 
 def _i2c(this: str, shed: RST2PyI) -> str:
-    shed.class_from_file(pre_str='# noinspection PyShadowingNames', old=this, )
+    shed.class_from_file(
+        pre_str="# noinspection PyShadowingNames", old=this,
+    )
     shed.def_(
-        old=R'.. class:: I2C(id, *, scl, sda, freq=400000)',
+        old=r".. class:: I2C(id, *, scl, sda, freq=400000)",
         new=[
-            'def __init__(self, id: int, /, *, freq: int = 400_000)',
-            'def __init__(self, id: int, /, *, scl: Pin, sda: Pin, freq: int = 400_000)',
+            "def __init__(self, id: int, /, *, freq: int = 400_000)",
+            "def __init__(self, id: int, /, *, scl: Pin, sda: Pin, freq: int = 400_000)",
         ],
     )
     shed.def_(
-        old=R'.. method:: I2C.init(scl, sda, *, freq=400000)',
+        old=r".. method:: I2C.init(scl, sda, *, freq=400000)",
         new=[
-            'def init(self, *, freq: int = 400_000) -> None',
-            'def init(self, *, scl: Pin, sda: Pin, freq: int = 400_000) -> None',
+            "def init(self, *, freq: int = 400_000) -> None",
+            "def init(self, *, scl: Pin, sda: Pin, freq: int = 400_000) -> None",
         ],
     )
     shed.def_(
-        old=R'.. method:: I2C.deinit()',
-        new='def deinit(self) -> None',
+        old=r".. method:: I2C.deinit()", new="def deinit(self) -> None",
     )
-    primitive_docs_start = 'Primitive I2C operations'
+    primitive_docs_start = "Primitive I2C operations"
     shed.def_(
-        old=R'.. method:: I2C.scan()',
-        new='def scan(self) -> list[int]',
-        end=primitive_docs_start
+        old=r".. method:: I2C.scan()",
+        new="def scan(self) -> list[int]",
+        end=primitive_docs_start,
     )
     primitive_docs = shed.extra_docs()
     shed.def_(
-        old=R'.. method:: I2C.start()',
-        new='def start(self) -> None',
-        extra_docs=primitive_docs
-    )
-    shed.def_(
-        old=R'.. method:: I2C.stop()',
-        new='def stop(self) -> None',
-        extra_docs=primitive_docs
-    )
-    shed.def_(
-        old=R'.. method:: I2C.readinto(buf, nack=True, /)',
-        new='def readinto(self, buf: _AnyWritableBuf, nack: bool = True, /) -> None',
-        extra_docs=primitive_docs
-    )
-    shed.def_(
-        old=R'.. method:: I2C.write(buf)',
-        new='def write(self, buf: _AnyReadableBuf, /) -> int',
+        old=r".. method:: I2C.start()",
+        new="def start(self) -> None",
         extra_docs=primitive_docs,
-        end='Standard bus operations',
+    )
+    shed.def_(
+        old=r".. method:: I2C.stop()",
+        new="def stop(self) -> None",
+        extra_docs=primitive_docs,
+    )
+    shed.def_(
+        old=r".. method:: I2C.readinto(buf, nack=True, /)",
+        new="def readinto(self, buf: AnyWritableBuf, nack: bool = True, /) -> None",
+        extra_docs=primitive_docs,
+    )
+    shed.def_(
+        old=r".. method:: I2C.write(buf)",
+        new="def write(self, buf: AnyReadableBuf, /) -> int",
+        extra_docs=primitive_docs,
+        end="Standard bus operations",
     )
     standard_docs = shed.extra_docs()
     shed.def_(
-        old=R'.. method:: I2C.readfrom(addr, nbytes, stop=True, /)',
-        new='def readfrom(self, addr: int, nbytes: int, stop: bool = True, /) -> bytes',
-        extra_docs=standard_docs
+        old=r".. method:: I2C.readfrom(addr, nbytes, stop=True, /)",
+        new="def readfrom(self, addr: int, nbytes: int, stop: bool = True, /) -> bytes",
+        extra_docs=standard_docs,
     )
     shed.def_(
-        old=R'.. method:: I2C.readfrom_into(addr, buf, stop=True, /)',
-        new='def readfrom_into(self, addr: int, buf: _AnyWritableBuf, stop: bool = True, /) -> None',
-        extra_docs=standard_docs
+        old=r".. method:: I2C.readfrom_into(addr, buf, stop=True, /)",
+        new="def readfrom_into(self, addr: int, buf: AnyWritableBuf, stop: bool = True, /) -> None",
+        extra_docs=standard_docs,
     )
     shed.def_(
-        old=R'.. method:: I2C.writeto(addr, buf, stop=True, /)',
-        new='def writeto(self, addr: int, buf: _AnyReadableBuf, stop: bool = True, /) -> int',
-        extra_docs=standard_docs
+        old=r".. method:: I2C.writeto(addr, buf, stop=True, /)",
+        new="def writeto(self, addr: int, buf: AnyReadableBuf, stop: bool = True, /) -> int",
+        extra_docs=standard_docs,
     )
     shed.def_(
-        old=R'.. method:: I2C.writevto(addr, vector, stop=True, /)',
-        new='''
+        old=r".. method:: I2C.writevto(addr, vector, stop=True, /)",
+        new="""
 def writevto(
    self, 
    addr: int, 
-   vector: Sequence[_AnyReadableBuf], 
+   vector: Sequence[AnyReadableBuf], 
    stop: bool = True, 
    /
 ) -> int
-''',
+""",
         extra_docs=standard_docs,
-        end='Memory operations',
+        end="Memory operations",
     )
     memory_docs = shed.extra_docs()
     shed.def_(
-        old=R'.. method:: I2C.readfrom_mem(addr, memaddr, nbytes, *, addrsize=8)',
-        new='def readfrom_mem(self, addr: int, memaddr: int, nbytes: int, /, *, addrsize: int = 8) -> bytes',
-        extra_docs=memory_docs
+        old=r".. method:: I2C.readfrom_mem(addr, memaddr, nbytes, *, addrsize=8)",
+        new="def readfrom_mem(self, addr: int, memaddr: int, nbytes: int, /, *, addrsize: int = 8) -> bytes",
+        extra_docs=memory_docs,
     )
     shed.def_(
-        old=R'.. method:: I2C.readfrom_mem_into(addr, memaddr, buf, *, addrsize=8)',
-        new='''
+        old=r".. method:: I2C.readfrom_mem_into(addr, memaddr, buf, *, addrsize=8)",
+        new="""
 def readfrom_mem_into(
    self, 
    addr: int, 
    memaddr: int, 
-   buf: _AnyWritableBuf, 
+   buf: AnyWritableBuf, 
    /, 
    *, 
    addrsize: int = 8
 ) -> None
-''',
-        extra_docs=memory_docs
-    )
-    rtc = 'machine.RTC.rst'
-    shed.def_(
-        old=R'.. method:: I2C.writeto_mem(addr, memaddr, buf, *, addrsize=8',
-        new='def writeto_mem(self, addr: int, memaddr: int, buf: _AnyReadableBuf, /, *, addrsize: int = 8) -> None',
+""",
         extra_docs=memory_docs,
-        end=rtc
+    )
+    rtc = "machine.RTC.rst"
+    shed.def_(
+        old=r".. method:: I2C.writeto_mem(addr, memaddr, buf, *, addrsize=8",
+        new="def writeto_mem(self, addr: int, memaddr: int, buf: AnyReadableBuf, /, *, addrsize: int = 8) -> None",
+        extra_docs=memory_docs,
+        end=rtc,
     )
     return rtc
 
@@ -352,10 +353,12 @@ def readfrom_mem_into(
 def _spi(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(old=this)
     shed.def_(
-        old='.. class:: SPI(id, ...)',
-        new=['''
+        old=".. class:: SPI(id, ...)",
+        new=[
+            """
 def __init__(self, id: int, /)
-''', '''
+""",
+            """
 def __init__(
    self, 
    id: int, 
@@ -370,7 +373,8 @@ def __init__(
    mosi: Pin | None = None, 
    miso: Pin | None = None, 
 )
-''', '''
+""",
+            """
 def __init__(
    self, 
    id: int, 
@@ -381,16 +385,18 @@ def __init__(
    phase: int = 0, 
    bits: int = 8, 
    firstbit: int = MSB, 
-   pins: Tuple[Pin, Pin, Pin] | None = None, 
+   pins: tuple[Pin, Pin, Pin] | None = None, 
 )
-'''],
+""",
+        ],
     )
     shed.def_(
         old=(
-            R'.. method:: SPI.init(baudrate=1000000, *, polarity=0, phase=0, bits=8, '
-            R'firstbit=SPI.MSB, sck=None, mosi=None, miso=None, pins=(SCK, MOSI, MISO))'
+            r".. method:: SPI.init(baudrate=1000000, *, polarity=0, phase=0, bits=8, "
+            r"firstbit=SPI.MSB, sck=None, mosi=None, miso=None, pins=(SCK, MOSI, MISO))"
         ),
-        new=['''
+        new=[
+            """
 def init(
    self, 
    baudrate: int = 1_000_000, 
@@ -403,7 +409,8 @@ def init(
    mosi: Pin | None = None, 
    miso: Pin | None = None, 
 ) -> None
-''', '''
+""",
+            """
 def init(
    self, 
    baudrate: int = 1_000_000, 
@@ -412,43 +419,43 @@ def init(
    phase: int = 0, 
    bits: int = 8, 
    firstbit: int = MSB, 
-   pins: Tuple[Pin, Pin, Pin] | None = None, 
+   pins: tuple[Pin, Pin, Pin] | None = None, 
 ) -> None
-'''],
+""",
+        ],
     )
     shed.def_(
-        old=R'.. method:: SPI.deinit()',
-        new='def deinit(self) -> None',
+        old=r".. method:: SPI.deinit()", new="def deinit(self) -> None",
     )
     shed.def_(
-        old=R'.. method:: SPI.read(nbytes, write=0x00)',
-        new='def read(self, nbytes: int, write: int = 0x00, /) -> bytes',
+        old=r".. method:: SPI.read(nbytes, write=0x00)",
+        new="def read(self, nbytes: int, write: int = 0x00, /) -> bytes",
     )
     shed.def_(
-        old=R'.. method:: SPI.readinto(buf, write=0x00)',
-        new='def readinto(self, buf: _AnyWritableBuf, write: int = 0x00, /) -> int | None',
+        old=r".. method:: SPI.readinto(buf, write=0x00)",
+        new="def readinto(self, buf: AnyWritableBuf, write: int = 0x00, /) -> int | None",
     )
     shed.def_(
-        old=R'.. method:: SPI.write(buf)',
-        new='def write(self, buf: _AnyReadableBuf, /) -> int | None',
+        old=r".. method:: SPI.write(buf)",
+        new="def write(self, buf: AnyReadableBuf, /) -> int | None",
     )
     shed.def_(
-        old=R'.. method:: SPI.write_readinto(write_buf, read_buf)',
-        new='def write_readinto(self, write_buf: _AnyReadableBuf, read_buf: _AnyWritableBuf, /) -> int | None',
+        old=r".. method:: SPI.write_readinto(write_buf, read_buf)",
+        new="def write_readinto(self, write_buf: AnyReadableBuf, read_buf: AnyWritableBuf, /) -> int | None",
     )
-    shed.vars(old='.. data:: SPI.CONTROLLER')
-    shed.vars(old='.. data:: SPI.MSB')
-    nxt = 'machine.I2C.rst'
-    shed.vars(old='.. data:: SPI.LSB', end=nxt)
+    shed.vars(old=".. data:: SPI.CONTROLLER")
+    shed.vars(old=".. data:: SPI.MSB")
+    nxt = "machine.I2C.rst"
+    shed.vars(old=".. data:: SPI.LSB", end=nxt)
     return nxt
 
 
 def _uart(this: str, shed: RST2PyI) -> str:
-    shed.class_from_file(old=this, end='Constructors')
+    shed.class_from_file(old=this, end="Constructors")
     shed.def_(
-        old='.. class:: UART(id, ...)',
+        old=".. class:: UART(id, ...)",
         new=[
-            '''
+            """
 def __init__(
    self,
    id: int | str,
@@ -466,8 +473,8 @@ def __init__(
    timeout_char: int | None = None,
    invert: int | None = None,
 )
-''',
-            '''
+""",
+            """
 def __init__(
    self,
    id: int | str,
@@ -477,10 +484,10 @@ def __init__(
    stop: int = 1, 
    /, 
    *, 
-   pins: Tuple[Pin, Pin] | None = None,
+   pins: tuple[Pin, Pin] | None = None,
 )
-''',
-            '''
+""",
+            """
 def __init__(
    self,
    id: int | str,
@@ -490,16 +497,16 @@ def __init__(
    stop: int = 1, 
    /, 
    *, 
-   pins: Tuple[Pin, Pin, Pin, Pin] | None = None,
+   pins: tuple[Pin, Pin, Pin, Pin] | None = None,
 )
-''',
+""",
         ],
-        end='Methods',
+        end="Methods",
     )
     shed.def_(
-        old='.. method:: UART.init(baudrate=9600, bits=8, parity=None, stop=1, *, ...)',
+        old=".. method:: UART.init(baudrate=9600, bits=8, parity=None, stop=1, *, ...)",
         new=[
-            '''
+            """
 def init(
    self,
    baudrate: int = 9600, 
@@ -516,8 +523,8 @@ def init(
    timeout_char: int | None = None,
    invert: int | None = None,
 ) -> None
-''',
-            '''
+""",
+            """
 def init(
    self,
    baudrate: int = 9600, 
@@ -526,10 +533,10 @@ def init(
    stop: int = 1, 
    /, 
    *, 
-   pins: Tuple[Pin, Pin] | None = None,
+   pins: tuple[Pin, Pin] | None = None,
 ) -> None
-''',
-            '''
+""",
+            """
 def init(
    self,
    baudrate: int = 9600, 
@@ -538,48 +545,44 @@ def init(
    stop: int = 1, 
    /, 
    *, 
-   pins: Tuple[Pin, Pin, Pin, Pin] | None = None,
+   pins: tuple[Pin, Pin, Pin, Pin] | None = None,
 ) -> None
-''',
+""",
         ],
     )
     shed.def_(
-        old='.. method:: UART.deinit()',
-        new='def deinit(self) -> None',
+        old=".. method:: UART.deinit()", new="def deinit(self) -> None",
     )
     shed.def_(
-        old='.. method:: UART.any()',
-        new='def any(self) -> int',
+        old=".. method:: UART.any()", new="def any(self) -> int",
     )
     shed.def_(
-        old='.. method:: UART.read([nbytes])',
+        old=".. method:: UART.read([nbytes])",
         new=[
-            'def read(self) -> bytes | None',
-            'def read(self, nbytes: int, /) -> bytes | None',
-        ]
+            "def read(self) -> bytes | None",
+            "def read(self, nbytes: int, /) -> bytes | None",
+        ],
     )
     shed.def_(
-        old='.. method:: UART.readinto(buf[, nbytes])',
+        old=".. method:: UART.readinto(buf[, nbytes])",
         new=[
-            'def readinto(self, buf: _AnyWritableBuf, /) -> int | None',
-            'def readinto(self, buf: _AnyWritableBuf, nbytes: int, /) -> int | None',
-        ]
+            "def readinto(self, buf: AnyWritableBuf, /) -> int | None",
+            "def readinto(self, buf: AnyWritableBuf, nbytes: int, /) -> int | None",
+        ],
     )
     shed.def_(
-        old='.. method:: UART.readline()',
-        new='def readline(self) -> bytes | None',
+        old=".. method:: UART.readline()", new="def readline(self) -> bytes | None",
     )
     shed.def_(
-        old='.. method:: UART.write(buf)',
-        new='def write(self, buf: _AnyReadableBuf, /) -> int | None',
+        old=".. method:: UART.write(buf)",
+        new="def write(self, buf: AnyReadableBuf, /) -> int | None",
     )
     shed.def_(
-        old='.. method:: UART.sendbreak()',
-        new='def sendbreak(self) -> None',
+        old=".. method:: UART.sendbreak()", new="def sendbreak(self) -> None",
     )
     shed.def_(
-        old='.. method:: UART.irq(trigger, priority=1, handler=None, wake=machine.IDLE)',
-        new='''
+        old=".. method:: UART.irq(trigger, priority=1, handler=None, wake=machine.IDLE)",
+        new="""
 def irq(
    self, 
    trigger: int, 
@@ -588,13 +591,12 @@ def irq(
    wake: int = IDLE, 
    /
 ) -> Any
-''',
-        end='Constants',
+""",
+        end="Constants",
     )
-    nxt = 'machine.SPI.rst'
+    nxt = "machine.SPI.rst"
     shed.vars(
-        old='.. data:: UART.RX_ANY',
-        end=nxt,
+        old=".. data:: UART.RX_ANY", end=nxt,
     )
     return nxt
 
@@ -602,14 +604,11 @@ def irq(
 def _adc(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(old=this)
     shed.def_(
-        old='.. class:: ADC(id)',
-        new='def __init__(self, pin: int | Pin, /)',
+        old=".. class:: ADC(id)", new="def __init__(self, pin: int | Pin, /)",
     )
-    nxt = 'machine.UART.rst'
+    nxt = "machine.UART.rst"
     shed.def_(
-        old='.. method:: ADC.read_u16()',
-        new='def read_u16(self) -> int',
-        end=nxt
+        old=".. method:: ADC.read_u16()", new="def read_u16(self) -> int", end=nxt
     )
     return nxt
 
@@ -617,15 +616,13 @@ def _adc(this: str, shed: RST2PyI) -> str:
 def _signal(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(old=this)
     shed.defs_with_common_description(
-        cmd='.. class:: ',
+        cmd=".. class:: ",
         old2new={
-            R'Signal(pin_obj, invert=False)':
-                '''
+            r"Signal(pin_obj, invert=False)": """
 @overload
 def __init__(self, pin_obj: Pin, invert: bool = False, /)
-''',
-            R'Signal(pin_arguments..., *, invert=False)':
-                '''
+""",
+            r"Signal(pin_arguments..., *, invert=False)": """
 @overload
 def __init__(
    self, 
@@ -639,38 +636,29 @@ def __init__(
    alt: int | None = None,
    invert: bool = False,
 )
-''',
+""",
         },
-        end='Methods',
+        end="Methods",
     )
     shed.def_(
-        old=R'.. method:: Signal.value([x])',
-        new=[
-            'def value(self) -> int',
-            'def value(self, x: Any, /) -> None'
-        ],
+        old=r".. method:: Signal.value([x])",
+        new=["def value(self) -> int", "def value(self, x: Any, /) -> None"],
     )
     shed.def_(
-        old=R'.. method:: Signal.on()',
-        new='def on(self) -> None',
+        old=r".. method:: Signal.on()", new="def on(self) -> None",
     )
-    nxt = 'machine.ADC.rst'
-    shed.def_(
-        old=R'.. method:: Signal.off()',
-        new='def off(self) -> None',
-        end=nxt
-    )
+    nxt = "machine.ADC.rst"
+    shed.def_(old=r".. method:: Signal.off()", new="def off(self) -> None", end=nxt)
     return nxt
 
 
 def _pin(shed: RST2PyI) -> str:
     shed.class_from_file(
-        old='machine.Pin.rst',
-        end='Constructors',
+        old="machine.Pin.rst", end="Constructors",
     )
     shed.def_(
-        old='.. class:: Pin(id, mode=-1, pull=-1, *, value, drive, alt)',
-        new='''
+        old=".. class:: Pin(id, mode=-1, pull=-1, *, value, drive, alt)",
+        new="""
 def __init__(
    self, 
    id: Any, 
@@ -682,12 +670,12 @@ def __init__(
    drive: int | None = None,
    alt: int | None = None
 )
-''',
-        end='Methods',
+""",
+        end="Methods",
     )
     shed.def_(
-        old='.. method:: Pin.init(mode=-1, pull=-1, *, value, drive, alt)',
-        new='''
+        old=".. method:: Pin.init(mode=-1, pull=-1, *, value, drive, alt)",
+        new="""
 def init(
    self, 
    mode: int = -1, 
@@ -697,36 +685,24 @@ def init(
    drive: int | None = None,
    alt: int | None = None
 ) -> None
-''',
+""",
     )
     shed.def_(
-        old='.. method:: Pin.value([x])',
-        new=[
-            'def value(self) -> int',
-            'def value(self, x: Any, /) -> None',
-        ]
+        old=".. method:: Pin.value([x])",
+        new=["def value(self) -> int", "def value(self, x: Any, /) -> None"],
     )
     shed.def_(
-        old='.. method:: Pin.__call__([x])',
-        new=[
-            'def __call__(self) -> int',
-            'def __call__(self, x: Any, /) -> None',
-        ]
+        old=".. method:: Pin.__call__([x])",
+        new=["def __call__(self) -> int", "def __call__(self, x: Any, /) -> None"],
     )
-    shed.def_(
-        old='.. method:: Pin.on()',
-        new='def on(self) -> None'
-    )
-    shed.def_(
-        old='.. method:: Pin.off()',
-        new='def off(self) -> None'
-    )
+    shed.def_(old=".. method:: Pin.on()", new="def on(self) -> None")
+    shed.def_(old=".. method:: Pin.off()", new="def off(self) -> None")
     shed.def_(
         old=(
-            '.. method:: Pin.irq(handler=None, trigger=(Pin.IRQ_FALLING | Pin.IRQ_RISING), *, '
-            'priority=1, wake=None, hard=False)'
+            ".. method:: Pin.irq(handler=None, trigger=(Pin.IRQ_FALLING | Pin.IRQ_RISING), *, "
+            "priority=1, wake=None, hard=False)"
         ),
-        new='''
+        new="""
 def irq(
    self,
    /,
@@ -737,70 +713,43 @@ def irq(
    wake: int | None = None, 
    hard: bool = False,
 ) -> Callable[[Pin], None] | None
-''',
-        end='The following methods are not part of the core Pin API and only implemented on certain ports.'
+""",
+        end="The following methods are not part of the core Pin API and only implemented on certain ports.",
     )
-    low = '.. method:: Pin.low()'
-    shed.consume(end=low)
+    low = ".. method:: Pin.low()"
+    shed.consume_up_to_but_excl_end_line(end=low)
+    shed.def_(old=low, new="def low(self) -> None")
+    shed.def_(old=".. method:: Pin.high()", new="def high(self) -> None")
     shed.def_(
-        old=low,
-        new='def low(self) -> None'
-    )
-    shed.def_(
-        old='.. method:: Pin.high()',
-        new='def high(self) -> None'
+        old=".. method:: Pin.mode([mode])",
+        new=["def mode(self) -> int", "def mode(self, mode: int, /) -> None"],
     )
     shed.def_(
-        old='.. method:: Pin.mode([mode])',
-        new=[
-            'def mode(self) -> int',
-            'def mode(self, mode: int, /) -> None',
-        ]
+        old=".. method:: Pin.pull([pull])",
+        new=["def pull(self) -> int", "def pull(self, pull: int, /) -> None"],
     )
     shed.def_(
-        old='.. method:: Pin.pull([pull])',
-        new=[
-            'def pull(self) -> int',
-            'def pull(self, pull: int, /) -> None',
-        ]
-    )
-    shed.def_(
-        old='.. method:: Pin.drive([drive])',
-        new=[
-            'def dive(self) -> int',
-            'def drive(self, drive: int, /) -> None',
-        ]
+        old=".. method:: Pin.drive([drive])",
+        new=["def dive(self) -> int", "def drive(self, drive: int, /) -> None"],
     )
     shed.vars(
         old=[
-            '.. data:: Pin.IN',
-            'Pin.OUT',
-            'Pin.OPEN_DRAIN',
-            'Pin.ALT',
-            'Pin.ALT_OPEN_DRAIN',
+            ".. data:: Pin.IN",
+            "Pin.OUT",
+            "Pin.OPEN_DRAIN",
+            "Pin.ALT",
+            "Pin.ALT_OPEN_DRAIN",
         ],
     )
+    shed.vars(old=[".. data:: Pin.PULL_UP", "Pin.PULL_DOWN", "Pin.PULL_HOLD"],)
+    shed.vars(old=[".. data:: Pin.LOW_POWER", "Pin.MED_POWER", "Pin.HIGH_POWER"],)
+    nxt = "machine.Signal.rst"
     shed.vars(
         old=[
-            '.. data:: Pin.PULL_UP',
-            'Pin.PULL_DOWN',
-            'Pin.PULL_HOLD',
-        ],
-    )
-    shed.vars(
-        old=[
-            '.. data:: Pin.LOW_POWER',
-            'Pin.MED_POWER',
-            'Pin.HIGH_POWER',
-        ],
-    )
-    nxt = 'machine.Signal.rst'
-    shed.vars(
-        old=[
-            '.. data:: Pin.IRQ_FALLING',
-            'Pin.IRQ_RISING',
-            'Pin.IRQ_LOW_LEVEL',
-            'Pin.IRQ_HIGH_LEVEL',
+            ".. data:: Pin.IRQ_FALLING",
+            "Pin.IRQ_RISING",
+            "Pin.IRQ_LOW_LEVEL",
+            "Pin.IRQ_HIGH_LEVEL",
         ],
         end=nxt,
     )
@@ -808,128 +757,84 @@ def irq(
 
 
 def _machine(shed: RST2PyI) -> None:
-    module_post_doc = f'''
-from typing import overload, Tuple, TypeVar, NoReturn, Callable
+    module_post_doc = f"""
+from typing import overload, NoReturn, Callable
 from typing import Sequence, ClassVar, Any, Final
 
-from uarray import array
 from uos import AbstractBlockDev
-
-{repdefs.ANY_WRITABLE_BUF}
-{repdefs.ANY_READABLE_BUF}
-'''
+from uio import AnyReadableBuf, AnyWritableBuf
+"""
     shed.module(
-        name='machine',
-        old='functions related to the hardware',
+        name="machine",
+        old="functions related to the hardware",
         post_doc=module_post_doc,
-        end='The ``machine`` module contains specific functions related to the hardware'
+        end="The ``machine`` module contains specific functions related to the hardware",
     )
-    shed.pyi.doc.extend(shed.extra_notes(end='Reset related functions'))
+    shed.pyi.doc.extend(shed.extra_notes(end="Reset related functions"))
+    shed.def_(old=".. function:: reset()", new="def reset() -> NoReturn", indent=0)
     shed.def_(
-        old='.. function:: reset()',
-        new='def reset() -> NoReturn',
-        indent=0
-    )
-    shed.def_(
-        old='.. function:: soft_reset()',
-        new='def soft_reset() -> NoReturn',
-        indent=0
+        old=".. function:: soft_reset()", new="def soft_reset() -> NoReturn", indent=0
     )
     shed.def_(
-        old='.. function:: reset_cause()',
-        new='def reset_cause() -> int',
-        indent=0
+        old=".. function:: reset_cause()", new="def reset_cause() -> int", indent=0
     )
     shed.def_(
-        old='.. function:: disable_irq()',
-        new='def disable_irq() -> bool',
-        indent=0
+        old=".. function:: disable_irq()", new="def disable_irq() -> bool", indent=0
     )
     shed.def_(
-        old='.. function:: enable_irq(state)',
-        new='def enable_irq(state: bool = True, /) -> None',
-        indent=0
+        old=".. function:: enable_irq(state)",
+        new="def enable_irq(state: bool = True, /) -> None",
+        indent=0,
     )
     shed.def_(
-        old='.. function:: freq([hz])',
-        new=[
-            'def freq() -> int',
-            'def freq(hz: int, /) -> None',
-        ],
-        indent=0
+        old=".. function:: freq([hz])",
+        new=["def freq() -> int", "def freq(hz: int, /) -> None"],
+        indent=0,
     )
-    shed.def_(
-        old='.. function:: idle()',
-        new='def idle() -> None',
-        indent=0
-    )
-    shed.def_(
-        old='.. function:: sleep()',
-        new='def sleep() -> None',
-        indent=0
-    )
-    wake_reason = '.. function:: wake_reason()'
+    shed.def_(old=".. function:: idle()", new="def idle() -> None", indent=0)
+    shed.def_(old=".. function:: sleep()", new="def sleep() -> None", indent=0)
+    wake_reason = ".. function:: wake_reason()"
     shed.defs_with_common_description(
-        cmd='.. function:: ',
+        cmd=".. function:: ",
         old2new={
-            'lightsleep([time_ms])': [
-                'def lightsleep() -> None',
-                'def lightsleep(time_ms: int, /) -> None',
+            "lightsleep([time_ms])": [
+                "def lightsleep() -> None",
+                "def lightsleep(time_ms: int, /) -> None",
             ],
-            'deepsleep([time_ms])': [
-                'def deepsleep() -> NoReturn',
-                'def deepsleep(time_ms: int, /) -> NoReturn',
+            "deepsleep([time_ms])": [
+                "def deepsleep() -> NoReturn",
+                "def deepsleep(time_ms: int, /) -> NoReturn",
             ],
         },
         end=wake_reason,
-        indent=0
+        indent=0,
     )
+    shed.def_(old=wake_reason, new="def wake_reason() -> int", indent=0)
+    shed.def_(old=".. function:: unique_id()", new="def unique_id() -> bytes", indent=0)
     shed.def_(
-        old=wake_reason,
-        new='def wake_reason() -> int',
-        indent=0
+        old=".. function:: time_pulse_us(pin, pulse_level, timeout_us=1000000, /)",
+        new="def time_pulse_us(pin: Pin, pulse_level: int, timeout_us: int = 1_000_000, /) -> int",
+        indent=0,
     )
-    shed.def_(
-        old='.. function:: unique_id()',
-        new='def unique_id() -> bytes',
-        indent=0
-    )
-    shed.def_(
-        old='.. function:: time_pulse_us(pin, pulse_level, timeout_us=1000000, /)',
-        new='def time_pulse_us(pin: Pin, pulse_level: int, timeout_us: int = 1_000_000, /) -> int',
-        indent=0
-    )
-    shed.def_(
-        old='.. function:: rng()',
-        new='def rng() -> int',
-        indent=0
-    )
-    idle = '.. data:: machine.IDLE'
-    shed.consume(end=idle)
+    shed.def_(old=".. function:: rng()", new="def rng() -> int", indent=0)
+    idle = ".. data:: machine.IDLE"
+    shed.consume_up_to_but_excl_end_line(end=idle)
     shed.vars(
-        old=[
-            '.. data:: machine.IDLE',
-            'machine.SLEEP',
-            'machine.DEEPSLEEP',
-        ],
+        old=[".. data:: machine.IDLE", "machine.SLEEP", "machine.DEEPSLEEP"],
         class_var=None,
     )
     shed.vars(
         old=[
-            '.. data:: machine.PWRON_RESET',
-            'machine.HARD_RESET',
-            'machine.WDT_RESET',
-            'machine.DEEPSLEEP_RESET',
-            'machine.SOFT_RESET',
+            ".. data:: machine.PWRON_RESET",
+            "machine.HARD_RESET",
+            "machine.WDT_RESET",
+            "machine.DEEPSLEEP_RESET",
+            "machine.SOFT_RESET",
         ],
         class_var=None,
     )
     shed.vars(
-        old=[
-            '.. data:: machine.WLAN_WAKE',
-            'machine.PIN_WAKE',
-            'machine.RTC_WAKE',
-        ],
+        old=[".. data:: machine.WLAN_WAKE", "machine.PIN_WAKE", "machine.RTC_WAKE"],
         class_var=None,
-        end='Classes',
+        end="Classes",
     )

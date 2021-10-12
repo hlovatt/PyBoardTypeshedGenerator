@@ -31,26 +31,42 @@ from pyb_ import pyb
 from re_ import re
 from rst2pyi import RST2PyI
 from select_ import select
+from socket_ import socket
+from ssl_ import ssl
+from struct_ import struct
+from sys_ import sys
+from thread_ import thread
+from time_ import time
 from uasyncio_ import uasyncio
 from uctypes_ import uctypes
 
 __author__ = rst.__author__
+
+from zlib_ import zlib
+
 __copyright_ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "6.2.1"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "7.0.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def main() -> None:
-    usage = '''
+    usage = """
 
 Usage (from `PyBoardTypeshedGenerator`'s directory) one of:
   0. `python3 -m main <destination root directory>`.
   1. `python3 main.py <destination root directory>`.
   2. `./main.py <destination root directory>` (if `main.py` is executable).
-'''
-    assert len(argv) > 1, 'No destination root directory given.' + usage
-    assert len(argv) == 2, 'Extra argument(s) given.' + usage
+"""
+    assert len(argv) > 1, "No destination root directory given." + usage
+    assert len(argv) == 2, "Extra argument(s) given." + usage
     shed = RST2PyI(output_root_dir=argv[1])
+    thread(shed)
+    zlib(shed)
+    time(shed)
+    sys(shed)
+    struct(shed)
+    ssl(shed)
+    socket(shed)
     select(shed)
     re(shed)
     os(shed)
@@ -78,5 +94,5 @@ Usage (from `PyBoardTypeshedGenerator`'s directory) one of:
     pyb(shed)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
