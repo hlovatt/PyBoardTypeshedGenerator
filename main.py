@@ -25,6 +25,7 @@ from lcd160cr_ import lcd160cr
 from machine_ import machine
 from math_ import math
 from micropython_ import micropython
+from neopixel_ import neopixel
 from network_ import network
 from os_ import os
 from pyb_ import pyb
@@ -46,7 +47,7 @@ from zlib_ import zlib
 
 __copyright_ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "7.0.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "7.1.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def main() -> None:
@@ -60,6 +61,7 @@ Usage (from `PyBoardTypeshedGenerator`'s directory) one of:
     assert len(argv) > 1, "No destination root directory given." + usage
     assert len(argv) == 2, "Extra argument(s) given." + usage
     shed = RST2PyI(output_root_dir=argv[1])
+    neopixel(shed)
     thread(shed)
     zlib(shed)
     time(shed)

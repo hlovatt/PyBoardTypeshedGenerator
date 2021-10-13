@@ -9,7 +9,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "7.0.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "7.1.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def thread(shed: RST2PyI) -> None:
@@ -20,4 +20,4 @@ def thread(shed: RST2PyI) -> None:
     )
     shed.consume_containing_line(dummy)
 
-    shed.write(u_also=True)
+    shed.write()
