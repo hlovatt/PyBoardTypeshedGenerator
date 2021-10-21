@@ -5,7 +5,7 @@ from urllib.request import urlopen, Request
 __author__ = "Howard C Lovatt"
 __copyright__ = "Howard C Lovatt, 2020 onwards."
 __license__ = "MIT https://opensource.org/licenses/MIT (as used by MicroPython)."
-__version__ = "7.1.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "7.2.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 @dataclass(frozen=True)
@@ -38,6 +38,9 @@ class RST(Iterator[str]):
     def push_line(self, line: str) -> None:
         self._lines.append(line)
 
+    def push_lines(self, *, lines: List[str]) -> None:
+        self._lines.extend(reversed(lines))
+
     def push_url(self, url: Union[str, Request]) -> None:
         with urlopen(url) as f:
             lines = f.read().splitlines()
@@ -51,3 +54,9 @@ class RST(Iterator[str]):
 
     def pop_line(self) -> str:
         return self._lines.pop()
+
+    def pop_lines(self, *, num_lines: int) -> List[str]:
+        lines: List[str] = []
+        for _ in range(num_lines):
+            lines.append(self._lines.pop())
+        return lines

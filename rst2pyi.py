@@ -3,7 +3,7 @@ Routines to converts `.rst` documentation files into `.pyi` typeshed stub interf
 """
 import os
 from dataclasses import dataclass
-from typing import List, Set, Dict, Callable, Optional, ClassVar, Final, Union
+from typing import List, Set, Dict, Callable, Optional, ClassVar, Union
 
 import rst
 from class_ import Class
@@ -13,7 +13,7 @@ from rst import RST
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "7.1.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "7.2.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 @dataclass
@@ -37,12 +37,12 @@ class RST2PyI:
 
     output_root_dir: str
     _name: str = ""
-    _input_base_url: Final[
-        str
-    ] = r"https://raw.githubusercontent.com/micropython/micropython/master/docs/library/"
     pyi: PYI = PYI()
     rst: RST = RST()
 
+    _input_base_url: ClassVar[
+        str
+    ] = r"https://raw.githubusercontent.com/micropython/micropython/master/docs/library/"
     _equals_char: ClassVar[Set[str]] = set("=")
     _minus_char: ClassVar[Set[str]] = set("-")
     _tilde_char: ClassVar[Set[str]] = set("~")
@@ -191,7 +191,7 @@ class RST2PyI:
         end: str,
     ) -> None:
         self._name = name
-        url = self._input_base_url + name + ".rst"
+        url = RST2PyI._input_base_url + name + ".rst"
         self.rst.push_url(url)
         self.consume_containing_line(
             string=old, and_preceding_lines=True,
@@ -207,10 +207,10 @@ class RST2PyI:
             assert False, f"`end` line, `{end}`, not found!"
         self.pyi.doc.append(
             f"""
-{new}
+{new}.
 
-Descriptions taken from 
-`{url}`, etc.
+Descriptions taken from:
+{url}.
 """.strip()
         )
         self.pyi.doc.extend(doc)
@@ -219,7 +219,7 @@ Descriptions taken from
 __author__ = "{rst.__author__}"
 __copyright__ = "{rst.__copyright__}"
 __license__ = "{rst.__license__}"
-__version__ = "7.1.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "7.2.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 {post_doc.strip()}
 """.strip()
@@ -238,7 +238,7 @@ __version__ = "7.1.0"  # Version set by https://github.com/hlovatt/tag2ver
     ) -> None:
         for line in self.rst:
             if line.lstrip().startswith(old):
-                url = self._input_base_url + old.strip()
+                url = RST2PyI._input_base_url + old.strip()
                 self.rst.push_url(url)
                 break
         else:

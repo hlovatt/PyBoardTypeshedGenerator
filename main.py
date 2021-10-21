@@ -34,6 +34,7 @@ from rst2pyi import RST2PyI
 from select_ import select
 from socket_ import socket
 from ssl_ import ssl
+from stm_ import stm
 from struct_ import struct
 from sys_ import sys
 from thread_ import thread
@@ -47,7 +48,7 @@ from zlib_ import zlib
 
 __copyright_ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "7.1.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "7.2.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def main() -> None:
@@ -61,6 +62,7 @@ Usage (from `PyBoardTypeshedGenerator`'s directory) one of:
     assert len(argv) > 1, "No destination root directory given." + usage
     assert len(argv) == 2, "Extra argument(s) given." + usage
     shed = RST2PyI(output_root_dir=argv[1])
+    stm(shed)
     neopixel(shed)
     thread(shed)
     zlib(shed)
