@@ -1,6 +1,7 @@
 """
 Generate `pyi` from corresponding `rst` docs.
 """
+from typing import Final
 
 import rst
 from rst2pyi import RST2PyI
@@ -8,7 +9,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "7.2.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "7.2.1"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def network(shed: RST2PyI) -> None:
@@ -190,7 +191,9 @@ def connect(
 
 
 def _wlan(shed: RST2PyI) -> str:
-    shed.class_from_file(old="network.WLAN.rst")
+    wlan: Final = r"network.WLAN.rst"
+    shed.consume_up_to_but_excl_end_line(end=wlan)
+    shed.class_from_file(old=wlan)
     shed.def_(
         old=r".. class:: WLAN(interface_id)",
         new="def __init__(self, interface_id: int, /)",

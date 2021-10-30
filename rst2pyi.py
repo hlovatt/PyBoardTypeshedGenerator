@@ -13,7 +13,7 @@ from rst import RST
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "7.2.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "7.2.1"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 @dataclass
@@ -219,7 +219,7 @@ Descriptions taken from:
 __author__ = "{rst.__author__}"
 __copyright__ = "{rst.__copyright__}"
 __license__ = "{rst.__license__}"
-__version__ = "7.2.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "7.2.1"  # Version set by https://github.com/hlovatt/tag2ver
 
 {post_doc.strip()}
 """.strip()
@@ -236,13 +236,10 @@ __version__ = "7.2.0"  # Version set by https://github.com/hlovatt/tag2ver
         post_doc: str = "",
         end: Optional[str] = None,
     ) -> None:
-        for line in self.rst:
-            if line.lstrip().startswith(old):
-                url = RST2PyI._input_base_url + old.strip()
-                self.rst.push_url(url)
-                break
-        else:
-            assert False, f"Did not find: `{old}`!"
+        line = next(iter(self.rst))
+        assert line.lstrip().startswith(old), f"Did not find: `{old}`, found `{line}`!"
+        url = RST2PyI._input_base_url + old.strip()
+        self.rst.push_url(url)
         rst_file_name = old[old.find(".") + 1 :]
         class_name = rst_file_name[: rst_file_name.find(".")]
         if super_class is not None:

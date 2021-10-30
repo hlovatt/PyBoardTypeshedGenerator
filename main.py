@@ -48,7 +48,7 @@ from zlib_ import zlib
 
 __copyright_ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "7.2.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "7.2.1"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def main() -> None:

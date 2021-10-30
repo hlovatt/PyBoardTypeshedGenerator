@@ -8,7 +8,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "7.2.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "7.2.1"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def bluetooth(shed: RST2PyI) -> None:
@@ -88,13 +88,15 @@ def gap_scan(
     )
     extra_docs = shed.extra_docs()
     shed.def_(
-        old=r".. method:: BLE.gap_connect(addr_type, addr, scan_duration_ms=2000, /)",
+        old=r".. method:: BLE.gap_connect(addr_type, addr, scan_duration_ms=2000, min_conn_interval_us=None, max_conn_interval_us=None, /)",
         new="""
 def gap_connect(
    self, 
    addr_type: int,
    addr: bytes, 
    scan_duration_ms: int = 2000, 
+   min_conn_interval_us: int | None = None, 
+   max_conn_interval_us: int | None = None,
    /,
 ) -> None
 """,

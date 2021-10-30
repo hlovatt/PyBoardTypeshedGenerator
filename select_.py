@@ -8,7 +8,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "7.2.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "7.2.1"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def select(shed: RST2PyI) -> None:

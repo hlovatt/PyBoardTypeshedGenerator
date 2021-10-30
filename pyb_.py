@@ -1,6 +1,7 @@
 """
 Generate `pyi` from corresponding `rst` docs.
 """
+from typing import Final
 
 import rst
 from class_ import Class
@@ -9,7 +10,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "7.2.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "7.2.1"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def pyb(shed: RST2PyI) -> None:
@@ -1728,10 +1729,11 @@ def init(
     )
     shed.def_(
         old=r".. method:: I2C.mem_read(data, addr, memaddr, *, timeout=5000, addr_size=8)",
-        new="""
+        new=[
+            """
 def mem_read(
    self, 
-   data: int | AnyWritableBuf, 
+   data: int, 
    addr: int, 
    memaddr: int,
    /, 
@@ -1740,8 +1742,79 @@ def mem_read(
    addr_size: int = 8, 
 ) -> bytes
 """,
+            """
+def mem_read(
+   self, 
+   data: AnyWritableBuf, 
+   addr: int, 
+   memaddr: int,
+   /, 
+   *, 
+   timeout: int = 5000, 
+   addr_size: int = 8, 
+) -> AnyWritableBuf
+""",
+        ],
     )
-    return "pyb.LCD.rst"
+    shed.def_(
+        old=r".. method:: I2C.mem_write(data, addr, memaddr, *, timeout=5000, addr_size=8)",
+        new="""
+def mem_write(
+   self, 
+   data: int | AnyWritableBuf, 
+   addr: int, 
+   memaddr: int,
+   /, 
+   *, 
+   timeout: int = 5000, 
+   addr_size: int = 8, 
+) -> None
+""",
+    )
+    shed.def_(
+        old=r".. method:: I2C.recv(recv, addr=0x00, *, timeout=5000)",
+        new=[
+            """    
+def recv(
+   self, 
+   recv: int, 
+   addr: int = 0x00, 
+   /, 
+   *, 
+   timeout: int = 5000, 
+) -> bytes
+""",
+            """    
+def recv(
+   self, 
+   recv: AnyWritableBuf, 
+   addr: int = 0x00, 
+   /, 
+   *, 
+   timeout: int = 5000, 
+) -> AnyWritableBuf
+""",
+        ],
+    )
+    shed.def_(
+        old=r".. method:: I2C.send(send, addr=0x00, *, timeout=5000)",
+        new="""
+def send(
+   self, 
+   addr: int = 0x00, 
+   /, 
+   *, 
+   timeout: int = 5000, 
+) -> None
+""",
+    )
+    shed.def_(
+        old=r".. method:: I2C.scan()", new="def scan(self) -> list[int]",
+    )
+    shed.vars(old=r".. data:: I2C.CONTROLLER",)
+    lcd: Final = "pyb.LCD.rst"
+    shed.vars(old=r".. data:: I2C.PERIPHERAL", end=lcd)
+    return lcd
 
 
 def _flash(this: str, shed: RST2PyI) -> str:
@@ -2082,7 +2155,9 @@ def read_timed_multi(
 
 
 def _accel(shed: RST2PyI) -> str:
-    shed.class_from_file(old="pyb.Accel.rst")
+    accel: Final = r"pyb.Accel.rst"
+    shed.consume_up_to_but_excl_end_line(end=accel)
+    shed.class_from_file(old=accel)
     shed.def_(
         old=".. class:: pyb.Accel()", new="def __init__(self)",
     )

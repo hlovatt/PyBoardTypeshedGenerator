@@ -9,7 +9,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "7.2.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "7.2.1"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def machine(shed: RST2PyI) -> None:
@@ -17,9 +17,11 @@ def machine(shed: RST2PyI) -> None:
     nxt = _pin(shed)
     nxt = _signal(nxt, shed)
     nxt = _adc(nxt, shed)
+    nxt = _pwm(nxt, shed)
     nxt = _uart(nxt, shed)
     nxt = _spi(nxt, shed)
     nxt = _i2c(nxt, shed)
+    nxt = _i2s(nxt, shed)
     nxt = _rtc(nxt, shed)
     nxt = _timer(nxt, shed)
     nxt = _wdt(nxt, shed)
@@ -27,6 +29,123 @@ def machine(shed: RST2PyI) -> None:
     _sd_card(nxt, shed)
 
     shed.write()
+
+
+def _i2s(this: str, shed: RST2PyI) -> str:
+    shed.class_from_file(
+        old=this, end="Constructors",
+    )
+    shed.def_(
+        old=r".. class:: I2S(id, *, sck, ws, sd, mode, bits, format, rate, ibuf)",
+        new="""
+def __init__(
+   self, 
+   id: int, 
+   /,
+   *, 
+   sck: Pin, 
+   ws: Pin, 
+   sd: Pin,
+   mode: int,
+   bits: int,
+   format: int,
+   rate: int,
+   ibuf: int,
+)
+""",
+        end="Methods",
+    )
+
+    shed.def_(
+        old=r".. method:: I2S.init(sck, ...)",
+        new="""
+def init(
+   self, 
+   *, 
+   sck: Pin, 
+   ws: Pin, 
+   sd: Pin, 
+   mode: int, 
+   bits: int, 
+   format: int, 
+   rate: int, 
+   ibuf: int
+) -> None
+""",
+    )
+    shed.def_(
+        old=r".. method:: I2S.deinit()", new="def deinit(self) -> None",
+    )
+    shed.def_(
+        old=r".. method::  I2S.readinto(buf)",
+        new="def readinto(self, buf: AnyWritableBuf, /,) -> int",
+    )
+    shed.def_(
+        old=r".. method::  I2S.write(buf)",
+        new="def write(self, buf: AnyReadableBuf, /,) -> int",
+    )
+    shed.def_(
+        old=r".. method::  I2S.irq(handler)",
+        new="def irq(self, handler: Callable[[], None], /,) -> None",
+    )
+
+    shed.def_(
+        old=r".. staticmethod::  I2S.shift(*, buf, bits, shift)",
+        new="""
+@staticmethod
+def shift(buf: AnyWritableBuf, bits: int, shift: int, /,) -> None
+""",
+    )
+
+    shed.vars(old=r".. data:: I2S.RX",)
+    shed.vars(old=r".. data:: I2S.TX",)
+    shed.vars(old=r".. data:: I2S.STEREO",)
+    nxt = "machine.RTC.rst"
+    shed.vars(old=r".. data:: I2S.MONO", end=nxt)
+    return nxt
+
+
+def _pwm(this: str, shed: RST2PyI) -> str:
+    shed.class_from_file(
+        pre_str="# noinspection PyShadowingNames", old=this, end="Constructors",
+    )
+    shed.def_(
+        old=r".. class:: PWM(dest, \*, freq, duty_u16, duty_ns)",
+        new="""
+def __init__(
+   self, 
+   dest: Pin | int, 
+   /,
+   *, 
+   freq: int = ..., 
+   duty_u16: int = ..., 
+   duty_ns: int = ...,
+)
+""",
+        end="Methods",
+    )
+    shed.def_(
+        old=r".. method:: PWM.init(\*, freq, duty_u16, duty_ns)",
+        new="def init(self, *, freq: int = ..., duty_u16: int = ..., duty_ns: int = ...) -> None",
+    )
+    shed.def_(
+        old=r".. method:: PWM.deinit()", new="def deinit(self) -> None",
+    )
+    shed.def_(
+        old=r".. method:: PWM.freq([value])",
+        new=["def freq(self) -> int", "def freq(self, value: int, /,) -> None"],
+    )
+    shed.def_(
+        old=r".. method:: PWM.duty_u16([value])",
+        new=["def duty_u16(self) -> int", "def duty_u16(self, value: int, /,) -> None"],
+    )
+    nxt = "machine.UART.rst"
+    shed.def_(
+        old=r".. method:: PWM.duty_ns([value])",
+        new=["def duty_ns(self) -> int", "def duty_ns(self, value: int, /,) -> None"],
+        end=nxt,
+    )
+    return nxt
 
 
 def _sd_card(this: str, shed: RST2PyI) -> None:
@@ -53,18 +172,10 @@ def __init__(
    mosi: int | str | Pin | None = None, 
    cs: int | str | Pin | None = None, 
    freq: int = 20000000,
+   /,
 )
 """,
         end="Implementation-specific details",
-    )
-    shed.pyi.classes[-1].defs.append(
-        """
-   def readblocks(self, blocknum: int, buf: bytes, offset: int = 0, /) -> None: ... 
-   
-   def writeblocks(self, blocknum: int, buf: bytes, offset: int = 0, /) -> None: ...
-   
-   def ioctl(self, op: int, arg: int) -> int | None: ...
-"""
     )
     shed.pyi.classes[-1].doc += shed.extra_docs()
 
@@ -77,7 +188,8 @@ def _sd(this: str, shed: RST2PyI) -> str:
 def __init__(
    self, 
    id: int = 0, 
-   pins: tuple[str, str, str] | tuple[Pin, Pin, Pin] = ("GP10", "GP11", "GP15")
+   pins: tuple[str, str, str] | tuple[Pin, Pin, Pin] = ("GP10", "GP11", "GP15"),
+   /,
 )
 """,
     )
@@ -87,7 +199,8 @@ def __init__(
 def init(
    self, 
    id: int = 0, 
-   pins: tuple[str, str, str] | tuple[Pin, Pin, Pin] = ("GP10", "GP11", "GP15")
+   pins: tuple[str, str, str] | tuple[Pin, Pin, Pin] = ("GP10", "GP11", "GP15"),
+   /,
 ) -> None
 """,
     )
@@ -340,14 +453,14 @@ def readfrom_mem_into(
 """,
         extra_docs=memory_docs,
     )
-    rtc = "machine.RTC.rst"
+    i2s = "machine.I2S.rst"
     shed.def_(
         old=r".. method:: I2C.writeto_mem(addr, memaddr, buf, *, addrsize=8",
         new="def writeto_mem(self, addr: int, memaddr: int, buf: AnyReadableBuf, /, *, addrsize: int = 8) -> None",
         extra_docs=memory_docs,
-        end=rtc,
+        end=i2s,
     )
-    return rtc
+    return i2s
 
 
 def _spi(this: str, shed: RST2PyI) -> str:
@@ -606,7 +719,7 @@ def _adc(this: str, shed: RST2PyI) -> str:
     shed.def_(
         old=".. class:: ADC(id)", new="def __init__(self, pin: int | Pin, /)",
     )
-    nxt = "machine.UART.rst"
+    nxt = "machine.PWM.rst"
     shed.def_(
         old=".. method:: ADC.read_u16()", new="def read_u16(self) -> int", end=nxt
     )
@@ -653,8 +766,10 @@ def __init__(
 
 
 def _pin(shed: RST2PyI) -> str:
+    pin: Final = r"machine.Pin.rst"
+    shed.consume_up_to_but_excl_end_line(end=pin)
     shed.class_from_file(
-        old="machine.Pin.rst", end="Constructors",
+        old=pin, end="Constructors",
     )
     shed.def_(
         old=".. class:: Pin(id, mode=-1, pull=-1, *, value, drive, alt)",
