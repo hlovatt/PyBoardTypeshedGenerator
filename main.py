@@ -29,6 +29,7 @@ from neopixel_ import neopixel
 from network_ import network
 from os_ import os
 from pyb_ import pyb
+from random_ import random
 from re_ import re
 from rst2pyi import RST2PyI
 from select_ import select
@@ -48,7 +49,7 @@ from zlib_ import zlib
 
 __copyright_ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "7.2.1"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "7.3.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def main() -> None:
@@ -62,6 +63,7 @@ Usage (from `PyBoardTypeshedGenerator`'s directory) one of:
     assert len(argv) > 1, "No destination root directory given." + usage
     assert len(argv) == 2, "Extra argument(s) given." + usage
     shed = RST2PyI(output_root_dir=argv[1])
+    random(shed)
     stm(shed)
     neopixel(shed)
     thread(shed)
