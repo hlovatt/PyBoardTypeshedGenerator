@@ -7,14 +7,14 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "7.3.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "7.4.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def uasyncio(shed: RST2PyI) -> None:
     shed.module(
         name="uasyncio",
         old="asynchronous I/O scheduler for writing concurrent code",
-        post_doc=f"""
+        post_doc=f'''
 from abc import ABC
 from typing import Awaitable, TypeVar, Callable
 from typing import Coroutine, Any, Dict, Iterable, Generic, Final
@@ -24,7 +24,35 @@ from uio import AnyReadableBuf
 _T: Final = TypeVar("_T")
 # `Coroutine` `_T` is covariant and `Awaitable` `_T` is invariant.
 _C: Final = Coroutine[Any, None, _T] | Awaitable[_T]
-""",
+
+class CancelledError(BaseException):
+   """
+   The operation has been cancelled.
+
+   This exception can be caught to perform custom operations when asyncio Tasks are cancelled. 
+   In almost all situations the exception must be re-raised.
+   """
+
+class IOQueue:
+   """
+   Queue and poller for stream IO.
+   """
+
+class SingletonGenerator:
+   """
+   `Yield` once, then raise StopIteration.
+   """
+
+class TimeoutError(Exception):
+   """
+   The operation has exceeded the given deadline.
+   """
+
+def run_until_complete(main_task: Awaitable[_T] | None = None, /):
+   """
+   Keep scheduling tasks until there are none left to schedule.
+   """
+''',
         end="Core functions",
     )
     shed.def_(
@@ -42,7 +70,7 @@ _C: Final = Coroutine[Any, None, _T] | Awaitable[_T]
     )
     shed.def_(
         old=".. function:: sleep(t)",
-        new="def sleep(t: float) -> Awaitable[None]",
+        new="def sleep(t: float, /) -> Awaitable[None]",
         indent=0,
     )
     shed.def_(

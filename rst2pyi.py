@@ -13,7 +13,7 @@ from rst import RST
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "7.3.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "7.4.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 @dataclass
@@ -219,7 +219,7 @@ Descriptions taken from:
 __author__ = "{rst.__author__}"
 __copyright__ = "{rst.__copyright__}"
 __license__ = "{rst.__license__}"
-__version__ = "7.3.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "7.4.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 {post_doc.strip()}
 """.strip()
@@ -377,10 +377,10 @@ __version__ = "7.3.0"  # Version set by https://github.com/hlovatt/tag2ver
             else:
                 doc.append(doc_line)
         else:
-            assert doc, f"No documentation found before end-of-file reached!"
-        assert doc, f"No documentation found before `{end}` reached!"
-        if extra_docs:
             doc.extend(extra_docs)
+            assert doc, f"No documentation found before end-of-file reached!"
+        doc.extend(extra_docs)
+        assert doc, f"No documentation found before `{end}` reached!"
         self._add_def_or_defs(method_def, doc, indent, extra_doc_indent, new, pre_str)
 
     def _add_def_or_defs(

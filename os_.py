@@ -9,7 +9,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "7.3.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "7.4.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def os(shed: RST2PyI) -> None:
@@ -269,9 +269,9 @@ def writeblocks(self, block_num: int, buf: bytes | bytearray, offset: int, /) ->
     shed.def_(
         old=r".. method:: ioctl(op, arg)",
         new=[
-            "def ioctl(self, op: int, arg: int) -> int | None",
-            "def ioctl(self, op: Literal[4, 5], arg: int) -> int",
-            "def ioctl(self, op: Literal[1, 2, 3, 6], arg: int) -> int | None",
+            "def ioctl(self, op: int, arg: int, /) -> int | None",
+            "def ioctl(self, op: Literal[4, 5], arg: int, /) -> int",
+            "def ioctl(self, op: Literal[1, 2, 3, 6], arg: int, /) -> int | None",
         ],
     )
 

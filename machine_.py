@@ -9,7 +9,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "7.3.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "7.4.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def machine(shed: RST2PyI) -> None:
@@ -139,12 +139,14 @@ def __init__(
         old=r".. method:: PWM.duty_u16([value])",
         new=["def duty_u16(self) -> int", "def duty_u16(self, value: int, /,) -> None"],
     )
-    nxt = "machine.UART.rst"
     shed.def_(
         old=r".. method:: PWM.duty_ns([value])",
         new=["def duty_ns(self) -> int", "def duty_ns(self, value: int, /,) -> None"],
-        end=nxt,
+        end="Limitations of PWM",
     )
+    nxt = "machine.UART.rst"
+    extra_docs = shed.extra_docs(end=nxt)
+    shed.pyi.classes[-1].doc.extend(extra_docs)
     return nxt
 
 
@@ -227,7 +229,7 @@ def _wdt(this: str, shed: RST2PyI) -> str:
 def _timer(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(old=this,)
     shed.def_(
-        old=r".. class:: Timer(id, ...)",
+        old=r".. class:: Timer(id, /, ...)",
         new=[
             """
 def __init__(
@@ -854,6 +856,7 @@ def irq(
             "Pin.OPEN_DRAIN",
             "Pin.ALT",
             "Pin.ALT_OPEN_DRAIN",
+            "Pin.ANALOG",
         ],
     )
     shed.vars(old=[".. data:: Pin.PULL_UP", "Pin.PULL_DOWN", "Pin.PULL_HOLD"],)

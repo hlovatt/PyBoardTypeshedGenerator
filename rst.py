@@ -5,7 +5,7 @@ from urllib.request import urlopen, Request
 __author__ = "Howard C Lovatt"
 __copyright__ = "Howard C Lovatt, 2020 onwards."
 __license__ = "MIT https://opensource.org/licenses/MIT (as used by MicroPython)."
-__version__ = "7.3.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "7.4.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 @dataclass(frozen=True)
@@ -14,10 +14,10 @@ class RST(Iterator[str]):
     An iterator of lines, used to read in the restructured text, `.rst`, files.
     `RST` works like a stack, you `push_line`s or `push_url`s (whole files) and then pop them using `next`
     (typically via a `for` loop).
-    `push_line` is typically used to provide 'push back' when parsing.
+    `push_line` and `push_lines` are typically used to provide 'push back' when parsing.
     `__len__` is provided and is typically use to test if empty, via implicit bool conversion.
     `peek` is useful for debugging parsers.
-    `pop_line` is useful for fixing up `rst` files to make them easier to parse.
+    `pop_line` and `pop_lines` are useful for fixing up `rst` files to make them easier to parse.
     """
 
     _lines: Final[List[str]] = field(default_factory=list)
@@ -27,7 +27,7 @@ class RST(Iterator[str]):
 
     def __next__(self) -> str:
         if not self._lines:
-            # Should really remember that it has stopped and then stay stopped (`Iterator` contract);
+            # Should really (`Iterator` contract) remember that it has stopped and then stay stopped;
             # but it doesn't, in fact it does the opposite and is reused via `Typeshed` instance for the next module!
             raise StopIteration
         return self._lines.pop()

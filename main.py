@@ -15,6 +15,8 @@ from cmath_ import cmath
 from collections_ import collections
 from cryptolib_ import cryptolib
 from errno_ import errno
+from esp32_ import esp32
+from esp_ import esp
 from framebuf_ import framebuf
 from gc_ import gc
 from hashlib_ import hashlib
@@ -42,14 +44,12 @@ from thread_ import thread
 from time_ import time
 from uasyncio_ import uasyncio
 from uctypes_ import uctypes
-
-__author__ = rst.__author__
-
 from zlib_ import zlib
 
+__author__ = rst.__author__
 __copyright_ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "7.3.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "7.4.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def main() -> None:
@@ -63,6 +63,8 @@ Usage (from `PyBoardTypeshedGenerator`'s directory) one of:
     assert len(argv) > 1, "No destination root directory given." + usage
     assert len(argv) == 2, "Extra argument(s) given." + usage
     shed = RST2PyI(output_root_dir=argv[1])
+    esp32(shed)
+    esp(shed)
     random(shed)
     stm(shed)
     neopixel(shed)
