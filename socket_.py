@@ -55,11 +55,13 @@ def getaddrinfo(
         indent=0,
     )
     shed.def_(
+        pre_str='# noinspection PyUnresolvedReferences',
         old=r".. function:: inet_ntop(af, bin_addr)",
         new="def inet_ntop(af: int, bin_addr: bytes, /) -> str",
         indent=0,
     )
     shed.def_(
+        pre_str='# noinspection PyUnresolvedReferences',
         old=r".. function:: inet_pton(af, txt_addr)",
         new="def inet_pton(af: int, txt_addr: str, /) -> bytes",
         indent=0,

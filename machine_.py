@@ -719,7 +719,11 @@ def irq(
 def _adc(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(old=this)
     shed.def_(
-        old=".. class:: ADC(id)", new="def __init__(self, pin: int | Pin, /)",
+        old=".. class:: ADC(id)", new="def __init__(self, pin: int | Pin, /)", extra_docs=[
+            '.. note::',
+            '',
+            'WiPy has a custom implementation of ADC, see ADCWiPY for details.'
+        ],
     )
     nxt = "machine.PWM.rst"
     shed.def_(
