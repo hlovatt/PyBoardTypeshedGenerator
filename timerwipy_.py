@@ -13,7 +13,7 @@ __version__ = "7.5.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def timer_wipy(shed: RST2PyI) -> None:
-    constructors: Final = "Constructors"
+    constructors: Final = "Constructogrs"
     shed.module(
         name="machine.TimerWiPy",
         old="class TimerWiPy -- control hardware timers",
