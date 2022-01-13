@@ -13,7 +13,7 @@ from rst import RST
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "7.4.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "7.5.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 @dataclass
@@ -219,7 +219,7 @@ Descriptions taken from:
 __author__ = "{rst.__author__}"
 __copyright__ = "{rst.__copyright__}"
 __license__ = "{rst.__license__}"
-__version__ = "7.4.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "7.5.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 {post_doc.strip()}
 """.strip()
@@ -278,6 +278,7 @@ __version__ = "7.4.0"  # Version set by https://github.com/hlovatt/tag2ver
         pre_str: str = "",
         name: str,
         extra_docs: List[str] = (),
+        post_doc: str = "",
         end: Optional[str],
     ) -> None:
         new_class = Class(pre_str=pre_str)
@@ -286,6 +287,7 @@ __version__ = "7.4.0"  # Version set by https://github.com/hlovatt/tag2ver
         new_class.doc = self.extra_notes(end=end, first_line="")
         if extra_docs:
             new_class.doc += extra_docs
+        new_class.imports_vars.append(post_doc)
 
     def defs_with_common_description(
         self,

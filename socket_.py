@@ -10,7 +10,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "7.4.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "7.5.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def socket(shed: RST2PyI) -> None:
@@ -55,13 +55,13 @@ def getaddrinfo(
         indent=0,
     )
     shed.def_(
-        pre_str='# noinspection PyUnresolvedReferences',
+        pre_str="# noinspection PyUnresolvedReferences",
         old=r".. function:: inet_ntop(af, bin_addr)",
         new="def inet_ntop(af: int, bin_addr: bytes, /) -> str",
         indent=0,
     )
     shed.def_(
-        pre_str='# noinspection PyUnresolvedReferences',
+        pre_str="# noinspection PyUnresolvedReferences",
         old=r".. function:: inet_pton(af, txt_addr)",
         new="def inet_pton(af: int, txt_addr: str, /) -> bytes",
         indent=0,

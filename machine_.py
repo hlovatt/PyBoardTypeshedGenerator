@@ -9,7 +9,7 @@ from rst2pyi import RST2PyI
 __author__ = rst.__author__
 __copyright__ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "7.4.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "7.5.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def machine(shed: RST2PyI) -> None:
@@ -719,10 +719,12 @@ def irq(
 def _adc(this: str, shed: RST2PyI) -> str:
     shed.class_from_file(old=this)
     shed.def_(
-        old=".. class:: ADC(id)", new="def __init__(self, pin: int | Pin, /)", extra_docs=[
-            '.. note::',
-            '',
-            'WiPy has a custom implementation of ADC, see ADCWiPY for details.'
+        old=".. class:: ADC(id)",
+        new="def __init__(self, pin: int | Pin, /)",
+        extra_docs=[
+            ".. note::",
+            "",
+            "WiPy has a custom implementation of ADC, see ADCWiPy for details.",
         ],
     )
     nxt = "machine.PWM.rst"

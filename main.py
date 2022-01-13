@@ -7,7 +7,7 @@ Convert MicroPython `.rst` documentation files into `.pyi` typeshed stub interfa
 from sys import argv
 
 import rst
-from adcwipy_ import adcwipy
+from adcwipy_ import adc_wipy
 from array_ import array
 from binascii_ import binascii
 from bluetooth_ import bluetooth
@@ -43,6 +43,7 @@ from struct_ import struct
 from sys_ import sys
 from thread_ import thread
 from time_ import time
+from timerwipy_ import timer_wipy
 from uasyncio_ import uasyncio
 from uctypes_ import uctypes
 from wipy_ import wipy
@@ -51,7 +52,7 @@ from zlib_ import zlib
 __author__ = rst.__author__
 __copyright_ = rst.__copyright__
 __license__ = rst.__license__
-__version__ = "7.4.0"  # Version set by https://github.com/hlovatt/tag2ver
+__version__ = "7.5.0"  # Version set by https://github.com/hlovatt/tag2ver
 
 
 def main() -> None:
@@ -65,7 +66,8 @@ Usage (from `PyBoardTypeshedGenerator`'s directory) one of:
     assert len(argv) > 1, "No destination root directory given." + usage
     assert len(argv) == 2, "Extra argument(s) given." + usage
     shed = RST2PyI(output_root_dir=argv[1])
-    adcwipy(shed)
+    timer_wipy(shed)
+    adc_wipy(shed)
     wipy(shed)
     esp32(shed)
     esp(shed)
